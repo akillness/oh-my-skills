@@ -1,5 +1,5 @@
 N:plannotator
-D:[plan/계획] AI 코딩 에이전트 계획/diff를 시각적으로 리뷰. 브라우저 UI에서 어노테이션(delete/insert/replace/comment)→Approve 또는 Send Feedback. Export→Notes탭에서 Approve 없이도 Obsidian/Bear에 즉시 저장 가능. Code Review(/plannotator-review), 이미지 어노테이션, Obsidian/Bear 자동저장 지원. Claude Code + OpenCode + Gemini CLI + Codex CLI 통합. 수동 Plan 제출은 echo/heredoc 대신 python3 JSON(stdin tool_input 포맷) 사용 권장.
+D:[plan/계획] AI 코딩 에이전트 계획/diff를 시각적으로 리뷰. 브라우저 UI에서 어노테이션(delete/insert/replace/comment)→Approve 또는 Send Feedback. Export→Notes탭에서 Approve 없이도 Obsidian/Bear에 즉시 저장 가능. Code Review(/plannotator-review), 이미지 어노테이션, Obsidian/Bear 자동저장 지원. Claude Code + OpenCode + Gemini CLI + Codex CLI 통합. 단독 동작 가능(ralph/omc 불필요). 수동 Plan 제출은 echo/heredoc 대신 python3 JSON(stdin tool_input 포맷) 사용, & 백그라운드 실행 금지(블로킹으로 실행해야 피드백 수신 가능).
 G:plan 계획 planno plannotator plan-review diff-review code-review annotate visual-review claude-code opencode gemini codex image-annotation obsidian export notes bear save scripts 계획검토 설계검토
 
 U[7]:
@@ -17,7 +17,7 @@ S[6]{n,action,details}:
   4,Remote Config,bash scripts/configure-remote.sh (또는 --show로 현재 설정 확인)
   5,Code Review,bash scripts/review.sh (또는 HEAD~1/main...HEAD 인자로 범위 지정)
   6,Manual Notes Save,Export버튼→Notes탭→Obsidian Save / Bear Save / Save All 클릭 (설정된 경우 초록 점 표시→Saved로 변경)
-  7,Manual Plan Submit,cat > /tmp/plan.md 후 python3 json.dumps(tool_input) | plannotator (echo/heredoc 지양)
+  7,Manual Plan Submit,python3 json.dumps(tool_input) | plannotator > /tmp/plannotator_feedback.txt 2>&1 — & 없이 블로킹 실행 (echo/heredoc 지양; & 사용 시 피드백 수신 불가)
 R[4]:
   코딩 시작 전 planno로 계획 먼저 검토 (잘못된 접근 조기 차단)
   어노테이션 하나당 하나의 구체적 액션 (모호함 방지)

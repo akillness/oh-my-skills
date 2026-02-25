@@ -300,12 +300,18 @@ npx skills add https://github.com/akillness/skills-template --skill playwriter
 These tools have full documentation in `docs/` and dedicated skills in `.agent-skills/`.
 
 ### plannotator — Interactive Plan & Diff Review
-> **용도**: 실행 전 계획 시각 검토 및 피드백 루프 | **플랫폼**: Claude · Codex · Gemini · OpenCode | **상태**: v0.9.0
+> **용도**: 실행 전 계획 시각 검토 및 피드백 루프 | **플랫폼**: Claude · Codex · Gemini · OpenCode | **상태**: v0.9.2
 > Keyword: `plan`, `계획` (alias: `planno`) | [Docs](docs/plannotator/README.md) | [GitHub](https://github.com/backnotprop/plannotator)
 
 Visual browser UI for annotating AI agent plans before coding. Works with **Claude Code**, **OpenCode**, **Gemini CLI**, and **Codex CLI**. Approve plans or send structured feedback in one click.
 
-Validated in-session with Playwright: Approve + feedback loops confirmed across all four platforms. See `docs/plannotator/README.md` for the verified python3 stdin pattern (avoid raw `echo`/heredoc for plan submission).
+**단독 동작 가능**: ralph, omc, bmad 등 다른 도구 없이 `ExitPlanMode` 훅 또는 플러그인 설정만으로 즉시 사용 가능합니다.
+
+> **중요**: 수동 plan 제출 시 `&` (백그라운드) 실행 금지 — 블로킹으로 실행해야 피드백을 수신할 수 있습니다.
+> ```bash
+> python3 -c "import json; print(json.dumps({'tool_input': {'plan': open('plan.md').read(), 'permission_mode': 'acceptEdits'}}))" \
+>   | plannotator > /tmp/plannotator_feedback.txt 2>&1
+> ```
 
 ```bash
 bash scripts/install.sh --all   # Install + configure all AI tools at once
@@ -349,7 +355,7 @@ open "bear://x-callback-url/create?title=Plannotator%20Check&text=Bear%20callbac
 | 증상 | 원인 | 해결 |
 |------|------|------|
 | 브라우저가 두 번 열림 | `plannotator-launch.sh`의 중복 `open` 호출 | 훅 스크립트에서 포트 감지 루프의 `open` 제거 — plannotator가 브라우저를 자체 오픈 |
-| 피드백 미수신 (Codex/Gemini/OpenCode) | `&` 백그라운드 실행으로 에이전트가 결과를 대기하지 않음 | `&` 없이 블로킹 실행 후 `/tmp/plannotator_feedback.txt` 읽기 |
+| 피드백 미수신 (Codex/Gemini/OpenCode) | `&` 백그라운드 실행으로 에이전트가 결과를 대기하지 않음 | `&` **제거** — 블로킹 실행: `python3 -c "..." \| plannotator > /tmp/plannotator_feedback.txt 2>&1` (& 없음) |
 
 ---
 

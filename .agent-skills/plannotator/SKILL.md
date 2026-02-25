@@ -24,6 +24,8 @@ source: backnotprop/plannotator
 - You want to share plan reviews with teammates via a link
 - You want to auto-save approved plans to Obsidian or Bear Notes
 
+> **plannotator는 단독으로 동작합니다.** ralph, omc, bmad 등 다른 도구 없이 Claude Code (ExitPlanMode 훅) 하나만으로 사용 가능합니다.
+
 ---
 
 ## Scripts (Automated Patterns)
@@ -222,12 +224,12 @@ Usage in Gemini CLI after setup:
 # Enter planning mode (hook fires when you exit)
 gemini --approval-mode plan
 
-# Manual plan review (validated format)
+# Manual plan review (validated format — blocking, NO & at end)
 python3 -c "
 import json
 plan = open('plan.md').read()
 print(json.dumps({'tool_input': {'plan': plan, 'permission_mode': 'acceptEdits'}}))
-" | plannotator > /tmp/plannotator_feedback.txt 2>&1 &
+" | plannotator > /tmp/plannotator_feedback.txt 2>&1
 
 # Code review after implementation
 plannotator review
@@ -257,12 +259,12 @@ Usage in Codex CLI after setup:
 # Use the plannotator agent prompt
 /prompts:plannotator
 
-# Manual plan review (validated format)
+# Manual plan review (validated format — blocking, NO & at end)
 python3 -c "
 import json
 plan = open('plan.md').read()
 print(json.dumps({'tool_input': {'plan': plan, 'permission_mode': 'acceptEdits'}}))
-" | plannotator > /tmp/plannotator_feedback.txt 2>&1 &
+" | plannotator > /tmp/plannotator_feedback.txt 2>&1
 
 # Code review after implementation
 plannotator review HEAD~1

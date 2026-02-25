@@ -9,6 +9,8 @@
 
 plannotator opens a **visual browser UI** when your AI coding agent finishes planning. You can annotate the plan, then either approve it (agent proceeds) or send feedback (annotations sent back as structured feedback).
 
+> **단독 동작 가능**: plannotator는 ralph, omc, bmad 등 다른 도구 없이 Claude Code 하나만으로 사용할 수 있습니다. `ExitPlanMode` 훅 또는 플러그인만 설정하면 즉시 동작합니다.
+
 **Part of AI Review Tools family** (independent tools, each with its own keyword):
 | Tool | Keyword | Purpose |
 |------|---------|---------|
@@ -202,7 +204,7 @@ PLAN
 python3 -c "
 import json
 print(json.dumps({'tool_input': {'plan': open('/tmp/plan.md').read(), 'permission_mode': 'acceptEdits'}}))
-" | plannotator > /tmp/plannotator_feedback.txt 2>&1 &
+" | plannotator > /tmp/plannotator_feedback.txt 2>&1
 ```
 
 ---
