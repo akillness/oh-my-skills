@@ -201,8 +201,10 @@ PLAN
 python3 -c "
 import json
 print(json.dumps({'tool_input': {'plan': open('/tmp/plan.md').read(), 'permission_mode': 'acceptEdits'}}))
-" | plannotator > /tmp/plannotator_feedback.txt 2>&1 &
+" | plannotator > /tmp/plannotator_feedback.txt 2>&1
 ```
+
+> **중요**: `&` 없이 블로킹 실행 — 사용자가 Approve/Send Feedback 클릭까지 대기해야 피드백을 수신할 수 있습니다.
 
 **Workflow:**
 1. Create your implementation plan in markdown
@@ -255,7 +257,8 @@ echo -e "${BLUE}Manual trigger:${NC}"
 echo -e "  ${GREEN}cat > /tmp/plan.md << 'PLAN'${NC}"
 echo -e "  ${GREEN}# ...your markdown...${NC}"
 echo -e "  ${GREEN}PLAN${NC}"
-echo -e "  ${GREEN}python3 -c \"import json; print(json.dumps({'tool_input': {'plan': open('/tmp/plan.md').read(), 'permission_mode': 'acceptEdits'}}))\" | plannotator > /tmp/plannotator_feedback.txt 2>&1 &${NC}"
+echo -e "  ${GREEN}python3 -c \"import json; print(json.dumps({'tool_input': {'plan': open('/tmp/plan.md').read(), 'permission_mode': 'acceptEdits'}}))\" | plannotator > /tmp/plannotator_feedback.txt 2>&1${NC}"
+echo -e "  ${GRAY}(& 없이 블로킹 실행 — Approve/Feedback 클릭 전까지 대기)${NC}"
 echo -e "  ${GREEN}plannotator review${NC}   (review git diff)"
 echo ""
 echo -e "${BLUE}Next steps:${NC}"

@@ -34,6 +34,7 @@ All installation steps have corresponding scripts in `scripts/`. Run them direct
 | `scripts/setup-codex-hook.sh` | Configure Codex CLI `developer_instructions` + prompt |
 | `scripts/setup-opencode-plugin.sh` | Register OpenCode plugin + slash commands |
 | `scripts/check-status.sh` | Verify all integrations (Claude, Gemini, Codex, OpenCode, Obsidian) |
+| `scripts/setup-shell.sh` | Add `plan` function to shell profile (~/.zshrc or ~/.bashrc) |
 | `scripts/configure-remote.sh` | SSH / devcontainer / WSL setup |
 | `scripts/review.sh` | Launch diff review UI |
 
@@ -99,7 +100,27 @@ Or use `--with-codex` during install:
 bash scripts/install.sh --with-codex
 ```
 
-### 5. Connect to OpenCode
+### 5. Shell Integration (Terminal `plan` command)
+
+```bash
+bash scripts/setup-shell.sh
+# Adds 'plan' function to ~/.zshrc or ~/.bashrc
+# Reload: source ~/.zshrc
+```
+
+After setup, use from any terminal:
+```bash
+plan plan.md          # Submit plan — blocks until Approve/Feedback
+plan --review         # Review uncommitted git diff
+plan --review HEAD~1  # Review specific commit
+```
+
+Or use `--with-shell` during install:
+```bash
+bash scripts/install.sh --with-shell
+```
+
+### 6. Connect to OpenCode
 
 **Option A — Automated script:**
 ```bash
@@ -118,7 +139,7 @@ Add to `opencode.json`:
 
 Then restart OpenCode.
 
-### 6. Verify installation
+### 7. Verify installation
 
 ```bash
 bash scripts/check-status.sh

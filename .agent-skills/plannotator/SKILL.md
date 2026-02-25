@@ -39,6 +39,7 @@ All patterns have a corresponding script in `scripts/`. Run them directly or let
 | `scripts/setup-gemini-hook.sh` | Gemini CLI Hook | Configure Gemini CLI ExitPlanMode hook + GEMINI.md |
 | `scripts/setup-codex-hook.sh` | Codex CLI Setup | Configure Codex CLI developer_instructions + prompt |
 | `scripts/setup-opencode-plugin.sh` | OpenCode Plugin | Register plugin + slash commands |
+| `scripts/setup-shell.sh` | Shell Integration | Add `plan` function to ~/.zshrc or ~/.bashrc |
 | `scripts/check-status.sh` | Status Check | Verify all integrations and configuration |
 | `scripts/configure-remote.sh` | Remote Mode | SSH / devcontainer / WSL configuration |
 | `scripts/review.sh` | Code Review | Launch diff review UI |
@@ -271,6 +272,44 @@ plannotator review HEAD~1
 ```
 
 > Note: `plannotator plan -` with heredoc/echo can fail with `Failed to parse hook event from stdin`. Use the python3 JSON format above.
+
+---
+
+## Pattern 9: Shell Integration (Terminal `plan` command)
+
+```bash
+# Add 'plan' function to shell profile (~/.zshrc or ~/.bashrc)
+bash scripts/setup-shell.sh
+
+# Preview what would change (no writes)
+bash scripts/setup-shell.sh --dry-run
+
+# Remove the function
+bash scripts/setup-shell.sh --remove
+```
+
+Reload shell after setup:
+```bash
+source ~/.zshrc   # or ~/.bashrc
+```
+
+Usage from any terminal:
+```bash
+# Submit plan for visual review (blocking — waits for Approve/Feedback)
+plan plan.md
+
+# Review uncommitted git diff
+plan --review
+
+# Review specific commit
+plan --review HEAD~1
+```
+
+What it does:
+- Adds a `plan()` shell function to your profile
+- `plan <file.md>` runs plannotator in **blocking** mode (no `&`)
+- After review, prints `✓ Plan APPROVED` or `✗ Plan REJECTED` with feedback
+- `plan --review` is a shortcut for `plannotator review`
 
 ---
 
