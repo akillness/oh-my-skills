@@ -1,5 +1,8 @@
 # Vibe Kanban MCP API 레퍼런스
 
+> **검증 버전**: v0.1.17 (2026-02-22 Playwright 검증)
+> MCP를 통해 에이전트가 직접 Vibe Kanban 워크스페이스를 생성하고 관리할 수 있습니다.
+
 ## 개요
 
 Vibe Kanban MCP 서버는 표준 MCP 프로토콜을 통해 보드 조작 API를 제공합니다.
@@ -24,7 +27,7 @@ Vibe Kanban MCP 서버는 표준 MCP 프로토콜을 통해 보드 조작 API를
     "description": "GET /api/users 엔드포인트 추가",
     "column": "in_progress",
     "agent": "claude",
-    "worktree": ".worktrees/vk-abc123",
+    "worktree": "~/.vibe-kanban-workspaces/<workspace-uuid>",
     "created_at": "2026-02-21T10:00:00Z"
   }
 ]
@@ -39,7 +42,7 @@ Vibe Kanban MCP 서버는 표준 MCP 프로토콜을 통해 보드 조작 API를
 |------|------|------|------|
 | `title` | string | 예 | 카드 제목 |
 | `description` | string | 아니오 | 카드 설명 |
-| `agent` | string | 아니오 | 에이전트 타입 (`claude`, `codex`, `gemini`) |
+| `agent` | string | 아니오 | 에이전트 타입 (`opencode`, `claude`, `codex`, `gemini`, `amp`, `qwen`, `copilot`, `droid`, `cursor`) |
 
 **응답:**
 ```json
@@ -66,13 +69,13 @@ Vibe Kanban MCP 서버는 표준 MCP 프로토콜을 통해 보드 조작 API를
 {
   "id": "card_abc123",
   "column": "review",
-  "worktree": ".worktrees/vk-abc123"
+  "worktree": "~/.vibe-kanban-workspaces/<workspace-uuid>"
 }
 ```
 
 **부작용:**
-- `todo` → `in_progress`: Git worktree 생성 + 에이전트 실행
-- `review` → `done`: Draft PR 생성 (GITHUB_TOKEN 설정 시)
+- 카드 생성 → Running: Git worktree + 브랜치(`vk/<4자ID>-<slug>`) 자동 생성 + 에이전트 실행
+- Done/Archive: Draft PR 생성 (GitHub 연결 시)
 
 ### vk_get_logs
 

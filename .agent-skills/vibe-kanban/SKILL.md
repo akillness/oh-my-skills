@@ -152,6 +152,28 @@ Vibe Kanban은 MCP(Model Context Protocol) 서버로 동작하여 에이전트�
 }
 ```
 
+### OpenCode MCP 설정
+
+`~/.config/opencode/opencode.json`에 추가:
+
+```json
+{
+  "mcp": {
+    "vibe-kanban": {
+      "command": "npx",
+      "args": ["vibe-kanban", "--mcp"],
+      "env": {
+        "MCP_HOST": "127.0.0.1",
+        "MCP_PORT": "3001"
+      }
+    }
+  }
+}
+```
+
+재시작 후 `vk_*` 도구가 OpenCode 세션에서 바로 사용 가능합니다.
+
+
 ### MCP 도구 목록
 
 | 도구 | 설명 |
@@ -435,6 +457,33 @@ VIBE_KANBAN_REMOTE=true 설정
   워크스페이스A → Claude Code (UI 구조 중심)
   워크스페이스B → Codex (성능 최적화 중심)
 → PR 비교 후 best-of-both 선택
+```
+
+### 5. OpenCode + ulw 병렬 위임
+
+OpenCode의 ulw(ultrawork) 모드와 결합해 에이전트를 에픽 단위로 병렬 실행:
+
+```python
+# ulw 키워드 → ultrawork 병렬 실행 레이어 활성화
+# Vibe Kanban 보드: npx vibe-kanban (별도 터미널에서 실행)
+
+task(category="visual-engineering", run_in_background=True,
+     load_skills=["frontend-ui-ux", "vibe-kanban"],
+     description="[Kanban WS1] 프론트엔드 UI",
+     prompt="결제 플로우 UI 구현 — src/components/payment/ 내 카드 입력, 주문 확인, 완료 화면")
+
+task(category="unspecified-high", run_in_background=True,
+     load_skills=["vibe-kanban"],
+     description="[Kanban WS2] 백엔드 API",
+     prompt="결제 플로우 API 구현 — POST /charge, POST /refund, GET /status/:id")
+
+task(category="unspecified-low", run_in_background=True,
+     load_skills=["vibe-kanban"],
+     description="[Kanban WS3] 통합 테스트",
+     prompt="결제 E2E 테스트 작성 — 성공/실패/환불 시나리오")
+
+# → 3개 워크스페이스가 Running 상태로 Kanban 보드에 동시 표시
+# → 각 완료 시: Needs Attention → PR 생성 → Archive
 ```
 
 ---

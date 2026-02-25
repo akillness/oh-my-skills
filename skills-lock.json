@@ -1,0 +1,10 @@
+{
+  "version": 1,
+  "skills": {
+    "jeo": {
+      "source": "supercent-io/skills-template",
+      "sourceType": "github",
+      "computedHash": "a0542ad8f9be8d20cbcab965969e90b88c1fbe68ac5c67b7637850123f14aaca"
+    }
+  }
+}

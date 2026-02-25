@@ -175,6 +175,21 @@ SKILL_KEYWORDS = {
         "backend agent",
         "serena",
     ],
+    "jeo": [
+        "jeo",
+        "integrated orchestration",
+        "통합 오케스트레이션",
+        "jeo workflow",
+        "jeo 워크플로우",
+        "plan execute track cleanup",
+        "계획 실행 추적 정리",
+        "worktree cleanup",
+        "워크트리 정리",
+        "kanban orchestration",
+        "칸반 오케스트레이션",
+        "multi-tool orchestration",
+        "전체 플로우",
+    ],
     "agent-browser": [
         "browser",
         "headless browser",
@@ -205,9 +220,24 @@ MODE_FALLBACK = {
 class SkillQueryHandler:
     def __init__(self, skills_dir: Optional[str] = None):
         if skills_dir:
-            self.skills_dir = Path(skills_dir)
+            self.skills_dir = Path(skills_dir).expanduser()
         else:
             self.skills_dir = Path(__file__).parent
+
+        self.global_skills_dir = Path.home() / ".agent-skills"
+
+    def _resolve_skill_base_path(self, skill_path: str) -> List[Path]:
+        input_path = Path(skill_path).expanduser()
+
+        if input_path.is_absolute():
+            if input_path.suffix:
+                return [input_path.parent]
+            return [input_path]
+
+        return [
+            self.skills_dir / input_path,
+            self.global_skills_dir / input_path,
+        ]
 
     def estimate_tokens(self, text: str) -> int:
         """Estimate token count (~4 chars = 1 token)"""
@@ -216,11 +246,20 @@ class SkillQueryHandler:
     def find_skill_file(self, skill_path: str, mode: str = "compact") -> Optional[Path]:
         """Find skill file with fallback for the given mode."""
         fallback_files = MODE_FALLBACK.get(mode, ["SKILL.md"])
+        base_paths = self._resolve_skill_base_path(skill_path)
 
-        for filename in fallback_files:
-            full_path = self.skills_dir / skill_path / filename
-            if full_path.exists():
-                return full_path
+        input_path = Path(skill_path).expanduser()
+        if input_path.is_absolute() and input_path.suffix:
+            input_file = input_path
+            if input_file.exists():
+                if input_file.name in set(fallback_files) | set(MODE_FILES.values()):
+                    return input_file
+
+        for base_path in base_paths:
+            for filename in fallback_files:
+                full_path = base_path / filename
+                if full_path.exists():
+                    return full_path
 
         return None
 

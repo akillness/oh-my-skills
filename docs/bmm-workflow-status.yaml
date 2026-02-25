@@ -1,14 +1,14 @@
 # BMAD Method Workflow Status
-# Generated: {{TIMESTAMP}}
-# Project: {{PROJECT_NAME}}
+# Generated: 2026-02-13T09:32:41Z
+# Project: skills-template
 
 # Project Information
-project_name: "{{PROJECT_NAME}}"
-project_type: "{{PROJECT_TYPE}}"
-project_level: {{PROJECT_LEVEL}}
+project_name: "skills-template"
+project_type: "library"
+project_level: 2
 communication_language: "English"
 output_language: "English"
-last_updated: "{{TIMESTAMP}}"
+last_updated: "2026-02-13T09:32:41Z"
 
 # Workflow Status Tracking
 # Status values:
@@ -45,14 +45,14 @@ workflow_status:
   # ============================================================
   - name: prd
     phase: 2
-    status: "{{PRD_STATUS}}"  # required for level 2+, recommended for level 1, optional for level 0
+    status: "required"  # required for level 2+, recommended for level 1, optional for level 0
     description: "Product Requirements Document - comprehensive requirements for multi-feature projects"
     command: "/prd"
     notes: "Use for Level 2+ projects or when stakeholder alignment needed"
 
   - name: tech-spec
     phase: 2
-    status: "{{TECH_SPEC_STATUS}}"  # required for level 0-1, optional for level 2+
+    status: "optional"  # required for level 0-1, optional for level 2+
     description: "Technical Specification - detailed technical design for implementation"
     command: "/tech-spec"
     notes: "Use for Level 0-1 projects or as supplement to PRD"
@@ -69,7 +69,7 @@ workflow_status:
   # ============================================================
   - name: architecture
     phase: 3
-    status: "{{ARCHITECTURE_STATUS}}"  # required for level 2+, optional for level 0-1
+    status: "required"  # required for level 2+, optional for level 0-1
     description: "System architecture design with components and integrations"
     command: "/architecture"
     notes: "Required for Level 2+ projects with architectural complexity"
@@ -118,17 +118,9 @@ workflow_status:
 # ============================================================
 # Status Legend
 # ============================================================
-# required              - Must be completed before proceeding to next phase
-# recommended           - Strongly suggested for project quality
-# optional              - Can be skipped based on project needs
-# conditional           - Required based on context (e.g., sprint active)
-# {file-path}           - Workflow completed, shows output document
-# skipped               - User explicitly chose to skip this workflow
-#
-# plannotator_review    - "approved" | "pending" | "changes-requested"
-# reviewed_at           - ISO 8601 timestamp of last plannotator review
-#
-# Phase Gate Review (optional but recommended):
-#   After completing any phase document, run:
-#   bash scripts/phase-gate-review.sh <doc-file> "<title>"
-#   This opens plannotator for review before transitioning to next phase.
+# required    - Must be completed before proceeding to next phase
+# recommended - Strongly suggested for project quality
+# optional    - Can be skipped based on project needs
+# conditional - Required based on context (e.g., sprint active)
+# {file-path} - Workflow completed, shows output document
+# skipped     - User explicitly chose to skip this workflow

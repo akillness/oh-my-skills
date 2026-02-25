@@ -7,7 +7,7 @@ U[4]:
 3:Self-correcting workflows across agent turns
 4:Tasks requiring strict completion signaling
 S[5]{n,action,details}:
-1:run-once,Start loop,/ralph "<task>" --completion-promise="DONE" --max-iterations=10
+1:run-once,Start loop,/ralph "<task>" --completion-promise="DONE" --max-iterations=100
 2:agent-works,Agent executes,Modifies files runs tests writes code in current turn
 3:hook-intercepts,AfterAgent hook fires,Checks output for completion promise tag
 4:loop-or-stop,Evaluate state,If promise not found: clear context start new turn with same prompt; if found or max reached: stop

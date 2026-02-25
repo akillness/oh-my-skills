@@ -1,17 +1,17 @@
 ---
 name: plannotator
-keyword: planno
+keyword: plan
 description: Interactive plan and diff review for AI coding agents. Visual browser UI for annotating agent plans — approve or request changes with structured feedback. Supports code review, image annotation, and auto-save to Obsidian/Bear Notes.
 allowed-tools: [Read, Bash, Write]
-tags: [planno, plannotator, plan-review, diff-review, code-review, claude-code, opencode, annotation, visual-review]
+tags: [plan, 계획, planno, plannotator, plan-review, diff-review, code-review, claude-code, opencode, annotation, visual-review, 계획검토, 설계검토]
 platforms: [Claude, OpenCode, Codex, Gemini]
-version: 0.9.0
+version: 0.9.2
 source: backnotprop/plannotator
 ---
 
-# plannotator — Interactive Plan & Diff Review (planno)
+# plannotator — Interactive Plan & Diff Review
 
-> Keyword: `planno` | Source: https://github.com/backnotprop/plannotator
+> Keyword: `plan`, `계획` (alias: `planno`) | Source: https://github.com/backnotprop/plannotator
 >
 > Annotate and review AI coding agent plans visually, share with your team, send feedback with one click.
 > Works with **Claude Code**, **OpenCode**, **Gemini CLI**, and **Codex CLI**.
@@ -222,8 +222,12 @@ Usage in Gemini CLI after setup:
 # Enter planning mode (hook fires when you exit)
 gemini --approval-mode plan
 
-# Manual plan review
-echo "# My Plan..." | plannotator plan -
+# Manual plan review (validated format)
+python3 -c "
+import json
+plan = open('plan.md').read()
+print(json.dumps({'tool_input': {'plan': plan, 'permission_mode': 'acceptEdits'}}))
+" | plannotator > /tmp/plannotator_feedback.txt 2>&1 &
 
 # Code review after implementation
 plannotator review
@@ -253,12 +257,49 @@ Usage in Codex CLI after setup:
 # Use the plannotator agent prompt
 /prompts:plannotator
 
-# Manual plan review
-echo "# My Plan..." | plannotator plan -
+# Manual plan review (validated format)
+python3 -c "
+import json
+plan = open('plan.md').read()
+print(json.dumps({'tool_input': {'plan': plan, 'permission_mode': 'acceptEdits'}}))
+" | plannotator > /tmp/plannotator_feedback.txt 2>&1 &
 
 # Code review after implementation
 plannotator review HEAD~1
 ```
+
+> Note: `plannotator plan -` with heredoc/echo can fail with `Failed to parse hook event from stdin`. Use the python3 JSON format above.
+
+---
+
+## Pattern 10: Manual Save via Export → Notes Tab
+
+Save the current plan to Obsidian or Bear Notes at any time — without approving or denying.
+
+### How to access
+
+1. Click **Export** button in the plannotator UI toolbar
+2. Click the **Notes** tab (not Share or Annotations)
+3. You see:
+   - **Obsidian** row with configured vault path and **Save** button
+   - **Bear** row with **Save** button
+   - **Save All** button to save both at once
+4. A green dot next to each row means that integration is configured
+5. Clicking **Save** shows **Saved** when complete
+
+### When to use
+
+- Save work-in-progress plans without committing to Approve/Deny
+- Quick archive after reviewing without final decision
+- Save annotated plans for team reference
+
+### Requirements
+
+- plannotator must be running in **hook mode** (normal Claude Code ExitPlanMode hook invocation = hook mode)
+- Obsidian/Bear must be configured in Settings (⚙️) → Saving tab
+- Settings are stored in **cookies** (not localStorage) and persist across restarts
+
+> **Note:** The Notes tab uses `POST /api/save-notes` which writes directly to the vault filesystem (Obsidian) or calls `bear://x-callback-url/create` (Bear). This endpoint is only available in hook mode.
 
 ---
 
@@ -338,15 +379,173 @@ The `submit_plan` tool is automatically available to the agent for plan submissi
 
 ---
 
-## Auto-save (Obsidian / Bear Notes)
+## Pattern 9: Obsidian Integration Setup
 
-> **Prerequisite:** Install Obsidian first → https://obsidian.md/download
+Auto-save approved plans to your Obsidian vault with YAML frontmatter and tags.
 
-1. Open plannotator UI → Settings (gear icon)
-2. Enable "Obsidian Integration" and select your vault
-3. Approved plans auto-save with YAML frontmatter and tags
+### Prerequisites
 
-Obsidian is optional — plans can still be reviewed and approved without it.
+1. **Install Obsidian**: https://obsidian.md/download
+2. **Create a Vault**: Open Obsidian → Create new vault → Choose location
+   - Example: `~/Documents/Obsidian/MyVault`
+3. **Verify Vault Exists**: Obsidian creates `obsidian.json` config after first vault creation
+
+```bash
+# Check Obsidian installation (macOS)
+ls /Applications/Obsidian.app
+
+# Check Obsidian config exists (vault detection depends on this)
+# macOS
+cat ~/Library/Application\ Support/obsidian/obsidian.json
+# Linux
+cat ~/.config/obsidian/obsidian.json
+# Windows
+cat %APPDATA%/obsidian/obsidian.json
+```
+
+### Step-by-Step Setup
+
+```bash
+# Step 1: Verify Obsidian is installed and has at least one vault
+bash scripts/check-status.sh
+
+# Step 2: Trigger a plan review (any method)
+# Claude Code: Shift+Tab×2 → plan mode → exit plan mode
+# Gemini CLI: gemini --approval-mode plan
+# OpenCode: Agent creates a plan
+
+# Step 3: In the plannotator UI:
+#   1. Click ⚙️ (Settings gear icon)
+#   2. Go to "Saving" tab
+#   3. Toggle ON "Obsidian Integration"
+#   4. Select your vault from dropdown (auto-detected)
+#      - Or enter custom path if vault not detected
+#   5. Set folder name (default: "plannotator")
+
+# Step 4: Approve a plan to test the integration
+#   - Click "Approve" in the plannotator UI
+#   - Check your vault for the saved file
+```
+
+### Obsidian Configuration Options
+
+| Setting | Description | Default |
+|---------|-------------|---------|
+| **Vault** | Path to Obsidian vault | Auto-detected |
+| **Folder** | Subfolder in vault for plans | `plannotator` |
+| **Custom Path** | Manual path if auto-detect fails | - |
+
+### Saved File Format
+
+Files are saved with human-readable names and YAML frontmatter:
+
+```
+Filename: {Title} - {Month} {Day}, {Year} {Hour}-{Minute}{am/pm}.md
+Example:  User Authentication - Feb 22, 2026 10-45pm.md
+```
+
+```yaml
+---
+created: 2026-02-22T22:45:30.000Z
+source: plannotator
+tags: [plannotator, project-name, typescript, ...]
+---
+
+[[Plannotator Plans]]
+
+# Original plan content...
+```
+
+**Tag extraction:**
+- `plannotator` — always included
+- Project name — from git repo or directory
+- Title words — first 3 meaningful words from H1 heading
+- Languages — from code blocks (```typescript → typescript)
+
+### Folder Organization
+
+Organize plans within the vault using subfolders:
+
+```
+vault/plannotator/
+├── approved/          ← approved plans
+├── denied/            ← rejected plans
+└── 2026-02/           ← monthly archive
+```
+
+Create subfolders manually (Obsidian detects them automatically):
+```bash
+mkdir -p ~/path/to/vault/plannotator/approved
+mkdir -p ~/path/to/vault/plannotator/denied
+mkdir -p ~/path/to/vault/plannotator/2026-02
+```
+
+Or write directly to any subfolder:
+```bash
+cp ~/.plannotator/plans/<name>-approved.md ~/path/to/vault/plannotator/approved/
+```
+
+### Bear Notes (Alternative)
+
+If you prefer Bear Notes over Obsidian:
+
+1. Toggle ON "Bear Notes" in Settings → Saving tab
+2. Plans are saved via `bear://x-callback-url/create`
+3. Tags are appended as hashtags
+4. Validate callback from terminal:
+
+```bash
+open "bear://x-callback-url/create?title=Plannotator%20Check&text=Bear%20callback%20OK"
+```
+
+| Feature | Obsidian | Bear |
+|---------|----------|------|
+| Storage | File system | x-callback-url |
+| Frontmatter | YAML | None (hashtags) |
+| Platforms | macOS/Win/Linux | macOS/iOS |
+
+### Troubleshooting
+
+**Vault not detected:**
+```bash
+# 1. Check Obsidian config exists
+ls ~/Library/Application\ Support/obsidian/obsidian.json  # macOS
+
+# 2. If missing, open Obsidian and create a vault first
+open /Applications/Obsidian.app
+
+# 3. After creating vault, restart plannotator
+```
+
+**Plans not saving:**
+```bash
+# Check write permissions on vault folder
+ls -la ~/path/to/vault/plannotator/
+
+# Check browser console for errors (F12 → Console)
+```
+
+**Export → Notes tab Save buttons require hook mode:**
+- Export → Notes tab Save buttons require plannotator running in **hook mode** (stdin JSON input). In CLI `review`/`annotate` modes, the `/api/save-notes` endpoint is not active. Normal Claude Code hook invocation (ExitPlanMode hook) always runs in hook mode.
+
+**Settings not visible in automated/headless browsers:**
+- Obsidian Integration settings must be configured in the **system browser** that plannotator auto-opens. Settings are stored in cookies (not localStorage). Automated/headless browser profiles (Playwright, Puppeteer) use isolated cookie jars and will not see these settings.
+
+**Bear export not working:**
+- Confirm Bear app is installed and opened at least once
+- Confirm `open "bear://x-callback-url/create?..."` works from terminal
+- Use system browser session for plannotator settings; automated/headless sessions can block custom URI handlers
+
+**Settings not persisting:**
+- Settings are stored in cookies (not localStorage)
+- Ensure cookies are enabled for localhost
+- Settings persist across different ports
+
+---
+
+## Auto-save (Summary)
+
+> Obsidian integration is **optional** — plans can still be reviewed and approved without it.
 
 ---
 

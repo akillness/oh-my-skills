@@ -34,7 +34,7 @@ Iteration 2: Agent reads task + sees file changes → continues → exits
 ## Usage
 
 ```bash
-/ralph "<task>" [--completion-promise="DONE"] [--max-iterations=5]
+/ralph "<task>" [--completion-promise="DONE"] [--max-iterations=100]
 ```
 
 ### Options
@@ -42,7 +42,7 @@ Iteration 2: Agent reads task + sees file changes → continues → exits
 | Option | Default | Description |
 |--------|---------|-------------|
 | `--completion-promise` | `"DONE"` | Text the agent must output inside `<promise>TEXT</promise>` to stop |
-| `--max-iterations` | `5` | Maximum number of iterations before stopping |
+| `--max-iterations` | `100` | Maximum number of iterations before stopping |
 
 ### Completion Promise Format
 
@@ -170,5 +170,48 @@ Required in `~/.gemini/settings.json` for Gemini CLI:
 | Iteration cap | `/ralph "task" --max-iterations=N` |
 | Cancel | `/ralph:cancel` |
 | Help | `/ralph:help` |
+
+---
+
+## Codex에서 사용 (보정 모드)
+
+`ralph`는 Gemini `AfterAgent` 훅 기반으로 동작합니다. Codex에는 네이티브 종료-후크가 없어 현재는 **보정 모드**로 운영합니다.
+
+### Codex 보정 설치
+
+```bash
+bash <your-agent-skills>/ralph/scripts/setup-codex-hook.sh
+```
+
+이 명령은 다음을 수행합니다.
+
+- `~/.codex/config.toml`에 `developer_instructions`로 ralph 반복 규칙 반영
+- `~/.codex/prompts/ralph.md` 생성
+
+### Codex 실행 순서
+
+1. 위 스크립트 실행
+2. Codex 재시작
+3. `/prompts:ralph` 확인
+4. `/ralph "..." --completion-promise="DONE" --max-iterations=100`
+
+### 현재 스킬만으로 가능한지
+
+- `bmad-orchestrator`: 이 문서의 스킬은 `ralph` 동작 계약만 다루므로, 실사용은 각 플랫폼 오케스트레이션 정책을 따릅니다.
+- `vibe-kanban`: `Codex`는 기본 종료-후크 자동 루프가 없어 `ralph`를 별도 보정 모드(`setup-codex-hook.sh`)로 운영합니다.
+
+### 플랫폼별 적용표
+
+| 플랫폼 | 현재 적용 가능성 | 설정 방식 |
+|---|---|---|
+| Gemini-CLI | 네이티브 지원 | `ralph` extension + `AfterAgent` 훅 |
+| Claude Code | 네이티브 지원 | `ralph` 키워드 등록 후 `/ralph` 실행 |
+| OpenCode | 네이티브 지원(동일 호출) | `ralph` 명령 등록 후 동일 사용 |
+| Codex | 보정 모드 지원 | `setup-codex-hook.sh` 실행 후 `/prompts:ralph` |
+
+### 현재 스킬만으로 가능한가?
+
+- Gemini-CLI/Claude/OpenCode: **가능**
+- Codex: **가능(보정 모드)** — native 훅 의존이 없어 자동성 보강이 필요
 
 Source: [gemini-cli-extensions/ralph](https://github.com/gemini-cli-extensions/ralph)

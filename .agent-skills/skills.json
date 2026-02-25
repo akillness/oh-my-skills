@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "generated": true,
-  "skill_count": 62,
+  "skill_count": 57,
   "categories": {
     "documentation": [
       "technical-writing",
@@ -40,6 +40,7 @@
       "file-organization",
       "git-submodule",
       "git-workflow",
+      "jeo",
       "mcp-codex-integration",
       "npm-git-install",
       "opencode-authentication",
@@ -350,7 +351,7 @@
           "source": "project-management/ultrathink-multiagent-workflow/SKILL.md"
         },
         {
-          "command": "claude --prompt \"작업을 계속하세요. 완료되면 COMPLETE 출력\"",
+          "command": "claude --prompt \"\uc791\uc5c5\uc744 \uacc4\uc18d\ud558\uc138\uc694. \uc644\ub8cc\ub418\uba74 COMPLETE \ucd9c\ub825\"",
           "source": "project-management/ultrathink-multiagent-workflow/SKILL.md"
         },
         {
@@ -374,11 +375,11 @@
           "source": "project-management/ultrathink-multiagent-workflow/SKILL.md"
         },
         {
-          "command": "claude task \"src/* 전체 파일의 코드 스멜 분석\"",
+          "command": "claude task \"src/* \uc804\uccb4 \ud30c\uc77c\uc758 \ucf54\ub4dc \uc2a4\uba5c \ubd84\uc11d\"",
           "source": "project-management/ultrathink-multiagent-workflow/SKILL.md"
         },
         {
-          "command": "claude task --model opus \"분석 결과를 종합하고 IMPLEMENTATION_PLAN.md 작성. Ultrathink.\"",
+          "command": "claude task --model opus \"\ubd84\uc11d \uacb0\uacfc\ub97c \uc885\ud569\ud558\uace0 IMPLEMENTATION_PLAN.md \uc791\uc131. Ultrathink.\"",
           "source": "project-management/ultrathink-multiagent-workflow/SKILL.md"
         },
         {
@@ -469,7 +470,7 @@
     },
     {
       "name": "agentic-principles",
-      "description": "AI 에이전트 협업 개발의 핵심 원칙. 분해정복, 컨텍스트 관리, 추상화 수준 선택, 자동화 철학, 검증 회고를 정의. 모든 AI 에이전트 사용 시 최적의 협업 패턴 적용.",
+      "description": "AI \uc5d0\uc774\uc804\ud2b8 \ud611\uc5c5 \uac1c\ubc1c\uc758 \ud575\uc2ec \uc6d0\uce59. \ubd84\ud574\uc815\ubcf5, \ucee8\ud14d\uc2a4\ud2b8 \uad00\ub9ac, \ucd94\uc0c1\ud654 \uc218\uc900 \uc120\ud0dd, \uc790\ub3d9\ud654 \ucca0\ud559, \uac80\uc99d \ud68c\uace0\ub97c \uc815\uc758. \ubaa8\ub4e0 AI \uc5d0\uc774\uc804\ud2b8 \uc0ac\uc6a9 \uc2dc \ucd5c\uc801\uc758 \ud611\uc5c5 \ud328\ud134 \uc801\uc6a9.",
       "category": "project-management",
       "path": "project-management/agentic-principles/SKILL.md",
       "tags": [
@@ -728,7 +729,7 @@
     },
     {
       "name": "cs-tool-dashboard",
-      "description": "Supercent CS Tool 대시보드 개발 - FAQ 시스템, 티켓 관리, Firebase 기반 인프라",
+      "description": "Supercent CS Tool \ub300\uc2dc\ubcf4\ub4dc \uac1c\ubc1c - FAQ \uc2dc\uc2a4\ud15c, \ud2f0\ucf13 \uad00\ub9ac, Firebase \uae30\ubc18 \uc778\ud504\ub77c",
       "category": "backend",
       "path": "backend/cs-tool-dashboard/SKILL.md",
       "tags": [],
@@ -805,7 +806,7 @@
     },
     {
       "name": "agentic-workflow",
-      "description": "AI 에이전트 실전 워크플로우와 생산성 기법. 명령어, 단축키, Git 통합, MCP 활용, 세션 관리 등 일상 개발 작업의 최적화 패턴 제공.",
+      "description": "AI \uc5d0\uc774\uc804\ud2b8 \uc2e4\uc804 \uc6cc\ud06c\ud50c\ub85c\uc6b0\uc640 \uc0dd\uc0b0\uc131 \uae30\ubc95. \uba85\ub839\uc5b4, \ub2e8\ucd95\ud0a4, Git \ud1b5\ud569, MCP \ud65c\uc6a9, \uc138\uc158 \uad00\ub9ac \ub4f1 \uc77c\uc0c1 \uac1c\ubc1c \uc791\uc5c5\uc758 \ucd5c\uc801\ud654 \ud328\ud134 \uc81c\uacf5.",
       "category": "utilities",
       "path": "utilities/agentic-workflow/SKILL.md",
       "tags": [
@@ -963,7 +964,7 @@
     },
     {
       "name": "opencontext",
-      "description": "OpenContext를 활용한 AI 에이전트 영구 메모리 및 컨텍스트 관리. 세션/레포/날짜 간 컨텍스트 유지, 결론 저장, 문서 검색 워크플로우 제공.",
+      "description": "OpenContext\ub97c \ud65c\uc6a9\ud55c AI \uc5d0\uc774\uc804\ud2b8 \uc601\uad6c \uba54\ubaa8\ub9ac \ubc0f \ucee8\ud14d\uc2a4\ud2b8 \uad00\ub9ac. \uc138\uc158/\ub808\ud3ec/\ub0a0\uc9dc \uac04 \ucee8\ud14d\uc2a4\ud2b8 \uc720\uc9c0, \uacb0\ub860 \uc800\uc7a5, \ubb38\uc11c \uac80\uc0c9 \uc6cc\ud06c\ud50c\ub85c\uc6b0 \uc81c\uacf5.",
       "category": "utilities",
       "path": "utilities/opencontext/SKILL.md",
       "tags": [
@@ -1144,7 +1145,7 @@
           "source": "utilities/workflow-automation/SKILL.md"
         },
         {
-          "command": "echo \"✅ Pre-commit checks passed!\"",
+          "command": "echo \"\u2705 Pre-commit checks passed!\"",
           "source": "utilities/workflow-automation/SKILL.md"
         },
         {
@@ -1341,7 +1342,7 @@
     },
     {
       "name": "prompt-repetition",
-      "description": "LLM 정확도 향상을 위한 프롬프트 반복 기법. 70개 벤치마크 중 67%(47/70)에서 유의미한 성능 향상 달성. 경량 모델(haiku, flash, mini)에서 자동 적용.",
+      "description": "LLM \uc815\ud655\ub3c4 \ud5a5\uc0c1\uc744 \uc704\ud55c \ud504\ub86c\ud504\ud2b8 \ubc18\ubcf5 \uae30\ubc95. 70\uac1c \ubca4\uce58\ub9c8\ud06c \uc911 67%(47/70)\uc5d0\uc11c \uc720\uc758\ubbf8\ud55c \uc131\ub2a5 \ud5a5\uc0c1 \ub2ec\uc131. \uacbd\ub7c9 \ubaa8\ub378(haiku, flash, mini)\uc5d0\uc11c \uc790\ub3d9 \uc801\uc6a9.",
       "category": "utilities",
       "path": "utilities/prompt-repetition/SKILL.md",
       "tags": [
@@ -1436,7 +1437,7 @@
     },
     {
       "name": "agentic-development-principles",
-      "description": "AI 에이전트와 협업하는 에이전틱 개발의 범용 원칙. 분해정복, 컨텍스트 관리, 추상화 수준 선택, 자동화 철학을 정의. 모든 AI 코딩 도구에 적용 가능.",
+      "description": "AI \uc5d0\uc774\uc804\ud2b8\uc640 \ud611\uc5c5\ud558\ub294 \uc5d0\uc774\uc804\ud2f1 \uac1c\ubc1c\uc758 \ubc94\uc6a9 \uc6d0\uce59. \ubd84\ud574\uc815\ubcf5, \ucee8\ud14d\uc2a4\ud2b8 \uad00\ub9ac, \ucd94\uc0c1\ud654 \uc218\uc900 \uc120\ud0dd, \uc790\ub3d9\ud654 \ucca0\ud559\uc744 \uc815\uc758. \ubaa8\ub4e0 AI \ucf54\ub529 \ub3c4\uad6c\uc5d0 \uc801\uc6a9 \uac00\ub2a5.",
       "category": "utilities",
       "path": "utilities/agentic-development-principles/SKILL.md",
       "tags": [
@@ -1687,19 +1688,19 @@
       ],
       "commands": [
         {
-          "command": "/var/log/                    # 시스템 로그",
+          "command": "/var/log/                    # \uc2dc\uc2a4\ud15c \ub85c\uadf8",
           "source": "search-analysis/log-analysis/SKILL.md"
         },
         {
-          "command": "/var/log/nginx/              # Nginx 로그",
+          "command": "/var/log/nginx/              # Nginx \ub85c\uadf8",
           "source": "search-analysis/log-analysis/SKILL.md"
         },
         {
-          "command": "/var/log/apache2/            # Apache 로그",
+          "command": "/var/log/apache2/            # Apache \ub85c\uadf8",
           "source": "search-analysis/log-analysis/SKILL.md"
         },
         {
-          "command": "./logs/                      # 애플리케이션 로그",
+          "command": "./logs/                      # \uc560\ud50c\ub9ac\ucf00\uc774\uc158 \ub85c\uadf8",
           "source": "search-analysis/log-analysis/SKILL.md"
         },
         {
@@ -1924,7 +1925,7 @@
     },
     {
       "name": "agent-configuration",
-      "description": "AI 에이전트 설정 정책 및 보안 가이드. 프로젝트 설명 파일 작성법, Hooks/Skills/Plugins 설정, 보안 정책, 팀 공유 워크플로우 정의.",
+      "description": "AI \uc5d0\uc774\uc804\ud2b8 \uc124\uc815 \uc815\ucc45 \ubc0f \ubcf4\uc548 \uac00\uc774\ub4dc. \ud504\ub85c\uc81d\ud2b8 \uc124\uba85 \ud30c\uc77c \uc791\uc131\ubc95, Hooks/Skills/Plugins \uc124\uc815, \ubcf4\uc548 \uc815\ucc45, \ud300 \uacf5\uc720 \uc6cc\ud06c\ud50c\ub85c\uc6b0 \uc815\uc758.",
       "category": "infrastructure",
       "path": "infrastructure/agent-configuration/SKILL.md",
       "tags": [
@@ -1950,7 +1951,7 @@
       ],
       "commands": [
         {
-          "command": "/init  # Claude가 코드베이스 분석 후 초안 생성",
+          "command": "/init  # Claude\uac00 \ucf54\ub4dc\ubca0\uc774\uc2a4 \ubd84\uc11d \ud6c4 \ucd08\uc548 \uc0dd\uc131",
           "source": "infrastructure/agent-configuration/SKILL.md"
         },
         {
@@ -1970,7 +1971,7 @@
           "source": "infrastructure/agent-configuration/SKILL.md"
         },
         {
-          "command": "description: 나의 커스텀 스킬",
+          "command": "description: \ub098\uc758 \ucee4\uc2a4\ud140 \uc2a4\ud0ac",
           "source": "infrastructure/agent-configuration/SKILL.md"
         },
         {
@@ -1982,11 +1983,11 @@
           "source": "infrastructure/agent-configuration/SKILL.md"
         },
         {
-          "command": "- 특정 작업에 필요할 때",
+          "command": "- \ud2b9\uc815 \uc791\uc5c5\uc5d0 \ud544\uc694\ud560 \ub54c",
           "source": "infrastructure/agent-configuration/SKILL.md"
         },
         {
-          "command": "1. 첫 번째 단계",
+          "command": "1. \uccab \ubc88\uc9f8 \ub2e8\uacc4",
           "source": "infrastructure/agent-configuration/SKILL.md"
         }
       ]
@@ -2347,7 +2348,7 @@
     },
     {
       "name": "omc",
-      "description": "oh-my-claudecode — Teams-first multi-agent orchestration layer for Claude Code. 32 specialized agents, smart model routing, persistent execution loops, and real-time HUD visibility. Activate with `omc` keyword.",
+      "description": "oh-my-claudecode \u2014 Teams-first multi-agent orchestration layer for Claude Code. 32 specialized agents, smart model routing, persistent execution loops, and real-time HUD visibility. Activate with `omc` keyword.",
       "category": "utilities",
       "tags": [
         "omc",
@@ -2379,6 +2380,46 @@
           "source": "utilities/omc/SKILL.md"
         }
       ]
+    },
+    {
+      "name": "jeo",
+      "description": "JEO \u2014 Integrated AI agent orchestration. ralph+plannotator for visual plan review, team/bmad for parallel execution, agent-browser for vibe-kanban tracking, auto worktree cleanup. Installs: omc, omx, ohmg, bmad, ralph, plannotator, agent-browser, playwriter, vibe-kanban. Keyword: jeo.",
+      "category": "utilities",
+      "path": "jeo/SKILL.md",
+      "tags": [
+        "jeo",
+        "orchestration",
+        "ralph",
+        "plannotator",
+        "team",
+        "bmad",
+        "vibe-kanban",
+        "agent-browser",
+        "omc",
+        "omx",
+        "ohmg",
+        "playwriter",
+        "multi-agent",
+        "workflow",
+        "kanban",
+        "worktree-cleanup"
+      ],
+      "platforms": [
+        "Claude",
+        "Codex",
+        "Gemini",
+        "OpenCode"
+      ],
+      "allowed_tools": [
+        "Read",
+        "Write",
+        "Bash",
+        "Grep",
+        "Glob",
+        "Task"
+      ],
+      "keyword": "jeo",
+      "version": "1.0.0"
     }
   ],
   "codex_integration": {

@@ -1,5 +1,5 @@
 N:vibe-kanban
-V:1.1.0
+V:1.2.0
 D:AI 에이전트 시각적 Kanban 보드. To Do→In Progress→Review→Done 흐름. git worktree 자동 격리, MCP 통합, GitHub PR 자동 생성. 원격 배포 지원.
 G:vibe-kanban kanban multi-agent git-worktree github-pr mcp task-management claude-code codex gemini docker remote
 U[6]:
@@ -26,6 +26,7 @@ E[4]{desc,in,out}:
   "에이전트 실행","카드 In Progress로 드래그","git worktree 생성 + 에이전트 CLI 실행 + 로그 스트리밍"
   "PR 생성","Review 칼럼에서 승인","GitHub Draft PR 자동 생성 + 카드 Done 이동"
   "MCP 서버","npx vibe-kanban --mcp","MCP 프로토콜로 카드 CRUD API 노출"
+  "OpenCode ulw결합","ulw 키워드+vibe-kanban 로드 후 task(category=\"visual-engineering\", run_in_background=True, ...) 병렬 호출","3개 워크스페이스 Kanban 보드에 동시 Running 표시"
 T[3]{problem,solution}:
   "Worktree 충돌","git worktree prune && git worktree list"
   "403 CORS 오류","VK_ALLOWED_ORIGINS=https://your-domain.com 설정"

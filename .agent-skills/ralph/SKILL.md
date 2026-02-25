@@ -4,7 +4,7 @@ keyword: ralph
 description: Self-referential completion loop for AI CLI tools. Re-runs the agent on the same task across turns with fresh context each iteration, until the completion promise is detected or max iterations is reached.
 allowed-tools: [Read, Write, Bash, Grep, Glob]
 tags: [ralph, ralph-loop, loop, completion, gemini-cli, opencode, self-referential]
-platforms: [Gemini-CLI, OpenCode, oh-my-opencode, Claude Code]
+platforms: [Gemini-CLI, OpenCode, oh-my-opencode, Claude Code, Codex]
 version: 2.0.0
 source: gemini-cli-extensions/ralph
 ---
@@ -47,7 +47,7 @@ The loop happens **across agent turns**, controlled by an `AfterAgent` hook.
 
 Defaults:
 - Completion promise: `DONE`
-- Max iterations: `5`
+- Max iterations: `100`
 
 ---
 
@@ -166,6 +166,48 @@ Required in `~/.gemini/settings.json`:
   }
 }
 ```
+
+---
+
+## 6. Codex에서 사용 (권장 보정)
+
+`ralph`는 Gemini에서 **AfterAgent 훅 기반으로 자동 반복**되며, Codex는 현재 네이티브 종료-후크를 보장하지 않습니다.
+
+따라서 Codex에서 `ralph`를 쓸 때는 아래 보정 스크립트를 설치해 사용하는 것을 권장합니다.
+
+```bash
+bash <your-agent-skills>/ralph/scripts/setup-codex-hook.sh
+```
+
+이 스크립트가 수행하는 것:
+
+- `~/.codex/config.toml`의 `developer_instructions`에 `ralph` 재시작 계약 정보를 기록
+- `~/.codex/prompts/ralph.md` 생성 (`/prompts:ralph`로 빠른 실행)
+- `--dry-run` 옵션으로 적용 전 미리보기
+
+```text
+Usage:
+  bash <your-agent-skills>/ralph/scripts/setup-codex-hook.sh
+bash <your-agent-skills>/ralph/scripts/setup-codex-hook.sh --dry-run
+```
+
+⚠️ 정확성 유의:
+
+- Codex에서 완전 자동 루프를 강제하는 네이티브 훅은 현재 제한적입니다.
+- 위 설정은 `ralph` 동작 계약을 고정시키고, 다음 작업을 반복할 때 수동 실수(`/prompts:ralph` 누락, promise 누락, max 반복 초과)를 줄여줍니다.
+    
+## 플랫폼별 적용 상태 (현재 지원 기준)
+
+| 플랫폼 | 현재 지원 방식 | 핵심 조건 |
+|---|---|---|
+| Gemini-CLI | 네이티브 | `AfterAgent` 훅 + ralph extension 설치 |
+| Claude Code | 네이티브(권장) | 스킬/오케스트레이션 적재 후 `/ralph` 사용 |
+| OpenCode | 네이티브(동일 경로) | `ralph` 키워드 등록 후 동일 명령어 사용 |
+| Codex | 보정 모드 | `setup-codex-hook.sh` 실행 후 `/prompts:ralph` 기반 반복 운영 |
+
+`현재 스킬만`으로 가능한지:  
+- Gemini-CLI/Claude Code/OpenCode: 가능  
+- Codex: `setup-codex-hook.sh`로 보정한 뒤 운영 가능
 
 ---
 

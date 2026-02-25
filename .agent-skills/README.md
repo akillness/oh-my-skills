@@ -10,14 +10,15 @@ Modular skill collection for AI agents. Works with Claude, Gemini, ChatGPT, and 
 
 ```bash
 # Install all skills
-npx skills add https://github.com/akillness/skills-template
+npx skills add https://github.com/supercent-io/skills-template
 
 # Install specific skills
-npx skills add https://github.com/akillness/skills-template --skill api-design
-npx skills add https://github.com/akillness/skills-template --skill code-review
-npx skills add https://github.com/akillness/skills-template --skill ohmg
-npx skills add https://github.com/akillness/skills-template --skill oh-my-codex
-npx skills add https://github.com/akillness/skills-template --skill plannotator
+npx skills add https://github.com/supercent-io/skills-template --skill api-design
+npx skills add https://github.com/supercent-io/skills-template --skill code-review
+npx skills add https://github.com/supercent-io/skills-template --skill jeo
+npx skills add https://github.com/supercent-io/skills-template --skill ohmg
+npx skills add https://github.com/supercent-io/skills-template --skill oh-my-codex
+npx skills add https://github.com/supercent-io/skills-template --skill plannotator
 ```
 
 ### oh-my-ag MCP Setup
@@ -37,7 +38,7 @@ npx skills add https://github.com/ComposioHQ/awesome-claude-skills --skill slack
 ### AI Agent Prompt
 
 ```
-Copy the .agent-skills folder from the https://github.com/akillness/skills-template
+Copy the .agent-skills folder from the https://github.com/supercent-io/skills-template
 repository to the current project.
 ```
 
@@ -53,9 +54,8 @@ repository to the current project.
 ├── skills.json                    # Skill manifest (auto-generated)
 ├── skills.toon                    # TOON summary (auto-generated)
 │
-├── agent-configuration/           # All 63 skill folders at root level
+├── agent-configuration/           # All 65 skill folders at root level
 ├── api-design/
-├── authentication-setup/
 ├── ... (all skills at same level)
 │
 └── templates/                     # Skill templates
@@ -64,119 +64,126 @@ repository to the current project.
     └── advanced-skill-template/
 ```
 
-> **v4.5.0 Changes**: Removed bmad and conductor-pattern skills, simplified structure
+> **v4.3.0 Changes**: Category folders removed, all skills flattened to root level
 
 ---
 
-## Skills List (63 Total)
+## Skills List (57 functional)
+
+> Skills marked *(in development)* exist on disk but do not yet have a SKILL.toon file.
 
 ### Agent Development (7)
-| Skill | Description |
-|-------|-------------|
-| `agent-configuration` | AI agent configuration & security policies |
-| `agent-evaluation` | AI agent evaluation systems |
-| `agentic-development-principles` | Universal agentic development principles |
-| `agentic-principles` | Core AI agent collaboration principles |
-| `agentic-workflow` | Practical AI agent workflows & productivity |
-| `bmad-orchestrator` | BMAD workflow orchestration (Analysis → Planning → Solutioning → Implementation) |
-| `prompt-repetition` | Prompt repetition for LLM accuracy |
+| Skill | Description | Platforms |
+|-------|-------------|-----------|
+| `agent-configuration` | AI agent configuration & security policies | All platforms |
+| `agent-evaluation` | AI agent evaluation systems | All platforms |
+| `agentic-development-principles` | Universal agentic development principles | All platforms |
+| `agentic-principles` | Core AI agent collaboration principles | All platforms |
+| `agentic-workflow` | Practical AI agent workflows & productivity | All platforms |
+| `bmad-orchestrator` | BMAD workflow orchestration (Analysis → Planning → Solutioning → Implementation) *(in development)* | Claude |
+| `prompt-repetition` | Prompt repetition for LLM accuracy | All platforms |
 
 ### Backend (5)
-| Skill | Description |
-|-------|-------------|
-| `api-design` | REST/GraphQL API design |
-| `api-documentation` | API documentation generation |
-| `authentication-setup` | Authentication & authorization setup |
-| `backend-testing` | Backend testing strategies |
-| `database-schema-design` | Database schema design |
+| Skill | Description | Platforms |
+|-------|-------------|-----------|
+| `api-design` | REST/GraphQL API design | All platforms |
+| `api-documentation` | API documentation generation | All platforms |
+| `authentication-setup` | Authentication & authorization setup | All platforms |
+| `backend-testing` | Backend testing strategies | All platforms |
+| `database-schema-design` | Database schema design | All platforms |
 
 ### Frontend (7)
-| Skill | Description |
-|-------|-------------|
-| `design-system` | Design system implementation |
-| `react-best-practices` | React & Next.js best practices |
-| `responsive-design` | Responsive web design |
-| `state-management` | State management patterns |
-| `ui-component-patterns` | UI component patterns |
-| `web-accessibility` | Web accessibility (a11y) |
-| `web-design-guidelines` | Web design guidelines |
+| Skill | Description | Platforms |
+|-------|-------------|-----------|
+| `design-system` | Design system implementation *(in development)* | All platforms |
+| `react-best-practices` | React & Next.js best practices | All platforms |
+| `responsive-design` | Responsive web design | All platforms |
+| `state-management` | State management patterns | All platforms |
+| `ui-component-patterns` | UI component patterns | All platforms |
+| `web-accessibility` | Web accessibility (a11y) | All platforms |
+| `web-design-guidelines` | Web design guidelines | All platforms |
 
 ### Code Quality (5)
-| Skill | Description |
-|-------|-------------|
-| `code-refactoring` | Code refactoring strategies |
-| `code-review` | Code review practices |
-| `debugging` | Systematic debugging |
-| `performance-optimization` | Performance optimization |
-| `testing-strategies` | Testing strategies |
+| Skill | Description | Platforms |
+|-------|-------------|-----------|
+| `code-refactoring` | Code refactoring strategies | All platforms |
+| `code-review` | Code review practices | All platforms |
+| `debugging` | Systematic debugging | All platforms |
+| `performance-optimization` | Performance optimization | All platforms |
+| `testing-strategies` | Testing strategies | All platforms |
 
 ### Infrastructure (8)
-| Skill | Description |
-|-------|-------------|
-| `deployment-automation` | CI/CD & deployment automation |
-| `firebase-ai-logic` | Firebase AI Logic integration |
-| `genkit` | Firebase Genkit AI workflows (flows, agents, RAG, streaming) |
-| `looker-studio-bigquery` | Looker Studio + BigQuery |
-| `monitoring-observability` | Monitoring & observability |
-| `security-best-practices` | Security best practices |
-| `system-environment-setup` | Environment configuration |
-| `vercel-deploy` | Vercel deployment |
+| Skill | Description | Platforms |
+|-------|-------------|-----------|
+| `deployment-automation` | CI/CD & deployment automation | All platforms |
+| `firebase-ai-logic` | Firebase AI Logic integration | Claude · Gemini |
+| `genkit` | Firebase Genkit AI workflows (flows, agents, RAG, streaming) | Claude · Gemini |
+| `looker-studio-bigquery` | Looker Studio + BigQuery | All platforms |
+| `monitoring-observability` | Monitoring & observability | All platforms |
+| `security-best-practices` | Security best practices | All platforms |
+| `system-environment-setup` | Environment configuration | All platforms |
+| `vercel-deploy` | Vercel deployment | All platforms |
 
 ### Documentation (4)
-| Skill | Description |
-|-------|-------------|
-| `changelog-maintenance` | Changelog management |
-| `presentation-builder` | Presentation builder |
-| `technical-writing` | Technical documentation |
-| `user-guide-writing` | User guides & tutorials |
+| Skill | Description | Platforms |
+|-------|-------------|-----------|
+| `changelog-maintenance` | Changelog management | All platforms |
+| `presentation-builder` | Presentation builder *(in development)* | All platforms |
+| `technical-writing` | Technical documentation | All platforms |
+| `user-guide-writing` | User guides & tutorials | All platforms |
 
 ### Project Management (4)
-| Skill | Description |
-|-------|-------------|
-| `sprint-retrospective` | Sprint retrospective facilitation |
-| `standup-meeting` | Daily standup management |
-| `task-estimation` | Task estimation techniques |
-| `task-planning` | Task planning & organization |
+| Skill | Description | Platforms |
+|-------|-------------|-----------|
+| `sprint-retrospective` | Sprint retrospective facilitation | All platforms |
+| `standup-meeting` | Daily standup management | All platforms |
+| `task-estimation` | Task estimation techniques | All platforms |
+| `task-planning` | Task planning & organization | All platforms |
 
 ### Search & Analysis (4)
-| Skill | Description |
-|-------|-------------|
-| `codebase-search` | Codebase search & navigation |
-| `data-analysis` | Data analysis & insights |
-| `log-analysis` | Log analysis & debugging |
-| `pattern-detection` | Pattern detection |
+| Skill | Description | Platforms |
+|-------|-------------|-----------|
+| `codebase-search` | Codebase search & navigation | All platforms |
+| `data-analysis` | Data analysis & insights | All platforms |
+| `log-analysis` | Log analysis & debugging | All platforms |
+| `pattern-detection` | Pattern detection | All platforms |
 
 ### Creative Media (3)
-| Skill | Description |
-|-------|-------------|
-| `image-generation` | AI image generation (Gemini via MCP) |
-| `pollinations-ai` | Free image generation via Pollinations.ai (no signup) |
-| `video-production` | Video production workflows |
+> All Creative Media skills are currently *in development* (no SKILL.toon).
+
+| Skill | Description | Platforms |
+|-------|-------------|-----------|
+| `image-generation` | AI image generation (Gemini via MCP) *(in development)* | Claude · Gemini |
+| `pollinations-ai` | Free image generation via Pollinations.ai (no signup) *(in development)* | All platforms |
+| `video-production` | Video production workflows *(in development)* | All platforms |
 
 ### Marketing (1)
-| Skill | Description |
-|-------|-------------|
-| `marketing-automation` | Marketing automation |
+> Marketing skills are currently *in development* (no SKILL.toon).
 
-### Utilities (15)
-| Skill | Description |
-|-------|-------------|
-| `agent-browser` | Fast headless browser CLI for AI agents |
-| `copilot-coding-agent` | GitHub Copilot Coding Agent — Issue → Draft PR automation |
-| `environment-setup` | Environment setup |
-| `file-organization` | File & folder organization |
-| `git-submodule` | Git submodule management |
-| `git-workflow` | Git workflow management |
-| `npm-git-install` | Install npm from GitHub |
-| `ohmg` | Multi-agent orchestration for Antigravity workflows |
-| `oh-my-codex` | Multi-agent orchestration for OpenAI Codex CLI |
-| `omc` | oh-my-claudecode — Teams-first multi-agent orchestration |
-| `opencontext` | AI agent persistent memory |
-| `plannotator` | Visual plan and diff review — annotate, approve, or request changes |
-| `ralph` | Self-referential completion loop for multi-turn agents |
-| `skill-standardization` | SKILL.md standardization |
-| `vibe-kanban` | Kanban board for AI coding agents with git worktree automation |
-| `workflow-automation` | Workflow automation |
+| Skill | Description | Platforms |
+|-------|-------------|-----------|
+| `marketing-automation` | Marketing automation *(in development)* | All platforms |
+
+### Utilities (17)
+| Skill | Description | Platforms |
+|-------|-------------|-----------|
+| `agent-browser` | Fast headless browser CLI for AI agents | All platforms |
+| `copilot-coding-agent` | GitHub Copilot Coding Agent — Issue → Draft PR automation | Claude · Codex |
+| `environment-setup` | Environment setup | All platforms |
+| `file-organization` | File & folder organization | All platforms |
+| `git-submodule` | Git submodule management | All platforms |
+| `git-workflow` | Git workflow management | All platforms |
+| `jeo` | Integrated AI orchestration: ralph+plannotator planning → team/bmad execution → vibe-kanban tracking → worktree cleanup | Claude · Codex · Gemini · OpenCode |
+| `npm-git-install` | Install npm from GitHub | All platforms |
+| `ohmg` | Multi-agent orchestration for Antigravity workflows | Claude · Gemini |
+| `oh-my-codex` | Multi-agent orchestration for OpenAI Codex CLI *(in development)* | Codex |
+| `omc` | oh-my-claudecode — Teams-first multi-agent orchestration | Claude |
+| `opencontext` | AI agent persistent memory | All platforms |
+| `plannotator`, `계획` *(alias: `plan`, `planno`)* | Visual plan and diff review with Plannotator — annotate, approve, or request changes | Claude |
+| `ralph` | Self-referential completion loop for multi-turn agents | Claude |
+| `skill-standardization` | SKILL.md standardization | All platforms |
+| `vibe-kanban` | Kanban board for AI coding agents with git worktree automation | All platforms |
+| `workflow-automation` | Workflow automation | All platforms |
 
 ---
 
@@ -216,6 +223,10 @@ python3 skill-query-handler.py query "API design"
 # View statistics
 python3 skill-query-handler.py stats
 ```
+
+Path resolution behavior for `--skill`:
+- Absolute skill paths are used directly (directory or direct `SKILL.md` path)
+- Relative skill paths resolve in order: configured `skills_dir` -> global `~/.agent-skills`
 
 ### skill_loader.py
 
@@ -289,4 +300,4 @@ npx skills add <skill-name>
 
 ---
 
-**Version**: 4.5.0 | **Updated**: 2026-02-21 | **Format**: TOON (Default) | **Structure**: Flat
+**Version**: 4.5.0 | **Updated**: 2026-02-24 | **Skills**: 57 functional | **Format**: TOON (Default) | **Structure**: Flat

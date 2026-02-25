@@ -14,7 +14,7 @@ Key capabilities:
 - Parallel agent execution on independent tasks
 - Git worktree isolation per task card
 - Automatic PR creation on task completion
-- planno (plannotator) integration for epic-level plan review before card creation (optional, independent)
+- plannotator integration for epic-level plan review before card creation (keyword: `plan` / `계획`, optional, independent)
 
 ---
 
@@ -23,8 +23,11 @@ Key capabilities:
 No global install is required. Run directly with `npx`:
 
 ```bash
-# Run directly (no install needed)
+# Run directly (no install needed) - default port 3000
 npx vibe-kanban
+
+# Port conflict (e.g. Next.js dev server on 3000)
+PORT=3001 npx vibe-kanban --port 3001
 
 # Or use the wrapper script
 bash scripts/vibe-kanban-start.sh
@@ -35,18 +38,207 @@ bash scripts/vibe-kanban-start.sh --port 3001
 
 After starting, the board is available at `http://localhost:3000` (or your configured port).
 
+Startup log (verified v0.1.17):
+```
+Starting vibe-kanban v0.1.17...
+No user profiles.json found, using defaults only
+Starting PR monitoring service with interval 60s
+Remote client initialized with URL: https://api.vibekanban.com
+Main server on :3000, Preview proxy on :XXXXX
+Opening browser...
+```
+
+**Supported agents** (verified v0.1.17): Opencode, Claude Code, Codex, Gemini, Amp, Qwen Code, Copilot, Droid, Cursor Agent
+
 ---
 
 ## Environment Variables
 
 | Variable | Description | Default |
 |----------|-------------|---------|
-| `VIBE_KANBAN_PORT` | Server port | `3000` |
+| `PORT` | Server port | `3000` |
+| `HOST` | Server host | `127.0.0.1` |
 | `VIBE_KANBAN_REMOTE` | Allow remote connections | `false` |
-| `ANTHROPIC_API_KEY` | For Claude-powered tasks | — |
-| `OPENAI_API_KEY` | For GPT-powered tasks | — |
+| `VK_ALLOWED_ORIGINS` | CORS allowed origins | — |
+| `DISABLE_WORKTREE_CLEANUP` | Disable worktree cleanup | — |
+| `ANTHROPIC_API_KEY` | For Claude Code-powered tasks | — |
+| `OPENAI_API_KEY` | For Codex-powered tasks | — |
+| `GOOGLE_API_KEY` | For Gemini-powered tasks | — |
+
+> **Port collision warning**: Default port is `3000`. If Next.js or other dev servers use 3000, run `PORT=3001 npx vibe-kanban --port 3001`.
 
 Set variables in your shell or in a `.env` file at the project root before starting the server.
+
+---
+
+## MCP Integration
+
+Vibe Kanban can run as an MCP (Model Context Protocol) server, allowing AI agents to directly control the board programmatically.
+
+### Platform Compatibility Matrix
+
+| Platform | 지원 방식 | 필요 설정 |
+|---|---|---|
+| Claude | Native MCP server registration | `~/.claude/settings.json` or `.mcp.json` |
+| Codex | MCP script-assisted setup | `bash <your-agent-skills>/vibe-kanban/scripts/mcp-setup.sh --codex` |
+| Gemini | MCP registration | 동일 패턴 설정 |
+| OpenCode | MCP/브릿지 연동 | `omx`/`ohmg`류 또는 동일 토폴로지 |
+
+`현재 스킬만`으로 가능한지:
+- Claude/Gemini: **가능**
+- Codex: **가능(스크립트 기반)** 
+- OpenCode: **가능(오케스트레이션 경유)**
+
+### Claude Code MCP Configuration
+
+Add to `~/.claude/settings.json` or project `.mcp.json`:
+
+```json
+{
+  "mcpServers": {
+    "vibe-kanban": {
+      "command": "npx",
+      "args": ["vibe-kanban", "--mcp"],
+      "env": {
+        "MCP_HOST": "127.0.0.1",
+        "MCP_PORT": "3001"
+      }
+    }
+  }
+}
+```
+
+### Available MCP Tools
+
+| Tool | Description |
+|------|-------------|
+| `vk_list_cards` | List all cards (workspaces) |
+| `vk_create_card` | Create a new card |
+| `vk_move_card` | Change card status |
+| `vk_get_diff` | Get card diff |
+| `vk_retry_card` | Retry card execution |
+
+> ⚠️ **Tool name change**: `vk_list_tasks` → `vk_list_cards`, `vk_create_task` → `vk_create_card` (verified v0.1.17)
+
+### Codex MCP setup
+
+When using Codex, set up MCP via the script included in this skill:
+
+```bash
+bash <your-agent-skills>/vibe-kanban/scripts/mcp-setup.sh --codex
+```
+
+It appends MCP server config under `~/.codex/config.toml` and writes a `vibe-kanban` MCP entry.
+
+> Note: This skill is not an Auto-hook loop system. For autonomous repeat behavior, combine with the skill or workflow that your Codex orchestration layer already provides.
+
+### OpenCode MCP Configuration
+
+Add to `~/.config/opencode/opencode.json`:
+
+```json
+{
+  "mcp": {
+    "vibe-kanban": {
+      "command": "npx",
+      "args": ["vibe-kanban", "--mcp"],
+      "env": {
+        "MCP_HOST": "127.0.0.1",
+        "MCP_PORT": "3001"
+      }
+    }
+  }
+}
+```
+
+After restarting OpenCode, `vk_*` tools are available directly in your session.
+
+---
+
+## Remote Deployment
+
+### Docker
+
+```bash
+# Official image
+docker run -p 3000:3000 vibekanban/vibe-kanban
+
+# With environment variables
+docker run -p 3000:3000 \
+  -e ANTHROPIC_API_KEY=$ANTHROPIC_API_KEY \
+  -e VK_ALLOWED_ORIGINS=https://vk.example.com \
+  vibekanban/vibe-kanban
+```
+
+### Reverse Proxy (Nginx/Caddy)
+
+```bash
+# CORS configuration required
+VK_ALLOWED_ORIGINS=https://vk.example.com
+
+# Multiple origins
+VK_ALLOWED_ORIGINS=https://a.example.com,https://b.example.com
+```
+
+### SSH Remote Access
+
+Integrate with VSCode Remote-SSH:
+```
+vscode://vscode-remote/ssh-remote+user@host/path/to/.vibe-kanban-workspaces/<workspace-uuid>
+```
+
+---
+
+## Troubleshooting
+
+### Worktree Conflicts / Orphaned Worktrees
+
+```bash
+# Clean orphaned worktrees
+git worktree prune
+
+# List current worktrees
+git worktree list
+
+    # Force remove a specific worktree
+    git worktree remove ~/.vibe-kanban-workspaces/<workspace-uuid> --force
+```
+
+### 403 Forbidden (CORS Error)
+
+```bash
+# Set CORS when accessing remotely
+VK_ALLOWED_ORIGINS=https://your-domain.com npx vibe-kanban
+```
+
+### Agent Won't Start
+
+```bash
+# Test CLI directly
+claude --version
+codex --version
+
+# Check API keys
+echo $ANTHROPIC_API_KEY
+echo $OPENAI_API_KEY
+```
+
+### Port Conflict
+
+```bash
+# Use a different port
+npx vibe-kanban --port 3001
+
+# Or via environment variable
+PORT=3001 npx vibe-kanban
+```
+
+### SQLite Lock Error
+
+```bash
+# Disable worktree cleanup and restart
+DISABLE_WORKTREE_CLEANUP=1 npx vibe-kanban
+```
 
 ---
 
@@ -59,15 +251,15 @@ npx vibe-kanban
 # → http://localhost:3000
 ```
 
-### 2. (Optional) Review Epic Plan with planno
+### 2. (Optional) Review Epic Plan with plannotator
 
 Before creating cards, review the feature breakdown visually:
 
 ```text
-planno로 이 기능의 구현 계획을 검토해줘
+plan으로 이 기능의 구현 계획을 검토해줘
 ```
 
-planno (plannotator) is an independent skill — usable without Vibe Kanban.
+plannotator is an independent skill — usable without Vibe Kanban.
 
 ### 3. Create Task Cards
 
@@ -134,6 +326,33 @@ Same task, two cards:
 → Compare PRs → pick best-of-both
 ```
 
+### 5. OpenCode + ulw Parallel Delegation
+
+Combine Vibe Kanban with OpenCode's ulw (ultrawork) mode to run agents in parallel at the epic level:
+
+```python
+# ulw keyword → ultrawork parallel execution layer activated
+# Run Vibe Kanban board: npx vibe-kanban (in a separate terminal)
+
+task(category="visual-engineering", run_in_background=True,
+     load_skills=["frontend-ui-ux", "vibe-kanban"],
+     description="[Kanban WS1] Frontend UI",
+     prompt="Implement payment flow UI — card input, order confirmation, completion screens in src/components/payment/")
+
+task(category="unspecified-high", run_in_background=True,
+     load_skills=["vibe-kanban"],
+     description="[Kanban WS2] Backend API",
+     prompt="Implement payment API — POST /charge, POST /refund, GET /status/:id")
+
+task(category="unspecified-low", run_in_background=True,
+     load_skills=["vibe-kanban"],
+     description="[Kanban WS3] Integration Tests",
+     prompt="Write payment E2E tests — success, failure, and refund scenarios")
+
+# → 3 workspaces appear simultaneously in Running state on the Kanban board
+# → Each completion: Needs Attention → PR created → Archive
+```
+
 ---
 
 ## Conductor Pattern (CLI Mode)
@@ -185,19 +404,19 @@ Worktrees are isolated — multiple agents run concurrently without conflicting 
 
 ---
 
-### 2. Plan Review with planno (Optional, Independent)
+### 2. Plan Review with plannotator (Optional, Independent)
 
-Before creating individual task cards, you can optionally review the epic breakdown using planno (plannotator) — a separate, independent skill:
+Before creating individual task cards, you can optionally review the epic breakdown using plannotator — a separate, independent skill:
 
 ```text
-planno로 이 기능의 구현 계획을 검토해줘
+plan으로 이 기능의 구현 계획을 검토해줘
 ```
 
-planno breaks the feature spec into an ordered set of sub-tasks. Review and adjust the plan, then approve it. Approved specs become the source of truth for card creation. planno operates independently — you can use Vibe Kanban without it.
+plannotator breaks the feature spec into an ordered set of sub-tasks. Review and adjust the plan, then approve it. Approved specs become the source of truth for card creation. plannotator operates independently — you can use Vibe Kanban without it.
 
 ### 3. Create Tasks
 
-Add task cards to the **To Do** column. Each card should represent a single, atomic unit of work derived from the approved planno spec (or your own task breakdown if not using planno).
+Add task cards to the **To Do** column. Each card should represent a single, atomic unit of work derived from the approved plannotator spec (or your own task breakdown if not using plannotator).
 
 ### 4. Assign Agents
 
@@ -221,19 +440,19 @@ Approve and merge the PR. The card advances to **Done**.
 
 ---
 
-## planno (plannotator) Integration — Optional, Independent
+## plannotator Integration — Optional, Independent
 
-planno is an independent skill for epic-level plan review. It is not required by Vibe Kanban — each tool operates on its own. Use planno when you want visual annotation and approval of the implementation plan before breaking it into cards.
+plannotator is an independent skill for epic-level plan review. It is not required by Vibe Kanban — each tool operates on its own. Use plannotator when you want visual annotation and approval of the implementation plan before breaking it into cards.
 
-Typical flow (when using planno alongside Vibe Kanban):
+Typical flow (when using plannotator alongside Vibe Kanban):
 
 1. Describe the feature or epic in natural language.
-2. Ask planno to decompose it: `planno로 이 기능의 구현 계획을 검토해줘`
+2. Ask plannotator to decompose it: `plan으로 이 기능의 구현 계획을 검토해줘`
 3. Review the generated breakdown — adjust ordering, scope, or dependencies.
 4. Approve the plan.
 5. Create one card per approved sub-task in Vibe Kanban.
 
-Skipping planno is perfectly fine for small, self-contained tasks. For larger features with many moving parts, planno helps prevent scope creep before card creation.
+Skipping plannotator is perfectly fine for small, self-contained tasks. For larger features with many moving parts, plannotator helps prevent scope creep before card creation.
 
 ---
 
@@ -262,7 +481,7 @@ This isolation means multiple agents can work on different cards simultaneously 
 ## Tips
 
 - Keep card scope narrow. One card = one commit-worthy change. Broad cards lead to large, hard-to-review PRs.
-- Use planno (independent skill) for any feature touching more than two files.
+- Use plannotator (independent skill, keyword: `plan` / `계획`) for any feature touching more than two files.
 - Set `VIBE_KANBAN_REMOTE=true` only on trusted networks — it exposes the board and agent controls to all connections on the port.
 - If an agent stalls on a card, reassign to a different agent or break the card into smaller pieces.
 

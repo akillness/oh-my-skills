@@ -193,15 +193,20 @@ if [ "$HOOK_ONLY" = false ]; then
 When you have a complete implementation plan, **always submit it for human review** before proceeding:
 
 ```bash
-# Save plan to temp file and open review UI
-plannotator plan <(echo "$YOUR_PLAN_MARKDOWN")
-# OR directly pipe plan content:
-echo "# My Plan\n..." | plannotator plan -
+# Save markdown plan to file, then send validated JSON payload:
+cat > /tmp/plan.md << 'PLAN'
+# Your plan markdown...
+PLAN
+
+python3 -c "
+import json
+print(json.dumps({'tool_input': {'plan': open('/tmp/plan.md').read(), 'permission_mode': 'acceptEdits'}}))
+" | plannotator > /tmp/plannotator_feedback.txt 2>&1 &
 ```
 
 **Workflow:**
 1. Create your implementation plan in markdown
-2. Run `plannotator plan -` (pipe plan via stdin) OR the hook fires automatically
+2. Run the python3 JSON command above (manual mode) OR let ExitPlanMode hook trigger automatically
 3. Wait for user approval in the browser UI
 4. If approved → proceed with implementation
 5. If changes requested → revise and resubmit
@@ -247,7 +252,10 @@ echo -e "  When Gemini exits plan mode (--approval-mode plan),"
 echo -e "  plannotator opens automatically in your browser."
 echo ""
 echo -e "${BLUE}Manual trigger:${NC}"
-echo -e "  ${GREEN}plannotator plan -${NC}   (pipe plan markdown via stdin)"
+echo -e "  ${GREEN}cat > /tmp/plan.md << 'PLAN'${NC}"
+echo -e "  ${GREEN}# ...your markdown...${NC}"
+echo -e "  ${GREEN}PLAN${NC}"
+echo -e "  ${GREEN}python3 -c \"import json; print(json.dumps({'tool_input': {'plan': open('/tmp/plan.md').read(), 'permission_mode': 'acceptEdits'}}))\" | plannotator > /tmp/plannotator_feedback.txt 2>&1 &${NC}"
 echo -e "  ${GREEN}plannotator review${NC}   (review git diff)"
 echo ""
 echo -e "${BLUE}Next steps:${NC}"

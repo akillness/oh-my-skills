@@ -221,6 +221,18 @@ fi
 
 echo ""
 
+echo -e "${BLUE}Bear Notes (Optional — for plan auto-save)${NC}"
+
+if [ -d "/Applications/Bear.app" ] || [ -d "$HOME/Applications/Bear.app" ]; then
+  check_pass "Bear.app detected"
+  echo -e "  ${GRAY}-${NC} Quick check: ${GREEN}open \"bear://x-callback-url/create?title=Plannotator%20Check&text=ok\"${NC}"
+else
+  echo -e "  ${GRAY}-${NC} Bear.app not found (install from App Store)"
+  echo -e "  ${GRAY}   Bear export uses ${BLUE}bear://x-callback-url/create${NC} in system browser${NC}"
+fi
+
+echo ""
+
 # ── 5. Git Status ──────────────────────────────────────────
 echo -e "${BLUE}Git Repository${NC}"
 

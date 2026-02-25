@@ -68,7 +68,7 @@ mkdir -p "$CODEX_DIR" "$CODEX_PROMPTS"
 echo -e "${BLUE}━━ Step 1: config.toml developer_instructions ━━━━${NC}"
 echo ""
 
-PLANNOTATOR_INSTRUCTION='Before implementing any plan, run `plannotator plan -` (pipe your plan via stdin) to open an interactive review UI. Wait for user approval. After coding, run `plannotator review` to open code review.'
+PLANNOTATOR_INSTRUCTION='Before implementing any plan, write the plan markdown to /tmp/plan.md and run: `python3 -c "import json; print(json.dumps({\"tool_input\": {\"plan\": open(\"/tmp/plan.md\").read(), \"permission_mode\": \"acceptEdits\"}}))" | plannotator > /tmp/pn_out.txt 2>&1 & sleep 5; cat /tmp/pn_out.txt`. Wait for user approval in plannotator UI. After coding, run `plannotator review` to open code review.'
 
 if [ -f "$CODEX_CONFIG" ] && grep -q "plannotator" "$CODEX_CONFIG" 2>/dev/null; then
   echo -e "${YELLOW}⚠ plannotator already referenced in ${CODEX_CONFIG}${NC}"
@@ -152,13 +152,15 @@ Use this prompt to do a plan review session with plannotator before implementati
 1. Create your implementation plan in markdown format
 2. Pipe it to plannotator for human review:
    ```bash
-   plannotator plan - << '"'"'PLAN
+   cat > /tmp/plan.md << '"'"'PLAN
    # Implementation Plan: [Feature Name]
 
    ## Steps
    1. ...
    2. ...
    PLAN
+
+   python3 -c "import json; print(json.dumps({\"tool_input\": {\"plan\": open(\"/tmp/plan.md\").read(), \"permission_mode\": \"acceptEdits\"}}))" | plannotator > /tmp/plannotator_feedback.txt 2>&1 &
    ```
 3. User reviews and annotates in browser UI
 4. If approved → proceed with implementation
@@ -207,7 +209,10 @@ echo ""
 echo -e "${BLUE}How to use plannotator in Codex:${NC}"
 echo ""
 echo -e "  ${BLUE}Plan review:${NC}"
-echo -e "    ${GREEN}echo '# My Plan...' | plannotator plan -${NC}"
+echo -e "    ${GREEN}cat > /tmp/plan.md << 'PLAN'${NC}"
+echo -e "    ${GREEN}# ...your markdown...${NC}"
+echo -e "    ${GREEN}PLAN${NC}"
+echo -e "    ${GREEN}python3 -c \"import json; print(json.dumps({\\\"tool_input\\\": {\\\"plan\\\": open(\\\"/tmp/plan.md\\\").read(), \\\"permission_mode\\\": \\\"acceptEdits\\\"}}))\" | plannotator > /tmp/plannotator_feedback.txt 2>&1 &${NC}"
 echo ""
 echo -e "  ${BLUE}Code review after coding:${NC}"
 echo -e "    ${GREEN}plannotator review${NC}"
