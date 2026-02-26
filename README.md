@@ -1,6 +1,6 @@
 # Agent Skills
 
-> v2026-02-25 · **65 Skills** · **TOON Format** · **Flat Skill Layout**
+> v2026-02-26 · **65 Skills** · **TOON Format** · **Flat Skill Layout**
 
 [![GitHub Releases](https://img.shields.io/badge/GitHub-Releases-blue)](https://github.com/akillness/skills-template/releases)
 [![Skills](https://img.shields.io/badge/Skills-65-brightgreen)](#skills-list-65-total)
@@ -35,13 +35,14 @@ curl -s https://raw.githubusercontent.com/akillness/skills-template/main/setup-a
 
 ---
 
-## What's New in v2026-02-25
+## What's New in v2026-02-26
 
 | 변경 | 내용 |
 |------|------|
+| **plannotator shell 통합** | `plan <file.md>` 터미널 명령 — 블로킹 실행, Approve/Reject 결과 자동 출력 |
+| **plannotator 단독 동작** | ralph/omc 없이 ExitPlanMode 훅만으로 즉시 사용 가능 |
+| **`&` 백그라운드 실행 금지** | 전체 문서/스크립트에서 블로킹 패턴으로 통일 |
 | **신규 `jeo` 스킬** | ralph+plannotator → team/bmad → agent-browser verify → worktree cleanup 완전 자동화 |
-| **Skills list 재구성** | 11개 카테고리, 65개 스킬 표 형식 개편 |
-| **신규 `copilot-coding-agent`** | GitHub Copilot Issue → Draft PR 자동화 |
 
 ---
 
@@ -147,6 +148,12 @@ npx skills add https://github.com/akillness/skills-template --skill ralph
 ```bash
 npx skills add https://github.com/akillness/skills-template --skill plannotator
 # 사용: 계획을 세울 때 자동으로 브라우저 UI 오픈 → Approve 또는 피드백 전송
+
+# 셸 통합 (터미널에서 plan 명령 사용):
+bash scripts/install.sh --with-shell
+source ~/.zshrc
+plan plan.md          # 브라우저 오픈 → 블로킹 → Approve/Reject 결과 출력
+plan --review         # git diff 리뷰
 ```
 
 > 상세: [docs/plannotator/README.md](docs/plannotator/README.md)
@@ -324,6 +331,7 @@ Path resolution behavior for skill loading:
 | Feature | Description |
 |---------|-------------|
 | Plan Review | Opens browser UI when agent exits plan mode — annotate, approve, or send feedback |
+| **Shell Integration** | `plan <file.md>` from any terminal — blocking review with ✓/✗ result output |
 | Diff Review | `/plannotator-review` for inline line annotations on git diffs |
 | **Obsidian Integration** | Auto-save approved plans to Obsidian vault with YAML frontmatter, tags, and backlinks |
 | Bear Notes | Alternative auto-save to Bear Notes (macOS) |
@@ -334,7 +342,7 @@ Path resolution behavior for skill loading:
 2. Create/open a vault in Obsidian
 3. In plannotator UI: Settings (⚙️) → Saving → Enable "Obsidian Integration" → Select vault
 
-> **Note**: Configure settings in the **system browser** that plannotator auto-opens. Settings configured in automated/Playwright browser sessions are isolated and will not persist. See [Pattern 9: Obsidian Integration Setup](.agent-skills/plannotator/SKILL.md#pattern-9-obsidian-integration-setup) for detailed instructions and folder organization.
+> **Note**: Configure settings in the **system browser** that plannotator auto-opens. Settings configured in automated/Playwright browser sessions are isolated and will not persist. See [Pattern 10: Obsidian Integration Setup](.agent-skills/plannotator/SKILL.md#pattern-10-obsidian-integration-setup) for detailed instructions and folder organization.
 
 #### Obsidian Folder Organization
 Plans can be organized into subfolders within the vault:
@@ -507,7 +515,12 @@ bash scripts/install.sh --all   # 전체 설치
 
 ## Changelog
 
-**v2026-02-25 (latest)**:
+**v2026-02-26 (latest)**:
+- **plannotator/shell**: `setup-shell.sh` 추가 — 터미널에서 `plan <file.md>` 명령으로 plannotator 블로킹 실행; `install.sh --with-shell` 옵션 추가
+- **plannotator**: 단독 동작 명시 (ralph/omc 불필요); `&` 백그라운드 실행 금지 패턴 전면 수정 (SKILL.md, SKILL.toon, setup-gemini-hook.sh, docs)
+- **plannotator**: Pattern 9 Shell Integration 추가 (SKILL.md)
+
+**v2026-02-25**:
 - **jeo**: New skill added — Integrated Agent Orchestration (ralph+plannotator → team/bmad → agent-browser verify → worktree cleanup); registered in skills.json under utilities
 - Skills list 표 형식 개편 (카테고리 재구성, 65개 전체)
 
