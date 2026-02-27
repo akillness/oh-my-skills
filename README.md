@@ -1,10 +1,12 @@
 # Agent Skills
 
-> v2026-02-26 · **65 Skills** · **TOON Format** · **Flat Skill Layout**
+> v2026-02-25 · **65 Skills** · **TOON Format** · **Flat Skill Layout**
 
 [![GitHub Releases](https://img.shields.io/badge/GitHub-Releases-blue)](https://github.com/akillness/skills-template/releases)
 [![Skills](https://img.shields.io/badge/Skills-65-brightgreen)](#skills-list-65-total)
 [![BMAD Deploy Version](https://img.shields.io/badge/BMAD-1.0.0-orange)](docs/bmad/README.md)
+
+![Agent Skills Installer](AgentSkills.png)
 
 > 스킬 구성 및 상세 목록: [.agent-skills/README.md](.agent-skills/README.md)
 
@@ -35,14 +37,14 @@ curl -s https://raw.githubusercontent.com/akillness/skills-template/main/setup-a
 
 ---
 
-## What's New in v2026-02-26
+## What's New in v2026-02-25
 
 | 변경 | 내용 |
 |------|------|
-| **plannotator shell 통합** | `plan <file.md>` 터미널 명령 — 블로킹 실행, Approve/Reject 결과 자동 출력 |
-| **plannotator 단독 동작** | ralph/omc 없이 ExitPlanMode 훅만으로 즉시 사용 가능 |
-| **`&` 백그라운드 실행 금지** | 전체 문서/스크립트에서 블로킹 패턴으로 통일 |
 | **신규 `jeo` 스킬** | ralph+plannotator → team/bmad → agent-browser verify → worktree cleanup 완전 자동화 |
+| **Skills list 재구성** | 11개 카테고리, 65개 스킬 표 형식 개편 |
+| **신규 `copilot-coding-agent`** | GitHub Copilot Issue → Draft PR 자동화 |
+| **`agent-browser` 강화** | deterministic workflow + verification/diff + security hardening + references/templates 추가 |
 
 ---
 
@@ -148,12 +150,6 @@ npx skills add https://github.com/akillness/skills-template --skill ralph
 ```bash
 npx skills add https://github.com/akillness/skills-template --skill plannotator
 # 사용: 계획을 세울 때 자동으로 브라우저 UI 오픈 → Approve 또는 피드백 전송
-
-# 셸 통합 (터미널에서 plan 명령 사용):
-bash scripts/install.sh --with-shell
-source ~/.zshrc
-plan plan.md          # 브라우저 오픈 → 블로킹 → Approve/Reject 결과 출력
-plan --review         # git diff 리뷰
 ```
 
 > 상세: [docs/plannotator/README.md](docs/plannotator/README.md)
@@ -307,18 +303,12 @@ npx skills add https://github.com/akillness/skills-template --skill playwriter
 These tools have full documentation in `docs/` and dedicated skills in `.agent-skills/`.
 
 ### plannotator — Interactive Plan & Diff Review
-> **용도**: 실행 전 계획 시각 검토 및 피드백 루프 | **플랫폼**: Claude · Codex · Gemini · OpenCode | **상태**: v0.9.2
+> **용도**: 실행 전 계획 시각 검토 및 피드백 루프 | **플랫폼**: Claude · Codex · Gemini · OpenCode | **상태**: v0.9.0
 > Keyword: `plan`, `계획` (alias: `planno`) | [Docs](docs/plannotator/README.md) | [GitHub](https://github.com/backnotprop/plannotator)
 
 Visual browser UI for annotating AI agent plans before coding. Works with **Claude Code**, **OpenCode**, **Gemini CLI**, and **Codex CLI**. Approve plans or send structured feedback in one click.
 
-**단독 동작 가능**: ralph, omc, bmad 등 다른 도구 없이 `ExitPlanMode` 훅 또는 플러그인 설정만으로 즉시 사용 가능합니다.
-
-> **중요**: 수동 plan 제출 시 `&` (백그라운드) 실행 금지 — 블로킹으로 실행해야 피드백을 수신할 수 있습니다.
-> ```bash
-> python3 -c "import json; print(json.dumps({'tool_input': {'plan': open('plan.md').read(), 'permission_mode': 'acceptEdits'}}))" \
->   | plannotator > /tmp/plannotator_feedback.txt 2>&1
-> ```
+Validated in-session with Playwright: Approve + feedback loops confirmed across all four platforms. See `docs/plannotator/README.md` for the verified python3 stdin pattern (avoid raw `echo`/heredoc for plan submission).
 
 ```bash
 bash scripts/install.sh --all   # Install + configure all AI tools at once
@@ -331,7 +321,6 @@ Path resolution behavior for skill loading:
 | Feature | Description |
 |---------|-------------|
 | Plan Review | Opens browser UI when agent exits plan mode — annotate, approve, or send feedback |
-| **Shell Integration** | `plan <file.md>` from any terminal — blocking review with ✓/✗ result output |
 | Diff Review | `/plannotator-review` for inline line annotations on git diffs |
 | **Obsidian Integration** | Auto-save approved plans to Obsidian vault with YAML frontmatter, tags, and backlinks |
 | Bear Notes | Alternative auto-save to Bear Notes (macOS) |
@@ -342,7 +331,7 @@ Path resolution behavior for skill loading:
 2. Create/open a vault in Obsidian
 3. In plannotator UI: Settings (⚙️) → Saving → Enable "Obsidian Integration" → Select vault
 
-> **Note**: Configure settings in the **system browser** that plannotator auto-opens. Settings configured in automated/Playwright browser sessions are isolated and will not persist. See [Pattern 10: Obsidian Integration Setup](.agent-skills/plannotator/SKILL.md#pattern-10-obsidian-integration-setup) for detailed instructions and folder organization.
+> **Note**: Configure settings in the **system browser** that plannotator auto-opens. Settings configured in automated/Playwright browser sessions are isolated and will not persist. See [Pattern 9: Obsidian Integration Setup](.agent-skills/plannotator/SKILL.md#pattern-9-obsidian-integration-setup) for detailed instructions and folder organization.
 
 #### Obsidian Folder Organization
 Plans can be organized into subfolders within the vault:
@@ -363,7 +352,8 @@ open "bear://x-callback-url/create?title=Plannotator%20Check&text=Bear%20callbac
 | 증상 | 원인 | 해결 |
 |------|------|------|
 | 브라우저가 두 번 열림 | `plannotator-launch.sh`의 중복 `open` 호출 | 훅 스크립트에서 포트 감지 루프의 `open` 제거 — plannotator가 브라우저를 자체 오픈 |
-| 피드백 미수신 (Codex/Gemini/OpenCode) | `&` 백그라운드 실행으로 에이전트가 결과를 대기하지 않음 | `&` **제거** — 블로킹 실행: `python3 -c "..." \| plannotator > /tmp/plannotator_feedback.txt 2>&1` (& 없음) |
+| 피드백 미수신 (Codex/Gemini/OpenCode) | `&` 백그라운드 실행으로 에이전트가 결과를 대기하지 않음 | `&` 없이 블로킹 실행 후 `/tmp/plannotator_feedback.txt` 읽기 |
+| Codex 시작 실패 (`invalid type: map, expected a string`) | `~/.codex/config.toml`에서 `developer_instructions`를 테이블(`[developer_instructions]`)로 잘못 선언 | `bash .agent-skills/jeo/scripts/setup-codex.sh` 재실행 후 `developer_instructions = "..."` top-level 문자열 형식 확인 |
 
 ---
 
@@ -464,6 +454,21 @@ npx skills add https://github.com/akillness/skills-template --skill bmad-orchest
 
 계획(ralph+plannotator) → 실행(team/bmad) → 검증(agent-browser) → 정리(worktree cleanup)의 완전 자동화 오케스트레이션 플로우.
 
+`jeo` 실행은 다음 동작을 자동화합니다.
+
+```bash
+bash scripts/install.sh --all     # 모든 툴/훅 일괄 설치
+bash scripts/check-status.sh      # 현재 설치/상태 점검
+jeo "<작업 설명>"                # plan → execute → verify → cleanup
+```
+
+| Stage | Tool | Notes |
+|------|------|-------|
+| Plan | ralph + plannotator | `plan.md` 승인(`approved=true`) 전에는 execute 진행 불가 |
+| Execute | omc team / bmad | Claude Code는 team 우선, 미지원 환경은 bmad 폴백 |
+| Verify | agent-browser | 웹 UI 작업은 스냅샷/요소 확인을 통해 검증 |
+| Cleanup | worktree-cleanup.sh | 완료 후 남은 worktree 정리 |
+
 ```bash
 bash scripts/install.sh --all   # 전체 설치
 ```
@@ -515,12 +520,16 @@ bash scripts/install.sh --all   # 전체 설치
 
 ## Changelog
 
-**v2026-02-26 (latest)**:
-- **plannotator/shell**: `setup-shell.sh` 추가 — 터미널에서 `plan <file.md>` 명령으로 plannotator 블로킹 실행; `install.sh --with-shell` 옵션 추가
-- **plannotator**: 단독 동작 명시 (ralph/omc 불필요); `&` 백그라운드 실행 금지 패턴 전면 수정 (SKILL.md, SKILL.toon, setup-gemini-hook.sh, docs)
-- **plannotator**: Pattern 9 Shell Integration 추가 (SKILL.md)
+**v2026-02-26**:
+- **agent-browser**: SKILL.md를 운영형 구조로 확장 (core workflow, verification, safeguards, troubleshooting)
+- **agent-browser**: SKILL.toon 동기화 (snapshot-interact-resnapshot + verify 단계 반영)
+- **agent-browser**: references 4종 및 templates 2종 추가
 
-**v2026-02-25**:
+**v2026-02-26**:
+- **jeo (codex setup)**: `setup-codex.sh`가 `developer_instructions`를 Codex 스키마에 맞는 top-level 문자열로 강제 동기화하도록 수정
+- **jeo (status check)**: Codex 설정 검증을 강화해 잘못된 `developer_instructions` 형식을 정확히 감지하고 안내
+
+**v2026-02-25 (latest)**:
 - **jeo**: New skill added — Integrated Agent Orchestration (ralph+plannotator → team/bmad → agent-browser verify → worktree cleanup); registered in skills.json under utilities
 - Skills list 표 형식 개편 (카테고리 재구성, 65개 전체)
 
