@@ -194,11 +194,12 @@ bash .agent-skills/plannotator/scripts/setup-hook.sh
 ```json
 {
   "hooks": {
-    "ExitPlanMode": [{
-      "matcher": "",
+    "PermissionRequest": [{
+      "matcher": "ExitPlanMode",
       "hooks": [{
         "type": "command",
-        "command": "plannotator plan -"
+        "command": "plannotator",
+        "timeout": 1800
       }]
     }]
   }
@@ -211,13 +212,39 @@ bash .agent-skills/plannotator/scripts/setup-hook.sh
 # 자동 설정
 bash scripts/setup-codex.sh
 
-# developer_instructions 추가됨: ~/.codex/config.toml
-# prompt 파일 생성됨: ~/.codex/prompts/jeo.md
+# 설정 내용:
+# - developer_instructions: ~/.codex/config.toml
+# - prompt 파일: ~/.codex/prompts/jeo.md
+# - notify hook: ~/.codex/hooks/jeo-notify.py
+# - [tui] notifications: agent-turn-complete
 ```
+
+**notify hook** (`~/.codex/hooks/jeo-notify.py`):
+- 에이전트 턴 완료 시 `last-assistant-message`에서 `PLAN_READY` 신호 감지
+- `plan.md` 존재 확인 후 plannotator 자동 실행
+- 결과를 `/tmp/plannotator_feedback.txt`에 저장
+
+**`~/.codex/config.toml`** 설정:
+```toml
+developer_instructions = """
+# JEO Orchestration Workflow
+# ...
+"""
+
+notify = ["python3", "~/.codex/hooks/jeo-notify.py"]
+
+[tui]
+notifications = ["agent-turn-complete"]
+notification_method = "osc9"
+```
+
+> `developer_instructions`는 반드시 **top-level string**이어야 합니다.
+> `[developer_instructions]` 테이블 형식으로 작성하면 Codex가 `invalid type: map, expected a string` 오류로 시작 실패할 수 있습니다.
 
 Codex에서 사용:
 ```bash
 /prompts:jeo    # JEO 워크플로우 활성화
+# 에이전트가 plan.md 작성 후 "PLAN_READY" 출력 → notify hook 자동 실행
 ```
 
 ### 4.3 Gemini CLI
@@ -226,46 +253,41 @@ Codex에서 사용:
 # 자동 설정
 bash scripts/setup-gemini.sh
 
-# AfterAgent 훅 추가됨: ~/.gemini/settings.json
-# 지시사항 추가됨: ~/.gemini/GEMINI.md
+# 설정 내용:
+# - AfterAgent backup hook: ~/.gemini/hooks/jeo-plannotator.sh
+# - 지시사항 (MANDATORY loop): ~/.gemini/GEMINI.md
 ```
 
-**훅 설정 파일** (`~/.gemini/settings.json`):
+**핵심 원칙**: 에이전트가 plannotator를 **직접 blocking 호출**해야 같은 턴 피드백 가능.
+AfterAgent 훅은 안전망 역할만 함 (턴 종료 후 실행 → 다음 턴에 주입).
+
+**AfterAgent backup hook** (`~/.gemini/settings.json`):
 ```json
 {
   "hooks": {
-    "AfterAgent": [
-      {
-        "matcher": "",
-        "hooks": [
-          {
-            "name": "plannotator-review",
-            "type": "command",
-            "command": "plannotator plan -",
-            "description": "계획 완료 후 plannotator UI 실행 (알림용)"
-          }
-        ]
-      }
-    ]
+    "AfterAgent": [{
+      "matcher": "",
+      "hooks": [{
+        "name": "plannotator-review",
+        "type": "command",
+        "command": "bash ~/.gemini/hooks/jeo-plannotator.sh",
+        "description": "plan.md 감지 시 plannotator 실행 (AfterAgent backup)"
+      }]
+    }]
   }
 }
 ```
 
-> **AfterAgent 훅 한계**: AfterAgent는 에이전트 턴이 끝난 후 실행되므로, 훅에서 받은 plannotator 피드백은 **다음 턴 대화에 주입**됩니다. 현재 턴에서 직접 피드백을 수신하려면 에이전트가 plannotator를 직접 블로킹 호출해야 합니다.
-
-> **권장**: `~/.gemini/GEMINI.md`에 아래 지시를 추가하세요.
-> ```
-> 계획 완료 후 반드시 plannotator를 foreground(블로킹)로 직접 실행하고 결과를 읽어라.
-> & (백그라운드)로 실행하지 말 것. /tmp/plannotator_feedback.txt 확인 후 분기할 것.
-> ```
+**GEMINI.md에 추가되는 PLAN 지시 (mandatory loop)**:
+```
+1. plan.md 작성
+2. plannotator blocking 실행 (& 금지) → /tmp/plannotator_feedback.txt
+3. approved=true → EXECUTE / 미승인 → 수정 후 2번 반복
+NEVER proceed to EXECUTE without approved=true.
+```
 
 > **참고**: Gemini CLI 훅 이벤트는 `BeforeTool`, `AfterAgent`를 사용합니다.
-> `ExitPlanMode`는 Claude Code 전용 훅으로 Gemini CLI에서 동작하지 않습니다.
-
-Gemini에서 사용:
-```bash
-gemini    # GEMINI.md 지시에 따라 에이전트가 plannotator를 직접 블로킹 실행
-```
+> `ExitPlanMode`는 Claude Code 전용 훅입니다.
 
 > [Hooks 공식 가이드](https://developers.googleblog.com/tailor-gemini-cli-to-your-workflow-with-hooks/)
 
@@ -276,7 +298,8 @@ gemini    # GEMINI.md 지시에 따라 에이전트가 plannotator를 직접 블
 bash scripts/setup-opencode.sh
 
 # opencode.json에 추가됨:
-# "@jeo/opencode@latest" 플러그인
+# "@plannotator/opencode@latest" 플러그인
+# "@oh-my-opencode/opencode@latest" 플러그인 (omx)
 ```
 
 OpenCode 슬래시 커맨드:
@@ -284,17 +307,17 @@ OpenCode 슬래시 커맨드:
 - `/jeo-exec` — team/bmad로 실행
 - `/jeo-cleanup` — worktree 정리
 
-**plannotator 연동** (플러그인 우선):
+**plannotator 연동** (MANDATORY blocking loop):
 ```bash
-# 플러그인 설치 후 슬래시 커맨드 사용 (CLI에서 결과 직접 반환)
-/plannotator-review
+# plan.md 작성 후 blocking 실행 (& 금지) — 같은 턴 피드백 수신
+python3 -c "import json,sys; plan=open('plan.md').read(); sys.stdout.write(json.dumps({'tool_input':{'plan':plan,'permission_mode':'acceptEdits'}}))" | plannotator > /tmp/plannotator_feedback.txt 2>&1
 
-# 플러그인 없을 때 수동 (블로킹 실행 — & 없음)
-python3 -c "
-import json
-print(json.dumps({'tool_input': {'plan': open('plan.md').read(), 'permission_mode': 'acceptEdits'}}))
-" | plannotator > /tmp/plannotator_feedback.txt 2>&1
+# 결과 확인 후 분기
+# approved=true  → EXECUTE 진입
+# not approved   → 피드백 반영 후 plan.md 수정 → 위 과정 반복
 ```
+
+> NEVER skip plannotator. NEVER proceed to EXECUTE without `"approved":true`.
 
 ---
 
@@ -368,6 +391,7 @@ bash scripts/worktree-cleanup.sh
 |------|------|
 | plannotator 미실행 | `bash .agent-skills/plannotator/scripts/check-status.sh` |
 | plannotator 피드백 미수신 | `&` 백그라운드 실행 제거 → 블로킹 실행 후 `/tmp/plannotator_feedback.txt` 확인 |
+| Codex 시작 실패 (`invalid type: map, expected a string`) | `bash scripts/setup-codex.sh` 재실행 후 `~/.codex/config.toml`의 `developer_instructions`가 top-level string인지 확인 |
 | Gemini 피드백 루프 없음 | `~/.gemini/GEMINI.md`에 블로킹 직접 호출 지시 추가 |
 | worktree 충돌 | `git worktree prune && git worktree list` |
 | team 모드 미동작 | `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` 환경변수 설정 |

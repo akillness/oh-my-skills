@@ -27,26 +27,44 @@ if ! command -v gemini >/dev/null 2>&1; then
   warn "gemini CLI not found. Install via: npm install -g @google/gemini-cli"
 fi
 
-# NOTE: ExitPlanMode hook support in Gemini CLI depends on the installed version.
-# If plannotator does not auto-open on plan exit, use the manual fallback:
-#   python3 -c "import json; plan=open('plan.md').read(); \
-#     print(json.dumps({'tool_input':{'plan':plan,'permission_mode':'acceptEdits'}}))" \
-#     | plannotator > /tmp/plannotator_feedback.txt 2>&1 &
+# NOTE: Gemini CLI uses AfterAgent hook (not ExitPlanMode, which is Claude Code-only).
+# The primary method is agent direct blocking call — do NOT use & (background).
+# Manual blocking call (same-turn feedback):
+#   python3 -c "import json,sys; plan=open('plan.md').read(); \
+#     sys.stdout.write(json.dumps({'tool_input':{'plan':plan,'permission_mode':'acceptEdits'}}))" \
+#     | plannotator > /tmp/plannotator_feedback.txt 2>&1
 
 # ── 2. Configure ~/.gemini/settings.json ─────────────────────────────────────
 if ! $MD_ONLY; then
   info "Configuring ~/.gemini/settings.json..."
 
   if $DRY_RUN; then
-    echo -e "${YELLOW}[DRY-RUN]${NC} Would add ExitPlanMode hook to $GEMINI_SETTINGS"
+    echo -e "${YELLOW}[DRY-RUN]${NC} Would add AfterAgent hook to $GEMINI_SETTINGS"
   else
     mkdir -p "$(dirname "$GEMINI_SETTINGS")"
     [[ -f "$GEMINI_SETTINGS" ]] && cp "$GEMINI_SETTINGS" "${GEMINI_SETTINGS}.jeo.bak"
 
-    python3 - <<'PYEOF'
+    # Create hook helper script (avoids plannotator plan - hanging on empty stdin)
+    GEMINI_HOOK_DIR="${HOME}/.gemini/hooks"
+    mkdir -p "$GEMINI_HOOK_DIR"
+    cat > "${GEMINI_HOOK_DIR}/jeo-plannotator.sh" << 'HOOKEOF'
+#!/usr/bin/env bash
+# JEO AfterAgent backup hook — runs plannotator if plan.md exists in cwd
+PLAN_FILE="$(pwd)/plan.md"
+test -f "$PLAN_FILE" || exit 0
+python3 -c "
+import json, sys
+plan = open(sys.argv[1]).read()
+sys.stdout.write(json.dumps({'tool_input': {'plan': plan, 'permission_mode': 'acceptEdits'}}))
+" "$PLAN_FILE" | plannotator > /tmp/plannotator_feedback.txt 2>&1 || true
+HOOKEOF
+    chmod +x "${GEMINI_HOOK_DIR}/jeo-plannotator.sh"
+
+    python3 - <<PYEOF
 import json, os
 
 settings_path = os.path.expanduser("~/.gemini/settings.json")
+hook_path = os.path.expanduser("~/.gemini/hooks/jeo-plannotator.sh")
 try:
     with open(settings_path) as f:
         settings = json.load(f)
@@ -54,25 +72,31 @@ except (FileNotFoundError, json.JSONDecodeError):
     settings = {}
 
 hooks = settings.setdefault("hooks", {})
-exit_plan = hooks.setdefault("ExitPlanMode", [])
+# AfterAgent is the correct Gemini CLI hook (ExitPlanMode is Claude Code-only)
+after_agent = hooks.setdefault("AfterAgent", [])
 
-# Check if plannotator hook already exists
+# Check if jeo plannotator hook already exists (old or new form)
 planno_exists = any(
-    any(h.get("command", "").startswith("plannotator") for h in entry.get("hooks", []))
-    for entry in exit_plan
+    any(
+        h.get("command", "").startswith("plannotator") or "jeo-plannotator" in h.get("command", "")
+        for h in entry.get("hooks", [])
+    )
+    for entry in after_agent
 )
 
 if not planno_exists:
-    exit_plan.append({
+    after_agent.append({
         "matcher": "",
         "hooks": [{
+            "name": "plannotator-review",
             "type": "command",
-            "command": "plannotator plan -"
+            "command": f"bash {hook_path}",
+            "description": "plan.md 감지 시 plannotator 실행 (AfterAgent backup)"
         }]
     })
     with open(settings_path, "w") as f:
         json.dump(settings, f, indent=2)
-    print("✓ plannotator ExitPlanMode hook added to ~/.gemini/settings.json")
+    print("✓ plannotator AfterAgent hook added to ~/.gemini/settings.json")
 else:
     print("✓ plannotator hook already present")
 PYEOF
@@ -93,10 +117,13 @@ JEO provides integrated AI agent orchestration across all AI tools.
 
 ### Workflow Phases
 
-**PLAN** (ralph + plannotator):
-- Enter plan mode: `gemini --approval-mode plan`
-- plannotator UI opens automatically when exiting plan mode
-- Review and approve or request changes
+**PLAN** (plannotator — 직접 blocking 호출 필수):
+1. `plan.md` 작성 (목표, 단계, 리스크, 완료 기준 포함)
+2. plannotator 블로킹 실행 (& 절대 금지):
+   python3 -c "import json,sys; plan=open('"'"'plan.md'"'"').read(); sys.stdout.write(json.dumps({'"'"'tool_input'"'"':{'"'"'plan'"'"':plan,'"'"'permission_mode'"'"':'"'"'acceptEdits'"'"'}}))" | plannotator > /tmp/plannotator_feedback.txt 2>&1
+3. /tmp/plannotator_feedback.txt 읽기
+4. "approved":true → EXECUTE 진입 / 미승인 → 피드백 반영 후 plan.md 수정 후 2번 반복
+NEVER skip plannotator. NEVER proceed to EXECUTE without approved=true.
 
 **EXECUTE** (BMAD for Gemini):
 - BMAD is the primary orchestration fallback when omc team is unavailable
@@ -116,15 +143,6 @@ For Gemini multi-agent orchestration:
 ```bash
 bunx oh-my-ag           # Initialize ohmg
 /coordinate "<task>"    # Coordinate multi-agent task
-```
-
-### Manual Plan Review
-```bash
-python3 -c "
-import json
-plan = open('"'"'plan.md'"'"').read()
-print(json.dumps({'"'"'tool_input'"'"': {'"'"'plan'"'"': plan, '"'"'permission_mode'"'"': '"'"'acceptEdits'"'"'}}))
-" | plannotator > /tmp/plannotator_feedback.txt 2>&1 &
 ```
 '
 

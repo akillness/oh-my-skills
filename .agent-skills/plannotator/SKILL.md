@@ -24,8 +24,6 @@ source: backnotprop/plannotator
 - You want to share plan reviews with teammates via a link
 - You want to auto-save approved plans to Obsidian or Bear Notes
 
-> **plannotator는 단독으로 동작합니다.** ralph, omc, bmad 등 다른 도구 없이 Claude Code (ExitPlanMode 훅) 하나만으로 사용 가능합니다.
-
 ---
 
 ## Scripts (Automated Patterns)
@@ -39,7 +37,6 @@ All patterns have a corresponding script in `scripts/`. Run them directly or let
 | `scripts/setup-gemini-hook.sh` | Gemini CLI Hook | Configure Gemini CLI ExitPlanMode hook + GEMINI.md |
 | `scripts/setup-codex-hook.sh` | Codex CLI Setup | Configure Codex CLI developer_instructions + prompt |
 | `scripts/setup-opencode-plugin.sh` | OpenCode Plugin | Register plugin + slash commands |
-| `scripts/setup-shell.sh` | Shell Integration | Add `plan` function to ~/.zshrc or ~/.bashrc |
 | `scripts/check-status.sh` | Status Check | Verify all integrations and configuration |
 | `scripts/configure-remote.sh` | Remote Mode | SSH / devcontainer / WSL configuration |
 | `scripts/review.sh` | Code Review | Launch diff review UI |
@@ -225,12 +222,12 @@ Usage in Gemini CLI after setup:
 # Enter planning mode (hook fires when you exit)
 gemini --approval-mode plan
 
-# Manual plan review (validated format — blocking, NO & at end)
+# Manual plan review (validated format)
 python3 -c "
 import json
 plan = open('plan.md').read()
 print(json.dumps({'tool_input': {'plan': plan, 'permission_mode': 'acceptEdits'}}))
-" | plannotator > /tmp/plannotator_feedback.txt 2>&1
+" | plannotator > /tmp/plannotator_feedback.txt 2>&1 &
 
 # Code review after implementation
 plannotator review
@@ -260,56 +257,18 @@ Usage in Codex CLI after setup:
 # Use the plannotator agent prompt
 /prompts:plannotator
 
-# Manual plan review (validated format — blocking, NO & at end)
+# Manual plan review (validated format)
 python3 -c "
 import json
 plan = open('plan.md').read()
 print(json.dumps({'tool_input': {'plan': plan, 'permission_mode': 'acceptEdits'}}))
-" | plannotator > /tmp/plannotator_feedback.txt 2>&1
+" | plannotator > /tmp/plannotator_feedback.txt 2>&1 &
 
 # Code review after implementation
 plannotator review HEAD~1
 ```
 
 > Note: `plannotator plan -` with heredoc/echo can fail with `Failed to parse hook event from stdin`. Use the python3 JSON format above.
-
----
-
-## Pattern 9: Shell Integration (Terminal `plan` command)
-
-```bash
-# Add 'plan' function to shell profile (~/.zshrc or ~/.bashrc)
-bash scripts/setup-shell.sh
-
-# Preview what would change (no writes)
-bash scripts/setup-shell.sh --dry-run
-
-# Remove the function
-bash scripts/setup-shell.sh --remove
-```
-
-Reload shell after setup:
-```bash
-source ~/.zshrc   # or ~/.bashrc
-```
-
-Usage from any terminal:
-```bash
-# Submit plan for visual review (blocking — waits for Approve/Feedback)
-plan plan.md
-
-# Review uncommitted git diff
-plan --review
-
-# Review specific commit
-plan --review HEAD~1
-```
-
-What it does:
-- Adds a `plan()` shell function to your profile
-- `plan <file.md>` runs plannotator in **blocking** mode (no `&`)
-- After review, prints `✓ Plan APPROVED` or `✗ Plan REJECTED` with feedback
-- `plan --review` is a shortcut for `plannotator review`
 
 ---
 

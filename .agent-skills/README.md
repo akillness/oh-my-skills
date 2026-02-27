@@ -10,15 +10,15 @@ Modular skill collection for AI agents. Works with Claude, Gemini, ChatGPT, and 
 
 ```bash
 # Install all skills
-npx skills add https://github.com/supercent-io/skills-template
+npx skills add https://github.com/akillness/skills-template
 
 # Install specific skills
-npx skills add https://github.com/supercent-io/skills-template --skill api-design
-npx skills add https://github.com/supercent-io/skills-template --skill code-review
-npx skills add https://github.com/supercent-io/skills-template --skill jeo
-npx skills add https://github.com/supercent-io/skills-template --skill ohmg
-npx skills add https://github.com/supercent-io/skills-template --skill oh-my-codex
-npx skills add https://github.com/supercent-io/skills-template --skill plannotator
+npx skills add https://github.com/akillness/skills-template --skill api-design
+npx skills add https://github.com/akillness/skills-template --skill code-review
+npx skills add https://github.com/akillness/skills-template --skill jeo
+npx skills add https://github.com/akillness/skills-template --skill ohmg
+npx skills add https://github.com/akillness/skills-template --skill oh-my-codex
+npx skills add https://github.com/akillness/skills-template --skill plannotator
 ```
 
 ### oh-my-ag MCP Setup
@@ -38,7 +38,7 @@ npx skills add https://github.com/ComposioHQ/awesome-claude-skills --skill slack
 ### AI Agent Prompt
 
 ```
-Copy the .agent-skills folder from the https://github.com/supercent-io/skills-template
+Copy the .agent-skills folder from the https://github.com/akillness/skills-template
 repository to the current project.
 ```
 
@@ -68,7 +68,7 @@ repository to the current project.
 
 ---
 
-## Skills List (57 functional)
+## Skills List (65 total)
 
 > Skills marked *(in development)* exist on disk but do not yet have a SKILL.toon file.
 
@@ -300,4 +300,4 @@ npx skills add <skill-name>
 
 ---
 
-**Version**: 4.5.0 | **Updated**: 2026-02-24 | **Skills**: 57 functional | **Format**: TOON (Default) | **Structure**: Flat
+**Version**: 4.6.0 | **Updated**: 2026-02-27 | **Skills**: 65 total | **Format**: TOON (Default) | **Structure**: Flat

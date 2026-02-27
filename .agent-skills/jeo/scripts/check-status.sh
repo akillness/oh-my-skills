@@ -77,10 +77,22 @@ fi
 
 # Codex CLI
 if [[ -f "${HOME}/.codex/config.toml" ]]; then
-  if grep -q "jeo" "${HOME}/.codex/config.toml" 2>/dev/null; then
+  if python3 - <<'PYEOF' >/dev/null 2>&1
+import pathlib, re
+p = pathlib.Path.home() / '.codex' / 'config.toml'
+text = p.read_text(encoding='utf-8')
+m1 = re.search(r'(?ms)^developer_instructions\s*=\s*"""\n?(.*?)\n?"""\s*$', text)
+if m1 and 'Keyword: jeo | Platforms: Codex, Claude, Gemini, OpenCode' in m1.group(1):
+    raise SystemExit(0)
+m2 = re.search(r'(?m)^developer_instructions\s*=\s*"(.*)"\s*$', text)
+if m2 and 'Keyword: jeo | Platforms: Codex, Claude, Gemini, OpenCode' in bytes(m2.group(1), 'utf-8').decode('unicode_escape'):
+    raise SystemExit(0)
+raise SystemExit(1)
+PYEOF
+  then
     ok "Codex CLI — JEO developer_instructions configured"; ((PASS++)) || true
   else
-    warn "Codex CLI — JEO not in config.toml"; ((WARN++)) || true
+    warn "Codex CLI — JEO developer_instructions missing/invalid in config.toml"; ((WARN++)) || true
   fi
   if [[ -f "${HOME}/.codex/prompts/jeo.md" ]]; then
     ok "Codex CLI — /prompts:jeo available"; ((PASS++)) || true

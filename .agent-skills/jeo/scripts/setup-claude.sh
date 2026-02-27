@@ -58,7 +58,7 @@ if echo "$EXISTING" | grep -q "plannotator"; then
   ok "plannotator hook already configured in settings.json"
 else
   if $DRY_RUN; then
-    echo -e "${YELLOW}[DRY-RUN]${NC} Would add plannotator ExitPlanMode hook to $CLAUDE_SETTINGS"
+    echo -e "${YELLOW}[DRY-RUN]${NC} Would add plannotator PermissionRequest hook to $CLAUDE_SETTINGS"
   else
     # Use python3 to safely merge JSON
     python3 - <<'PYEOF'
@@ -71,27 +71,29 @@ try:
 except (FileNotFoundError, json.JSONDecodeError):
     settings = {}
 
-# Add ExitPlanMode hook for plannotator
+# Add PermissionRequest hook for plannotator (official plannotator method)
 hooks = settings.setdefault("hooks", {})
-exit_plan = hooks.setdefault("ExitPlanMode", [])
+perm_req = hooks.setdefault("PermissionRequest", [])
 
 # Check if plannotator hook already exists
 planno_exists = any(
+    entry.get("matcher") == "ExitPlanMode" and
     any(h.get("command", "").startswith("plannotator") for h in entry.get("hooks", []))
-    for entry in exit_plan
+    for entry in perm_req
 )
 
 if not planno_exists:
-    exit_plan.append({
-        "matcher": "",
+    perm_req.append({
+        "matcher": "ExitPlanMode",
         "hooks": [{
             "type": "command",
-            "command": "plannotator plan -"
+            "command": "plannotator",
+            "timeout": 1800
         }]
     })
     with open(settings_path, "w") as f:
         json.dump(settings, f, indent=2)
-    print("✓ plannotator ExitPlanMode hook added")
+    print("✓ plannotator PermissionRequest hook added")
 else:
     print("✓ plannotator hook already present")
 

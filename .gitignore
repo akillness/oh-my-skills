@@ -19,6 +19,8 @@ eggs/
 .eggs/
 lib/
 lib64/
+# Exception: scripts/lib is source code, not a venv
+!scripts/lib/
 parts/
 sdist/
 var/
@@ -43,9 +45,6 @@ venv.bak/
 # IDEs
 .vscode/
 .idea/
-
-# oh-my-claudecode runtime state
-.omc/
 
 # Ensure .agent-skills is tracked (not ignored)
 !.agent-skills/

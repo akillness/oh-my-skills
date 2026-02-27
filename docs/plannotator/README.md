@@ -9,8 +9,6 @@
 
 plannotator opens a **visual browser UI** when your AI coding agent finishes planning. You can annotate the plan, then either approve it (agent proceeds) or send feedback (annotations sent back as structured feedback).
 
-> **단독 동작 가능**: plannotator는 ralph, omc, bmad 등 다른 도구 없이 Claude Code 하나만으로 사용할 수 있습니다. `ExitPlanMode` 훅 또는 플러그인만 설정하면 즉시 동작합니다.
-
 **Part of AI Review Tools family** (independent tools, each with its own keyword):
 | Tool | Keyword | Purpose |
 |------|---------|---------|
@@ -34,7 +32,6 @@ All installation steps have corresponding scripts in `scripts/`. Run them direct
 | `scripts/setup-codex-hook.sh` | Configure Codex CLI `developer_instructions` + prompt |
 | `scripts/setup-opencode-plugin.sh` | Register OpenCode plugin + slash commands |
 | `scripts/check-status.sh` | Verify all integrations (Claude, Gemini, Codex, OpenCode, Obsidian) |
-| `scripts/setup-shell.sh` | Add `plan` function to shell profile (~/.zshrc or ~/.bashrc) |
 | `scripts/configure-remote.sh` | SSH / devcontainer / WSL setup |
 | `scripts/review.sh` | Launch diff review UI |
 
@@ -100,27 +97,7 @@ Or use `--with-codex` during install:
 bash scripts/install.sh --with-codex
 ```
 
-### 5. Shell Integration (Terminal `plan` command)
-
-```bash
-bash scripts/setup-shell.sh
-# Adds 'plan' function to ~/.zshrc or ~/.bashrc
-# Reload: source ~/.zshrc
-```
-
-After setup, use from any terminal:
-```bash
-plan plan.md          # Submit plan — blocks until Approve/Feedback
-plan --review         # Review uncommitted git diff
-plan --review HEAD~1  # Review specific commit
-```
-
-Or use `--with-shell` during install:
-```bash
-bash scripts/install.sh --with-shell
-```
-
-### 6. Connect to OpenCode
+### 5. Connect to OpenCode
 
 **Option A — Automated script:**
 ```bash
@@ -139,7 +116,7 @@ Add to `opencode.json`:
 
 Then restart OpenCode.
 
-### 7. Verify installation
+### 6. Verify installation
 
 ```bash
 bash scripts/check-status.sh
@@ -225,7 +202,7 @@ PLAN
 python3 -c "
 import json
 print(json.dumps({'tool_input': {'plan': open('/tmp/plan.md').read(), 'permission_mode': 'acceptEdits'}}))
-" | plannotator > /tmp/plannotator_feedback.txt 2>&1
+" | plannotator > /tmp/plannotator_feedback.txt 2>&1 &
 ```
 
 ---

@@ -92,7 +92,7 @@ gemini --approval-mode plan
     └─ Cleanup: bash .agent-skills/jeo/scripts/worktree-cleanup.sh
 ```
 
-**Config**: `~/.gemini/settings.json` (ExitPlanMode hook)
+**Config**: `~/.gemini/settings.json` (AfterAgent hook)
 **Instructions**: `~/.gemini/GEMINI.md`
 
 ### OpenCode

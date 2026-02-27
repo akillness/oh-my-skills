@@ -520,6 +520,13 @@ bash scripts/install.sh --all   # 전체 설치
 
 ## Changelog
 
+**v2026-02-27**:
+- **`.agent-skills/README.md`**: domain 참조를 `supercent-io` → `akillness/skills-template`으로 전면 교체; 스킬 수 57 → 65, 버전 4.5.0 → 4.6.0 업데이트
+- **plannotator**: `setup-shell.sh` 및 Shell Integration (Pattern 9) 제거; `docs/plannotator/README.md` 섹션 번호 재정렬 (5→6 항목 삭제)
+- **plannotator**: Gemini/Codex 수동 플랜 리뷰 예시에서 blocking 강제(`NO &`) 표현 완화
+- **agent-browser**: SKILL.md 운영형 구조로 대폭 확장 (core workflow, verification loop, safeguards, troubleshooting); references/templates 디렉터리 추가
+- **jeo/setup-codex.sh**: `developer_instructions` top-level string 강제 동기화 로직 보강
+
 **v2026-02-26**:
 - **agent-browser**: SKILL.md를 운영형 구조로 확장 (core workflow, verification, safeguards, troubleshooting)
 - **agent-browser**: SKILL.toon 동기화 (snapshot-interact-resnapshot + verify 단계 반영)

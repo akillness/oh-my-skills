@@ -23,7 +23,6 @@ WITH_PLUGIN=false
 WITH_GEMINI=false
 WITH_CODEX=false
 WITH_OPENCODE=false
-WITH_SHELL=false
 
 for arg in "$@"; do
   case $arg in
@@ -31,13 +30,11 @@ for arg in "$@"; do
     --with-gemini)   WITH_GEMINI=true ;;
     --with-codex)    WITH_CODEX=true ;;
     --with-opencode) WITH_OPENCODE=true ;;
-    --with-shell)    WITH_SHELL=true ;;
     --all)
       WITH_PLUGIN=true
       WITH_GEMINI=true
       WITH_CODEX=true
       WITH_OPENCODE=true
-      WITH_SHELL=true
       ;;
     -h|--help)
       echo "Usage: $0 [OPTIONS]"
@@ -47,7 +44,6 @@ for arg in "$@"; do
       echo "  --with-gemini    Configure Gemini CLI hook (runs setup-gemini-hook.sh)"
       echo "  --with-codex     Configure Codex CLI (runs setup-codex-hook.sh)"
       echo "  --with-opencode  Register OpenCode plugin (runs setup-opencode-plugin.sh)"
-      echo "  --with-shell     Add 'plan' function to shell profile (runs setup-shell.sh)"
       echo "  --all            All of the above"
       echo "  -h, --help       Show this help"
       echo ""
@@ -193,18 +189,6 @@ if [ "$WITH_OPENCODE" = true ]; then
     bash "${SCRIPT_DIR}/setup-opencode-plugin.sh"
   else
     echo -e "${YELLOW}⚠ setup-opencode-plugin.sh not found at ${SCRIPT_DIR}${NC}"
-    echo -e "${GRAY}  Run it manually from the scripts/ directory${NC}"
-  fi
-fi
-
-if [ "$WITH_SHELL" = true ]; then
-  echo ""
-  echo -e "${BLUE}━━ Shell Integration ━━━━━━━━━━━━━━━━━━━━━━━━━━━━${NC}"
-  echo ""
-  if [ -f "${SCRIPT_DIR}/setup-shell.sh" ]; then
-    bash "${SCRIPT_DIR}/setup-shell.sh"
-  else
-    echo -e "${YELLOW}⚠ setup-shell.sh not found at ${SCRIPT_DIR}${NC}"
     echo -e "${GRAY}  Run it manually from the scripts/ directory${NC}"
   fi
 fi

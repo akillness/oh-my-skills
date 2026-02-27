@@ -88,6 +88,15 @@ jeo_instructions = """
 - omx: /omx:team <n>:executor "<task>"
 - BMAD: /workflow-init then follow phases
 - plannotator: /plannotator-review (code review after implementation)
+
+## MANDATORY: plannotator Plan Review (blocking loop)
+After writing plan.md, you MUST run plannotator and wait for approval before EXECUTE.
+Run blocking (no &):
+  python3 -c "import json,sys; plan=open('plan.md').read(); sys.stdout.write(json.dumps({'tool_input':{'plan':plan,'permission_mode':'acceptEdits'}}))" | plannotator > /tmp/plannotator_feedback.txt 2>&1
+Then read /tmp/plannotator_feedback.txt:
+  - "approved":true  → proceed to EXECUTE
+  - not approved     → read annotations, revise plan.md, repeat
+NEVER skip plannotator. NEVER proceed to EXECUTE without approved=true.
 """
 
 if "JEO Orchestration Commands" not in instructions:
