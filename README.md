@@ -1,6 +1,6 @@
 # Agent Skills
 
-> v2026-03-03 · **69 Skills** · **TOON Format** · **Flat Skill Layout**
+> v2026-03-03 · **69 Skills** · **TOON Format** · **Flat Skill Layout** · [GitHub Releases](https://github.com/akillness/skills-template/releases/tag/v2026-03-03)
 
 > 스킬 구성 및 상세 목록: [.agent-skills/README.md](.agent-skills/README.md)
 
