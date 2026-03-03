@@ -1,0 +1,158 @@
+name: AI Tool Compliance Check
+on:
+  pull_request:
+    branches: [main, develop, staging]
+  schedule:
+    # 매주 월요일 09:00 UTC (주간 스냅샷)
+    - cron: '0 9 * * 1'
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: 'Compliance mode override (warn|block|auto)'
+        required: false
+        default: 'auto'
+
+permissions:
+  contents: read
+  pull-requests: write
+  statuses: write
+
+env:
+  COMPLIANCE_SKILL_PATH: .agent-skills/ai-tool-compliance
+  COMPLIANCE_INCLUDE_P1: "false"
+
+jobs:
+  compliance-check:
+    name: AI Tool Compliance
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Setup dependencies
+        run: |
+          sudo apt-get update -qq
+          sudo apt-get install -y -qq jq curl bc
+
+      - name: Load project config
+        id: config
+        run: |
+          CONFIG=".ai-tool-compliance.yaml"
+          if [ -f "$CONFIG" ]; then
+            MODE="${{ github.event.inputs.mode }}"
+            if [ -z "$MODE" ] || [ "$MODE" = "auto" ]; then
+              MODE=$(grep '^mode:' "$CONFIG" | awk '{print $2}' | tr -d '"' || echo "warn")
+            fi
+            PROJECT_ID=$(grep '^project_id:' "$CONFIG" | awk '{print $2}' | tr -d '"' || echo "unknown")
+          else
+            MODE="warn"
+            PROJECT_ID="unknown"
+          fi
+          echo "mode=$MODE"           >> $GITHUB_OUTPUT
+          echo "project_id=$PROJECT_ID" >> $GITHUB_OUTPUT
+
+      - name: Run static analysis
+        id: verify
+        run: |
+          INCLUDE_P1_FLAG=""
+          if [ "${COMPLIANCE_INCLUDE_P1}" = "true" ]; then
+            INCLUDE_P1_FLAG="--include-p1"
+          fi
+          bash $COMPLIANCE_SKILL_PATH/scripts/verify.sh \
+            --output /tmp/compliance-verify.json \
+            --target . \
+            $INCLUDE_P1_FLAG
+          echo "p0_count=$(jq '.summary.p0_violations' /tmp/compliance-verify.json)" >> $GITHUB_OUTPUT
+
+      - name: Calculate score
+        id: score
+        run: |
+          bash $COMPLIANCE_SKILL_PATH/scripts/score.sh \
+            --input  /tmp/compliance-verify.json \
+            --output /tmp/compliance-score.json
+          echo "total_score=$(jq '.total_score' /tmp/compliance-score.json)" >> $GITHUB_OUTPUT
+          echo "grade=$(jq -r '.grade' /tmp/compliance-score.json)"          >> $GITHUB_OUTPUT
+
+      - name: Evaluate deployment gate
+        id: gate
+        run: |
+          set +e
+          bash $COMPLIANCE_SKILL_PATH/scripts/gate.sh \
+            --score-file /tmp/compliance-score.json \
+            --mode "${{ steps.config.outputs.mode }}"
+          echo "gate_exit=$?" >> $GITHUB_OUTPUT
+
+      - name: Post PR comment
+        if: github.event_name == 'pull_request'
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const fs = require('fs');
+            const score  = JSON.parse(fs.readFileSync('/tmp/compliance-score.json',  'utf8'));
+            const verify = JSON.parse(fs.readFileSync('/tmp/compliance-verify.json', 'utf8'));
+            const gateExit = '${{ steps.gate.outputs.gate_exit }}';
+
+            const statusText  = gateExit === '0' ? 'APPROVE' : (score.p0_fail_total > 0 ? 'BLOCK' : 'WARNING');
+            const statusEmoji = statusText === 'APPROVE' ? ':white_check_mark:' : (statusText === 'BLOCK' ? ':x:' : ':warning:');
+
+            let body = `## ${statusEmoji} AI Tool Compliance: **${statusText}**\n\n`;
+            body += `**Score**: ${score.total_score}/100 (${score.grade}) &nbsp; | &nbsp; P0: ${score.p0_fail_total} &nbsp; | &nbsp; P1: ${score.p1_fail_total}\n\n`;
+
+            body += `| Domain | Score | P0 Fails | P1 Fails |\n`;
+            body += `|--------|-------|----------|----------|\n`;
+            for (const [domain, data] of Object.entries(score.domains)) {
+              const icon = data.p0_fails > 0 ? ':x:' : (data.p1_fails > 2 ? ':warning:' : ':white_check_mark:');
+              body += `| ${icon} ${domain} | ${data.score}/${data.base} | ${data.p0_fails} | ${data.p1_fails} |\n`;
+            }
+
+            if (verify.p0_violations && verify.p0_violations.length > 0) {
+              body += `\n### :no_entry: P0 Violations (must fix)\n`;
+              for (const v of verify.p0_violations.slice(0, 10)) {
+                body += `- **[${v.rule_id}]** \`${v.file}:${v.line}\`\n  ${v.message}\n`;
+              }
+            }
+
+            if (verify.p1_violations && verify.p1_violations.length > 0) {
+              body += `\n### :warning: P1 Violations (should fix)\n`;
+              for (const v of verify.p1_violations.slice(0, 5)) {
+                body += `- **[${v.rule_id}]** \`${v.file}:${v.line}\`\n  ${v.message}\n`;
+              }
+            }
+
+            await github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body
+            });
+
+      - name: Notify Slack on violation
+        if: steps.gate.outputs.gate_exit != '0'
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.COMPLIANCE_SLACK_WEBHOOK }}
+        run: |
+          bash $COMPLIANCE_SKILL_PATH/scripts/notify.sh \
+            --score-file  /tmp/compliance-score.json \
+            --verify-file /tmp/compliance-verify.json \
+            --project "${{ steps.config.outputs.project_id }}" \
+            --pr-url  "${{ github.event.pull_request.html_url }}"
+
+      - name: Fail on BLOCK
+        if: steps.gate.outputs.gate_exit == '2'
+        run: |
+          echo "::error::Compliance gate BLOCKED. Fix P0 violations before deploying."
+          exit 1
+
+      - name: Upload compliance report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: compliance-report-${{ github.run_id }}
+          path: |
+            /tmp/compliance-verify.json
+            /tmp/compliance-score.json
+          retention-days: 30

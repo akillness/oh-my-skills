@@ -1,0 +1,81 @@
+# AI Tool Compliance - 프로젝트 설정 파일 예시
+# 프로젝트 루트에 .ai-tool-compliance.yaml 로 저장하세요.
+# 생성 방법: bash .agent-skills/ai-tool-compliance/scripts/install.sh
+
+version: 1
+
+# 프로젝트 식별자 (알림/리포트에 사용)
+project_id: "my-project"
+
+# 설치 시각 (자동 기록)
+installed_at: "2026-03-03T00:00:00Z"
+
+# ── 룰 활성화 ──────────────────────────────────────────────────
+rules:
+  p0: enabled          # P0: 즉시 차단 수준 (1건 위반 → Block)
+  p1: enabled          # P1: 경고 수준 (3건 이상 → Warning + 리뷰 필수)
+  p2: enabled          # P2: 정보성 (리포트만, 점수 영향 최소)
+
+# ── 실행 모드 ──────────────────────────────────────────────────
+# warn  : 위반 탐지 시 리포트/알림만, 배포 차단 없음 (전환 기간)
+# block : P0 위반 또는 저점수 시 배포 차단
+mode: warn
+
+# ── 자동 전환 일정 ─────────────────────────────────────────────
+transition:
+  # warn_until: 이 날짜까지 warn 모드 유지
+  # 날짜 경과 + auto_transition: true → 자동으로 block 전환
+  warn_until: "2026-03-17"
+  auto_transition: true
+
+  # 수동 전환: COMPLIANCE_MODE=block 환경변수로 즉시 적용 가능
+
+# ── 배포 게이트 정책 ──────────────────────────────────────────
+gate:
+  # 총점 기준 (이 이상이어야 APPROVE)
+  threshold: 90
+
+  # P0 위반 허용 건수 (0 = P0 1건이라도 있으면 Block)
+  p0_fail_limit: 0
+
+  # P1 위반 임계값 (이 이상이면 Warning + 리뷰 필수)
+  p1_fail_limit: 3
+
+  # 총점 Block 기준 (block 모드에서 이 미만이면 Block)
+  block_below_score: 80
+
+# ── 알림 설정 ──────────────────────────────────────────────────
+notifications:
+  # Slack Incoming Webhook URL
+  # GitHub Actions에서는 secrets.COMPLIANCE_SLACK_WEBHOOK 환경변수 사용 권장
+  slack_webhook: ""
+
+  # 알림 트리거
+  notify_on:
+    - block     # Block 판정 시
+    - p0_fail   # P0 위반 탐지 시 즉시
+
+# ── 리포트 설정 ────────────────────────────────────────────────
+report:
+  # 주간 스냅샷 (GitHub Actions schedule: 매주 월요일)
+  weekly_snapshot: true
+
+  # 월간 감사 리포트
+  monthly_audit: true
+
+  # 리포트 아티팩트 보관 기간 (일)
+  retention_days: 90
+
+# ── 룰별 세부 오버라이드 (선택) ────────────────────────────────
+# 특정 룰을 비활성화하거나 경로를 제외할 때 사용
+rule_overrides:
+  # 예시: P0-01 (Firestore 직접 접근)을 특정 경로에서 제외
+  # P0-01:
+  #   enabled: true
+  #   exclude_paths:
+  #     - "src/admin/**"
+  #     - "scripts/migration/**"
+
+  # 예시: P2-D01 (TODO 주석)을 비활성화
+  # P2-D01:
+  #   enabled: false

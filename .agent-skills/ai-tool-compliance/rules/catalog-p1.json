@@ -1,0 +1,80 @@
+{
+  "rules": [
+    {
+      "id": "P1-DOM-001",
+      "domain": "domain_management",
+      "severity": "P1",
+      "name": "AI 도메인 등록·변경·삭제·이력 관리",
+      "description": "내부 AI 도구에서 사용하는 모든 도메인(게임, 기능 영역, 데이터 스키마 등)은 등록, 변경, 삭제 시 이력이 남아야 한다. 도메인 변경에 대한 감사 추적이 가능해야 하며, 삭제된 도메인에 대한 쿼리 시 적절한 오류를 반환해야 한다. 도메인 등록 시 필수 메타데이터(이름, 소유자, 생성일, 상태)가 포함되어야 한다.\n",
+      "check_type": "static_analysis",
+      "grep_patterns": [
+        "createDomain|registerDomain|addDomain",
+        "updateDomain|modifyDomain|changeDomain",
+        "deleteDomain|removeDomain|archiveDomain",
+        "domainHistory|domainAuditLog|domainChangeLog",
+        "domain.*createdAt|domain.*updatedAt|domain.*deletedAt"
+      ],
+      "pass_condition": "도메인 CRUD 작업마다 audit 로그 생성; 각 도메인 문서에 createdAt, updatedAt, status, owner 필드 존재; 삭제된 도메인은 hard delete 대신 status='archived'로 처리\n",
+      "fail_condition": "도메인 변경 시 이력 기록 없음; 필수 메타데이터 필드 누락; 삭제 후 이력 조회 불가\n",
+      "remediation": "도메인 CRUD 핸들러에 이력 기록 미들웨어를 추가한다. Firestore의 도메인 컬렉션에 createdAt, updatedAt, deletedAt, status, ownerId 필드를 스키마에 포함시킨다. 삭제 시 별도 domain_history 컬렉션에 스냅샷을 저장한다. TypeScript 인터페이스에 DomainAuditEntry 타입을 정의한다.\n",
+      "score_impact": 7
+    },
+    {
+      "id": "P1-STAT-002",
+      "domain": "statistics",
+      "severity": "P1",
+      "name": "사용량 통계 집계 (사용자·모델·기간·게임·누적비용)",
+      "description": "AI 도구 사용량 통계를 사용자별, 모델별, 기간별, 게임별로 집계하고 조회할 수 있어야 한다. 누적 비용 통계는 실시간 또는 준실시간(1시간 이내)으로 갱신되어야 한다. 관리자는 대시보드 또는 API를 통해 기간·게임·모델로 필터링된 사용량 리포트를 조회할 수 있어야 한다.\n",
+      "check_type": "api_test",
+      "grep_patterns": [
+        "getUsageStats|fetchUsageStats|usageStatistics",
+        "aggregateByUser|aggregateByModel|aggregateByGame",
+        "totalCost|cumulativeCost|costSummary",
+        "usageReport|statsReport|analyticsReport",
+        "period.*filter|dateRange.*filter|game_id.*filter"
+      ],
+      "pass_condition": "/api/stats 또는 동등 엔드포인트가 userId, model, dateRange, gameId 파라미터를 지원; 응답에 totalCost, callCount, avgTokens 포함; 통계 데이터 최신성 < 1시간\n",
+      "fail_condition": "사용량 집계 API 없음; 게임별 또는 모델별 필터 미지원; 통계 데이터가 24시간 이상 지연\n",
+      "remediation": "BigQuery 또는 Firestore aggregation을 활용한 사용량 통계 API를 구현한다. /api/admin/stats 엔드포인트에 query parameters로 userId, modelId, gameId, startDate, endDate를 받아 집계 쿼리를 실행한다. Cloud Scheduler로 1시간 단위 사전 집계를 실행하여 응답 지연을 줄인다.\n",
+      "score_impact": 6
+    },
+    {
+      "id": "P1-COST-003",
+      "domain": "cost",
+      "severity": "P1",
+      "name": "비용 통제 (예산 제한·초과 경고·차단)",
+      "description": "게임별 또는 사용자별 AI 비용 예산 한도를 설정하고, 한도 도달 시 단계별 조치를 취해야 한다: 80% 도달 시 경고 알림, 100% 도달 시 추가 AI 호출을 차단한다. 예산 초과 차단은 API 레벨에서 강제되어야 하며 우회 수단이 없어야 한다.\n",
+      "check_type": "config_check",
+      "grep_patterns": [
+        "budgetLimit|maxBudget|costCap|spendingLimit",
+        "checkBudget|enforceBudget|budgetGuard|costGuard",
+        "budgetWarning|budgetExceeded|overBudget",
+        "blockRequest.*budget|rejectRequest.*cost",
+        "BUDGET_WARNING_THRESHOLD|BUDGET_HARD_LIMIT"
+      ],
+      "pass_condition": "예산 한도 설정 인터페이스(API 또는 환경변수) 존재; 80% 경고 알림 로직 구현; 100% 초과 시 AI 호출 API에서 429 또는 403 반환; 예산 리셋 주기(일/주/월) 설정 가능\n",
+      "fail_condition": "예산 한도 설정 없음; 한도 초과해도 계속 호출 허용; 경고 알림 없음\n",
+      "remediation": "AI 호출 미들웨어에 budgetGuard를 추가한다. 호출 전 누적 비용을 조회하고 hard limit 초과 시 HTTP 429를 반환한다. soft limit(80%) 초과 시 관리자에게 경고 알림을 발송한다. 게임별 예산은 Firestore의 game_budgets 컬렉션에서 관리한다. 예산 한도 API(/api/admin/budgets)를 통해 동적으로 설정 가능하게 한다.\n",
+      "score_impact": 6
+    },
+    {
+      "id": "P1-LOG-004",
+      "domain": "logging",
+      "severity": "P1",
+      "name": "로그 스키마 검증·보관 기간·검색·Export",
+      "description": "AI 호출 및 BigQuery 비용 로그는 6~12개월 보관되어야 한다. 로그 저장 시 스키마 유효성 검사가 실행되어 잘못된 형식의 로그가 저장되는 것을 방지한다. 관리자는 기간·사용자·게임으로 로그를 검색하고 CSV/JSON 형식으로 Export할 수 있어야 한다.\n",
+      "check_type": "config_check",
+      "grep_patterns": [
+        "logRetention|retentionPeriod|LOG_RETENTION_DAYS",
+        "validateLogSchema|logSchemaValidator|logValidation",
+        "searchLogs|queryLogs|filterLogs",
+        "exportLogs|downloadLogs|logExport",
+        "ttl.*log|log.*ttl|expireAfterSeconds"
+      ],
+      "pass_condition": "로그 컬렉션의 TTL 또는 보관 정책이 180일(6개월) 이상으로 설정; 로그 저장 전 스키마 유효성 검사 실행; /api/admin/logs 엔드포인트에서 기간/사용자/게임 필터 지원; CSV 또는 JSON Export 기능 존재\n",
+      "fail_condition": "보관 기간 미설정 또는 6개월 미만; 스키마 검증 없이 임의 형식 저장; 로그 검색 API 없음; Export 기능 없음\n",
+      "remediation": "Firestore 컬렉션에 TTL 정책을 설정하거나 Cloud Scheduler로 6개월 초과 로그를 BigQuery 콜드 스토리지로 아카이빙한다. 로그 저장 함수에 Zod 또는 Joi 스키마 유효성 검사를 추가한다. /api/admin/logs에 cursor-based pagination과 필터(userId, gameId, startDate, endDate, model)를 구현한다. Export 엔드포인트(/api/admin/logs/export)에서 BigQuery to GCS를 활용한 대용량 CSV 다운로드를 지원한다.\n",
+      "score_impact": 6
+    }
+  ]
+}

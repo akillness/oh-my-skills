@@ -1,0 +1,161 @@
+{
+  "timestamp": "2026-03-03T05:13:13Z",
+  "total_score": 53,
+  "raw_score": 30,
+  "applicable_max": 57,
+  "p0_fail_total": 4,
+  "p1_fail_total": 0,
+  "manual_review_count": 0,
+  "grade": "Red",
+  "domains": {
+    "security": {
+      "score": 30,
+      "max": 40,
+      "applicable_max": 40
+    },
+    "auth": {
+      "score": 0,
+      "max": 25,
+      "applicable_max": 7
+    },
+    "cost": {
+      "score": 0,
+      "max": 20,
+      "applicable_max": 5
+    },
+    "logging": {
+      "score": 0,
+      "max": 15,
+      "applicable_max": 5
+    }
+  },
+  "p0_failed_rules": [
+    "AUTH-P0-002",
+    "SEC-P0-009",
+    "COST-P0-007",
+    "LOG-P0-010"
+  ],
+  "p1_failed_rules": [],
+  "manual_review_rules": [],
+  "delta": {
+    "score_change": 0,
+    "newly_passed": [],
+    "newly_failed": []
+  },
+  "verify_results": [
+    {
+      "rule_id": "AUTH-P0-001",
+      "domain": "auth",
+      "severity": "P0",
+      "tier": 2,
+      "check_type": "static_analysis",
+      "status": "NA",
+      "score_impact": 8,
+      "note": "Feature not detected in codebase"
+    },
+    {
+      "rule_id": "AUTH-P0-002",
+      "domain": "auth",
+      "severity": "P0",
+      "tier": 3,
+      "check_type": "code_review",
+      "status": "FAIL",
+      "score_impact": 7,
+      "note": "No related code patterns found — rule likely not implemented",
+      "evidence": []
+    },
+    {
+      "rule_id": "AUTH-P0-003",
+      "domain": "auth",
+      "severity": "P0",
+      "tier": 2,
+      "check_type": "static_analysis",
+      "status": "NA",
+      "score_impact": 10,
+      "note": "Feature not detected in codebase"
+    },
+    {
+      "rule_id": "SEC-P0-004",
+      "domain": "security",
+      "severity": "P0",
+      "tier": 1,
+      "check_type": "static_analysis",
+      "status": "PASS",
+      "score_impact": 12,
+      "evidence": []
+    },
+    {
+      "rule_id": "SEC-P0-005",
+      "domain": "security",
+      "severity": "P0",
+      "tier": 1,
+      "check_type": "static_analysis",
+      "status": "PASS",
+      "score_impact": 18,
+      "evidence": []
+    },
+    {
+      "rule_id": "SEC-P0-009",
+      "domain": "security",
+      "severity": "P0",
+      "tier": 3,
+      "check_type": "code_review",
+      "status": "FAIL",
+      "score_impact": 10,
+      "note": "No related code patterns found — rule likely not implemented",
+      "evidence": []
+    },
+    {
+      "rule_id": "COST-P0-006",
+      "domain": "cost",
+      "severity": "P0",
+      "tier": 2,
+      "check_type": "static_analysis",
+      "status": "NA",
+      "score_impact": 10,
+      "note": "Feature not detected in codebase"
+    },
+    {
+      "rule_id": "COST-P0-007",
+      "domain": "cost",
+      "severity": "P0",
+      "tier": 3,
+      "check_type": "log_check",
+      "status": "FAIL",
+      "score_impact": 5,
+      "note": "No related code patterns found — rule likely not implemented",
+      "evidence": []
+    },
+    {
+      "rule_id": "COST-P0-011",
+      "domain": "cost",
+      "severity": "P0",
+      "tier": 1,
+      "check_type": "static_analysis",
+      "status": "NA",
+      "score_impact": 5,
+      "note": "Feature not detected in codebase"
+    },
+    {
+      "rule_id": "LOG-P0-008",
+      "domain": "logging",
+      "severity": "P0",
+      "tier": 2,
+      "check_type": "static_analysis",
+      "status": "NA",
+      "score_impact": 10,
+      "note": "Feature not detected in codebase"
+    },
+    {
+      "rule_id": "LOG-P0-010",
+      "domain": "logging",
+      "severity": "P0",
+      "tier": 3,
+      "check_type": "code_review",
+      "status": "FAIL",
+      "score_impact": 5,
+      "note": "No related code patterns found — rule likely not implemented",
+      "evidence": []
+    }
+  ]
+}

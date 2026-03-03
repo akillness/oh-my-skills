@@ -1,0 +1,24 @@
+N:ai-tool-compliance
+D:Verifies internal AI tool implementation against P0/P1 mandatory rules. Scans codebase for auth, security, cost, and logging compliance. Produces risk scores and remediation tasks. Gates deployments on P0 violations.
+G:compliance verification p0 rules auth security cost logging audit governance gate deployment
+
+U[5]:
+  Verify P0 rule compliance after implementing AI features
+  Gate deployment pipeline with compliance checks
+  Generate compliance score reports for audits
+  Identify specific rule violations with file:line evidence
+  Create remediation tasks for failed rules
+
+S[6]{n,action,details}:
+  1,Load,Read rules/p0-catalog.yaml — parse all 11 P0 rules with check patterns and targets
+  2,Scan,Glob project files matching check_targets — collect candidate files per rule
+  3,Analyze,Grep check_patterns on candidates — determine must_contain/must_not_contain matches
+  4,Judge,Apply Pass/Fail/Warning/N/A verdict per rule based on pattern match results
+  5,Score,Calculate fixed-point risk score: 보안(35) + 권한(30) + 비용(20) + 로그(15) = 100점 만점
+  6,Report,Generate risk-score-report.md + remediation-task.json for each Fail — gate exit code
+
+R[4]:
+  Never modify source code — this skill is verification-only (Read, Grep, Glob, Bash)
+  Mark rules as N/A when grep_patterns find no matching code — do not penalize unused features
+  Always include file:line evidence for every Fail and Warning verdict
+  P0 Fail on any single rule blocks deployment gate (exit 1) — no exceptions

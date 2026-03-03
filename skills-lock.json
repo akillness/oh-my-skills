@@ -5,6 +5,24 @@
       "source": "supercent-io/skills-template",
       "sourceType": "github",
       "computedHash": "a0542ad8f9be8d20cbcab965969e90b88c1fbe68ac5c67b7637850123f14aaca"
+    },
+    "ai-tool-compliance": {
+      "source": "supercent-io/skills-template",
+      "sourceType": "github",
+      "version": "1.0.0",
+      "keyword": "compliance",
+      "description": "내부 AI 툴 필수 구현 가이드(P0/P1) 기반 컴플라이언스 검증 자동화",
+      "tags": ["compliance", "RBAC", "security", "cost-tracking", "audit-log", "gateway", "deploy-gate"],
+      "addedAt": "2026-03-03T00:00:00Z"
+    },
+    "llm-monitoring-dashboard": {
+      "source": "supercent-io/skills-template",
+      "sourceType": "github",
+      "version": "1.0.0",
+      "keyword": "llm-monitoring",
+      "description": "PM용 관리자 대시보드에 LLM 사용 모니터링 페이지를 자동 생성. Tokuin CLI 기반 비용/토큰/레이턴시 추적 + PM 인사이트 + 사용자 랭킹",
+      "tags": ["LLM", "monitoring", "dashboard", "tokuin", "pm-insights", "ranking", "cost-tracking"],
+      "addedAt": "2026-03-03T00:00:00Z"
     }
   }
 }

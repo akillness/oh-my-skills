@@ -1,0 +1,306 @@
+{
+  "rules": [
+    {
+      "id": "AUTH-P0-001",
+      "domain": "auth",
+      "severity": "P0",
+      "tier": 2,
+      "name": "신규 가입자 Role=Guest 강제",
+      "description": "신규 가입 계정의 기본 역할(role)은 반드시 'guest'이어야 한다. 가입 처리 코드(signup, register, createUser, onUserCreate 등)에서 role을 명시적으로 'guest'로 설정해야 하며, admin/manager/viewer 등 다른 역할이 자동 부여되어서는 안 된다.\n",
+      "check_type": "static_analysis",
+      "grep_patterns": [
+        "signup|register|createUser|onUserCreate"
+      ],
+      "must_contain": [
+        "role.*['\"]guest['\"]",
+        "defaultRole.*guest",
+        "role.*=.*guest"
+      ],
+      "must_not_contain": [
+        "role.*['\"]admin['\"]",
+        "role.*['\"]manager['\"]",
+        "role.*['\"]viewer['\"]"
+      ],
+      "pass_condition": "가입 코드에서 role='guest' 기본값 설정",
+      "fail_condition": "가입 시 guest 이외 역할 자동 부여",
+      "remediation": "사용자 생성 핸들러(onUserCreate, createUser, signup 등)에서 기본 role을 명시적으로 'guest'로 설정한다. 예: { role: 'guest' } 또는 defaultRole = 'guest' admin/manager 등의 역할은 명시적 초대 또는 승인 절차를 통해서만 부여한다.\n",
+      "score_impact": 8
+    },
+    {
+      "id": "AUTH-P0-002",
+      "domain": "auth",
+      "severity": "P0",
+      "tier": 3,
+      "name": "Guest 메뉴/API 접근 차단",
+      "description": "Guest 역할의 사용자는 보호된 메뉴와 API 엔드포인트에 접근할 수 없어야 한다. 미들웨어 또는 가드(guard)에서 Guest 역할을 명시적으로 차단하는 로직이 존재해야 한다. 인증된 사용자라도 role=guest이면 접근이 거부되어야 한다.\n",
+      "check_type": "code_review",
+      "grep_patterns": [
+        "guard|middleware|authorize|isGuest|guestBlock|guestDeny"
+      ],
+      "must_contain": [
+        "guest.*block|guest.*deny|role.*guest.*reject|isGuest.*&&"
+      ],
+      "must_not_contain": [],
+      "pass_condition": "미들웨어에서 Guest 역할 명시적 접근 차단 존재",
+      "fail_condition": "Guest 역할 체크 없이 모든 인증된 사용자에게 동일 접근 허용",
+      "remediation": "인증 미들웨어 또는 가드에서 role === 'guest' 조건을 추가하여 접근을 명시적으로 차단한다. 예: if (user.role === 'guest') return res.status(403).json({ error: 'Forbidden' }); 또는 @Guard(Role.GUEST_DENY) 데코레이터를 보호 라우트에 적용한다.\n",
+      "score_impact": 7
+    },
+    {
+      "id": "AUTH-P0-003",
+      "domain": "auth",
+      "severity": "P0",
+      "tier": 2,
+      "name": "서버 최종 권한 검증",
+      "description": "모든 API 핸들러(router.get, router.post 등)에 서버 사이드 권한 검증 미들웨어가 적용되어야 한다. 클라이언트 사이드 권한 체크만으로는 부족하며, 서버에서 auth/verify/authenticate/requireAuth/verifyToken/checkAuth 등의 미들웨어가 반드시 동작해야 한다.\n",
+      "check_type": "static_analysis",
+      "grep_patterns": [
+        "router\\.(get|post|put|delete|patch)"
+      ],
+      "must_contain": [
+        "auth|verify|authenticate|requireAuth|verifyToken|checkAuth"
+      ],
+      "must_not_contain": [],
+      "pass_condition": "모든 API 핸들러에 서버 사이드 권한 검증 미들웨어 적용",
+      "fail_condition": "일부 API에 미들웨어 누락 또는 클라이언트 권한 체크만 존재",
+      "remediation": "모든 라우터 정의에 인증 미들웨어를 추가한다. 예: router.get('/resource', requireAuth, handler) 또는 router.use(verifyToken)으로 전체 라우터에 일괄 적용한다. 클라이언트에서만 권한을 체크하고 서버에서 검증하지 않는 패턴을 제거한다.\n",
+      "score_impact": 10
+    },
+    {
+      "id": "SEC-P0-004",
+      "domain": "security",
+      "severity": "P0",
+      "tier": 1,
+      "name": "Firestore 직접 접근 금지",
+      "description": "클라이언트 소스코드에서 Firebase Firestore SDK를 직접 호출하는 코드가 존재해서는 안 된다. firebase/firestore import, getDocs, setDoc, addDoc, updateDoc, deleteDoc, getFirestore, collection(db 등의 패턴이 클라이언트 경로에서 발견되면 즉시 배포 차단이다. 모든 데이터 접근은 서버 API(Cloud Functions 등)를 통해야 한다.\n",
+      "check_type": "static_analysis",
+      "grep_patterns": [
+        "firebase/firestore|getDocs|setDoc|addDoc|updateDoc|deleteDoc|getFirestore|collection\\(db"
+      ],
+      "must_contain": [],
+      "must_not_contain": [
+        "firebase/firestore|getDocs|setDoc|addDoc|updateDoc|deleteDoc|getFirestore|collection\\(db"
+      ],
+      "pass_condition": "클라이언트 코드에서 Firestore 직접 접근 코드 없음",
+      "fail_condition": "클라이언트 경로에서 Firestore SDK import 또는 직접 접근 코드 발견",
+      "remediation": "클라이언트 코드에서 Firebase Firestore SDK import를 모두 제거한다. 데이터 접근이 필요한 경우 서버 API 엔드포인트(fetch, axios 등)를 호출하도록 변경한다. Firestore SDK는 server/api/functions 디렉토리에서만 사용한다.\n",
+      "score_impact": 12
+    },
+    {
+      "id": "SEC-P0-005",
+      "domain": "security",
+      "severity": "P0",
+      "tier": 1,
+      "name": "외부 API Gateway 강제",
+      "description": "클라이언트 또는 비-Gateway 서버 코드에서 외부 AI API(OpenAI, Anthropic, Google Generative AI 등)를 직접 호출해서는 안 된다. 모든 AI API 호출은 내부 Gateway(Cloud Functions 등)를 경유해야 한다. fetch로 외부 AI 도메인에 직접 요청하거나 openai/anthropic SDK를 클라이언트에서 사용하는 패턴이 발견되면 배포 차단이다.\n",
+      "check_type": "static_analysis",
+      "grep_patterns": [
+        "fetch.*https?://|openai|anthropic|generativelanguage"
+      ],
+      "must_contain": [],
+      "must_not_contain": [
+        "fetch\\(['\"]https?://(?!localhost)|openai\\.com|generativelanguage\\.googleapis\\.com|anthropic\\.com|api\\.openai|generativeai"
+      ],
+      "pass_condition": "모든 외부 AI API 호출이 내부 Gateway(Cloud Functions) 경유",
+      "fail_condition": "클라이언트 또는 비-Gateway 서버에서 AI API 직접 호출 발견",
+      "remediation": "클라이언트에서 openai, anthropic, generativelanguage 등 외부 AI API로의 직접 fetch 호출을 제거한다. 대신 내부 Cloud Functions 엔드포인트를 호출한다. AI SDK는 Gateway 역할을 하는 Cloud Functions 내부에서만 사용한다. API 키는 서버 환경 변수에만 저장하고 클라이언트에 노출하지 않는다.\n",
+      "score_impact": 18
+    },
+    {
+      "id": "SEC-P0-009",
+      "domain": "security",
+      "severity": "P0",
+      "tier": 3,
+      "name": "민감 텍스트 서버 처리",
+      "description": "AI 응답 전문(raw_response, model_output), 프롬프트 원문, 또는 민감한 내부 정보(token, password 등)가 클라이언트 API 응답에 직접 포함되어서는 안 된다. 클라이언트에는 응답 ID 또는 요약만 반환하고, 원문은 서버에서만 처리·저장해야 한다. console.log로 token이나 password를 출력하는 것도 금지된다.\n",
+      "check_type": "code_review",
+      "grep_patterns": [
+        "res\\.json|return.*response|response\\.send"
+      ],
+      "must_contain": [],
+      "must_not_contain": [
+        "res\\.json.*prompt|return.*prompt|response.*raw_response|res\\.json.*model_output|console\\.log.*token|console\\.log.*password"
+      ],
+      "pass_condition": "클라이언트에는 응답 ID/요약만 반환, 원문은 서버에서만 처리/저장",
+      "fail_condition": "AI 응답 전문 또는 프롬프트 원문이 클라이언트 응답에 직접 포함",
+      "remediation": "AI 호출 핸들러의 응답 객체에서 민감 필드(prompt, raw_response, model_output 등)를 제외하는 sanitizeResponse() 함수를 구현하고 모든 AI 관련 API 응답 경로에 적용한다. 응답에는 result_id, status, summary 등 참조값만 포함한다. console.log에서 token, password, key 등 민감 값을 출력하지 않는다.\n",
+      "score_impact": 10
+    },
+    {
+      "id": "COST-P0-006",
+      "domain": "cost",
+      "severity": "P0",
+      "tier": 2,
+      "name": "모델 호출 비용 로그",
+      "description": "모든 AI 모델 호출(openai, vertexai, gemini, anthropic, claude, gpt 등) 경로에 비용 추적을 위한 로그가 기록되어야 한다. 로그에는 cost, token, usage, billing, estimatedCost, inputTokens, outputTokens 중 하나 이상의 필드가 반드시 포함되어야 한다.\n",
+      "check_type": "static_analysis",
+      "grep_patterns": [
+        "openai|vertexai|gemini|anthropic|claude|gpt"
+      ],
+      "must_contain": [
+        "cost|token|usage|billing|estimatedCost|inputTokens|outputTokens"
+      ],
+      "must_not_contain": [],
+      "pass_condition": "모든 AI 모델 호출 경로에 필수 필드를 포함한 비용 로그 기록",
+      "fail_condition": "일부 호출 경로에 로그 누락 또는 필수 필드 미기록",
+      "remediation": "AI 호출 래퍼 함수에서 응답 객체의 usage 필드를 파싱하여 inputTokens, outputTokens를 추출하고, 모델별 단가를 적용한 estimatedCost를 계산하여 로깅 함수에 전달한다. 모든 AI 호출 경로에 공통 로깅 래퍼를 적용한다.\n",
+      "score_impact": 10
+    },
+    {
+      "id": "COST-P0-007",
+      "domain": "cost",
+      "severity": "P0",
+      "tier": 3,
+      "name": "BQ 스캔 비용 로그",
+      "description": "BigQuery 쿼리를 실행하는 모든 코드 경로에 스캔 비용 로그가 기록되어야 한다. 로그에는 totalBytesProcessed, bytesProcessed, estimatedCost 중 하나 이상이 반드시 포함되어야 한다. BigQuery를 사용하지 않는 프로젝트는 N/A로 처리한다.\n",
+      "check_type": "log_check",
+      "grep_patterns": [
+        "bigquery|BigQuery|createQueryJob|runQuery"
+      ],
+      "must_contain": [
+        "totalBytesProcessed|bytesProcessed|estimatedCost"
+      ],
+      "must_not_contain": [],
+      "pass_condition": "모든 BQ 쿼리 실행 경로에 bytesProcessed + estimatedCost 기록",
+      "fail_condition": "BQ 사용 코드는 있으나 비용 로그 누락",
+      "remediation": "BigQuery 래퍼 함수에서 Job 완료 후 statistics를 파싱하여 totalBytesProcessed를 추출하고, 단가(bytes * price_per_byte)로 estimatedCost를 계산하여 로그에 기록한다. BQ 미사용 프로젝트는 N/A로 마킹한다.\n",
+      "score_impact": 5
+    },
+    {
+      "id": "COST-P0-011",
+      "domain": "cost",
+      "severity": "P0",
+      "tier": 1,
+      "name": "캐시 우선 조회",
+      "description": "openai, vertexai, gemini, anthropic 등 고비용 AI API를 호출하기 전에 캐시 조회 로직이 반드시 존재해야 한다. cache, Cache, redis, memo, cached, fromCache 중 하나 이상의 패턴이 AI 호출 코드와 함께 존재해야 한다. 매 요청마다 캐시 없이 AI API를 직접 호출하는 것은 금지된다.\n",
+      "check_type": "static_analysis",
+      "grep_patterns": [
+        "openai|vertexai|gemini|anthropic"
+      ],
+      "must_contain": [
+        "cache|Cache|redis|memo|cached|fromCache"
+      ],
+      "must_not_contain": [],
+      "pass_condition": "고비용 API 호출 전 캐시 조회 로직 존재",
+      "fail_condition": "매 요청마다 캐시 없이 AI API 직접 호출",
+      "remediation": "AI API 호출 전 캐시(Redis, in-memory, Cloud Memorystore 등)를 먼저 조회한다. 캐시 히트 시 AI API를 호출하지 않고 캐시 값을 반환한다. 캐시 키는 요청 파라미터의 해시값으로 생성하고, TTL을 적절히 설정한다.\n",
+      "score_impact": 5
+    },
+    {
+      "id": "LOG-P0-008",
+      "domain": "logging",
+      "severity": "P0",
+      "tier": 2,
+      "name": "실패 요청 로그 필수",
+      "description": "모든 에러 핸들러(catch, errorHandler, onError, .catch() 등)에서 실패 케이스에 대한 로그가 반드시 기록되어야 한다. logger, log.error, winston, pino, console.error, logError 중 하나 이상을 사용하여 4xx/5xx/timeout 모든 실패를 로그로 남겨야 한다.\n",
+      "check_type": "static_analysis",
+      "grep_patterns": [
+        "catch|errorHandler|onError|\\.catch\\("
+      ],
+      "must_contain": [
+        "logger|log\\.error|winston|pino|console\\.error|logError"
+      ],
+      "must_not_contain": [],
+      "pass_condition": "4xx/5xx/timeout 모든 실패 케이스에 로그 기록",
+      "fail_condition": "성공 요청만 로그 기록, 실패 케이스 누락",
+      "remediation": "모든 catch 블록과 에러 핸들러에 로그 기록 코드를 추가한다. 예: catch (err) { logger.error('operation failed', { err, userId, path }); ... } 전역 에러 핸들러(Express errorHandler 등)에서도 로그가 기록되도록 한다. 성공 로그만 남기고 실패 로그를 누락하는 패턴을 점검한다.\n",
+      "score_impact": 10
+    },
+    {
+      "id": "LOG-P0-010",
+      "domain": "logging",
+      "severity": "P0",
+      "tier": 3,
+      "name": "권한 변경 감사 로그",
+      "description": "역할(role) 변경과 관련된 모든 코드(updateRole, changeRole, setRole, grantRole, revokeRole 등)에 감사 로그(audit log)가 기록되어야 한다. audit, auditLog, eventLog, audit_log 중 하나 이상의 패턴이 권한 변경 코드와 함께 존재해야 한다.\n",
+      "check_type": "code_review",
+      "grep_patterns": [
+        "updateRole|changeRole|setRole|grantRole|revokeRole"
+      ],
+      "must_contain": [
+        "audit|auditLog|eventLog|audit_log"
+      ],
+      "must_not_contain": [],
+      "pass_condition": "모든 권한 변경 이벤트에 필수 필드를 포함한 감사 로그 기록",
+      "fail_condition": "권한 변경 코드는 있으나 감사 로그 누락",
+      "remediation": "권한 변경 함수 내부에 감사 로그 기록 코드를 추가한다. 감사 로그에는 변경 주체(actorId), 대상(targetUserId), 이전 역할(fromRole), 신규 역할(toRole), 변경 사유(reason), 타임스탬프(timestamp)를 포함한다. 예: auditLog({ event: 'role_changed', actorId, targetUserId, fromRole, toRole, timestamp })\n",
+      "score_impact": 5
+    },
+    {
+      "id": "P1-DOM-001",
+      "domain": "domain_management",
+      "severity": "P1",
+      "name": "AI 도메인 등록·변경·삭제·이력 관리",
+      "description": "내부 AI 도구에서 사용하는 모든 도메인(게임, 기능 영역, 데이터 스키마 등)은 등록, 변경, 삭제 시 이력이 남아야 한다. 도메인 변경에 대한 감사 추적이 가능해야 하며, 삭제된 도메인에 대한 쿼리 시 적절한 오류를 반환해야 한다. 도메인 등록 시 필수 메타데이터(이름, 소유자, 생성일, 상태)가 포함되어야 한다.\n",
+      "check_type": "static_analysis",
+      "grep_patterns": [
+        "createDomain|registerDomain|addDomain",
+        "updateDomain|modifyDomain|changeDomain",
+        "deleteDomain|removeDomain|archiveDomain",
+        "domainHistory|domainAuditLog|domainChangeLog",
+        "domain.*createdAt|domain.*updatedAt|domain.*deletedAt"
+      ],
+      "pass_condition": "도메인 CRUD 작업마다 audit 로그 생성; 각 도메인 문서에 createdAt, updatedAt, status, owner 필드 존재; 삭제된 도메인은 hard delete 대신 status='archived'로 처리\n",
+      "fail_condition": "도메인 변경 시 이력 기록 없음; 필수 메타데이터 필드 누락; 삭제 후 이력 조회 불가\n",
+      "remediation": "도메인 CRUD 핸들러에 이력 기록 미들웨어를 추가한다. Firestore의 도메인 컬렉션에 createdAt, updatedAt, deletedAt, status, ownerId 필드를 스키마에 포함시킨다. 삭제 시 별도 domain_history 컬렉션에 스냅샷을 저장한다. TypeScript 인터페이스에 DomainAuditEntry 타입을 정의한다.\n",
+      "score_impact": 7
+    },
+    {
+      "id": "P1-STAT-002",
+      "domain": "statistics",
+      "severity": "P1",
+      "name": "사용량 통계 집계 (사용자·모델·기간·게임·누적비용)",
+      "description": "AI 도구 사용량 통계를 사용자별, 모델별, 기간별, 게임별로 집계하고 조회할 수 있어야 한다. 누적 비용 통계는 실시간 또는 준실시간(1시간 이내)으로 갱신되어야 한다. 관리자는 대시보드 또는 API를 통해 기간·게임·모델로 필터링된 사용량 리포트를 조회할 수 있어야 한다.\n",
+      "check_type": "api_test",
+      "grep_patterns": [
+        "getUsageStats|fetchUsageStats|usageStatistics",
+        "aggregateByUser|aggregateByModel|aggregateByGame",
+        "totalCost|cumulativeCost|costSummary",
+        "usageReport|statsReport|analyticsReport",
+        "period.*filter|dateRange.*filter|game_id.*filter"
+      ],
+      "pass_condition": "/api/stats 또는 동등 엔드포인트가 userId, model, dateRange, gameId 파라미터를 지원; 응답에 totalCost, callCount, avgTokens 포함; 통계 데이터 최신성 < 1시간\n",
+      "fail_condition": "사용량 집계 API 없음; 게임별 또는 모델별 필터 미지원; 통계 데이터가 24시간 이상 지연\n",
+      "remediation": "BigQuery 또는 Firestore aggregation을 활용한 사용량 통계 API를 구현한다. /api/admin/stats 엔드포인트에 query parameters로 userId, modelId, gameId, startDate, endDate를 받아 집계 쿼리를 실행한다. Cloud Scheduler로 1시간 단위 사전 집계를 실행하여 응답 지연을 줄인다.\n",
+      "score_impact": 6
+    },
+    {
+      "id": "P1-COST-003",
+      "domain": "cost",
+      "severity": "P1",
+      "name": "비용 통제 (예산 제한·초과 경고·차단)",
+      "description": "게임별 또는 사용자별 AI 비용 예산 한도를 설정하고, 한도 도달 시 단계별 조치를 취해야 한다: 80% 도달 시 경고 알림, 100% 도달 시 추가 AI 호출을 차단한다. 예산 초과 차단은 API 레벨에서 강제되어야 하며 우회 수단이 없어야 한다.\n",
+      "check_type": "config_check",
+      "grep_patterns": [
+        "budgetLimit|maxBudget|costCap|spendingLimit",
+        "checkBudget|enforceBudget|budgetGuard|costGuard",
+        "budgetWarning|budgetExceeded|overBudget",
+        "blockRequest.*budget|rejectRequest.*cost",
+        "BUDGET_WARNING_THRESHOLD|BUDGET_HARD_LIMIT"
+      ],
+      "pass_condition": "예산 한도 설정 인터페이스(API 또는 환경변수) 존재; 80% 경고 알림 로직 구현; 100% 초과 시 AI 호출 API에서 429 또는 403 반환; 예산 리셋 주기(일/주/월) 설정 가능\n",
+      "fail_condition": "예산 한도 설정 없음; 한도 초과해도 계속 호출 허용; 경고 알림 없음\n",
+      "remediation": "AI 호출 미들웨어에 budgetGuard를 추가한다. 호출 전 누적 비용을 조회하고 hard limit 초과 시 HTTP 429를 반환한다. soft limit(80%) 초과 시 관리자에게 경고 알림을 발송한다. 게임별 예산은 Firestore의 game_budgets 컬렉션에서 관리한다. 예산 한도 API(/api/admin/budgets)를 통해 동적으로 설정 가능하게 한다.\n",
+      "score_impact": 6
+    },
+    {
+      "id": "P1-LOG-004",
+      "domain": "logging",
+      "severity": "P1",
+      "name": "로그 스키마 검증·보관 기간·검색·Export",
+      "description": "AI 호출 및 BigQuery 비용 로그는 6~12개월 보관되어야 한다. 로그 저장 시 스키마 유효성 검사가 실행되어 잘못된 형식의 로그가 저장되는 것을 방지한다. 관리자는 기간·사용자·게임으로 로그를 검색하고 CSV/JSON 형식으로 Export할 수 있어야 한다.\n",
+      "check_type": "config_check",
+      "grep_patterns": [
+        "logRetention|retentionPeriod|LOG_RETENTION_DAYS",
+        "validateLogSchema|logSchemaValidator|logValidation",
+        "searchLogs|queryLogs|filterLogs",
+        "exportLogs|downloadLogs|logExport",
+        "ttl.*log|log.*ttl|expireAfterSeconds"
+      ],
+      "pass_condition": "로그 컬렉션의 TTL 또는 보관 정책이 180일(6개월) 이상으로 설정; 로그 저장 전 스키마 유효성 검사 실행; /api/admin/logs 엔드포인트에서 기간/사용자/게임 필터 지원; CSV 또는 JSON Export 기능 존재\n",
+      "fail_condition": "보관 기간 미설정 또는 6개월 미만; 스키마 검증 없이 임의 형식 저장; 로그 검색 API 없음; Export 기능 없음\n",
+      "remediation": "Firestore 컬렉션에 TTL 정책을 설정하거나 Cloud Scheduler로 6개월 초과 로그를 BigQuery 콜드 스토리지로 아카이빙한다. 로그 저장 함수에 Zod 또는 Joi 스키마 유효성 검사를 추가한다. /api/admin/logs에 cursor-based pagination과 필터(userId, gameId, startDate, endDate, model)를 구현한다. Export 엔드포인트(/api/admin/logs/export)에서 BigQuery to GCS를 활용한 대용량 CSV 다운로드를 지원한다.\n",
+      "score_impact": 6
+    }
+  ]
+}

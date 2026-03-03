@@ -1,0 +1,288 @@
+{
+  "$schema": "https://schemas.ai-tool-compliance/verification-run/v1.1.json",
+  "$comment": "Template: verification-run.json — Mandatory Implementation Guideline v1.1",
+
+  "run_id": "{{run_id}}",
+  "project_id": "{{project_id}}",
+  "tool_name": "{{tool_name}}",
+  "commit_sha": "{{commit_sha}}",
+  "branch": "{{branch}}",
+  "env": "{{env}}",
+  "mode": "{{mode}}",
+  "triggered_by": "{{triggered_by}}",
+  "started_at": "{{started_at}}",
+  "finished_at": "{{finished_at}}",
+  "duration_ms": 0,
+
+  "score": {
+    "total": 0,
+    "p0_pass": 0,
+    "p0_total": 0,
+    "p1_pass": 0,
+    "p1_total": 0,
+    "status": "GREEN | YELLOW | RED",
+    "deployment_gate": "PASS | BLOCKED | CONDITIONAL"
+  },
+
+  "results": [
+    {
+      "rule_id": "P0-001",
+      "rule_name": "비용 상한 제어",
+      "category": "P0",
+      "status": "PASS | FAIL | WARN | SKIP",
+      "file_path": "",
+      "line_number": null,
+      "message": "",
+      "guideline_section": "Section 5.1",
+      "assigned_role": "CEO",
+      "remediation_task_id": null
+    },
+    {
+      "rule_id": "P0-002",
+      "rule_name": "에러 핸들링",
+      "category": "P0",
+      "status": "PASS | FAIL | WARN | SKIP",
+      "file_path": "",
+      "line_number": null,
+      "message": "",
+      "guideline_section": "Section 6.1",
+      "assigned_role": "Engineer",
+      "remediation_task_id": null
+    },
+    {
+      "rule_id": "P0-003",
+      "rule_name": "롤백 메커니즘",
+      "category": "P0",
+      "status": "PASS | FAIL | WARN | SKIP",
+      "file_path": "",
+      "line_number": null,
+      "message": "",
+      "guideline_section": "Section 5.2",
+      "assigned_role": "서비스안정화",
+      "remediation_task_id": null
+    },
+    {
+      "rule_id": "P0-004",
+      "rule_name": "인증/권한 검증",
+      "category": "P0",
+      "status": "PASS | FAIL | WARN | SKIP",
+      "file_path": "",
+      "line_number": null,
+      "message": "",
+      "guideline_section": "Section 7.1",
+      "assigned_role": "Engineer",
+      "remediation_task_id": null
+    },
+    {
+      "rule_id": "P0-005",
+      "rule_name": "데이터 암호화",
+      "category": "P0",
+      "status": "PASS | FAIL | WARN | SKIP",
+      "file_path": "",
+      "line_number": null,
+      "message": "",
+      "guideline_section": "Section 7.2",
+      "assigned_role": "Engineer",
+      "remediation_task_id": null
+    },
+    {
+      "rule_id": "P0-006",
+      "rule_name": "입력 검증",
+      "category": "P0",
+      "status": "PASS | FAIL | WARN | SKIP",
+      "file_path": "",
+      "line_number": null,
+      "message": "",
+      "guideline_section": "Section 7.3",
+      "assigned_role": "Engineer",
+      "remediation_task_id": null
+    },
+    {
+      "rule_id": "P0-007",
+      "rule_name": "비용 알림 설정",
+      "category": "P0",
+      "status": "PASS | FAIL | WARN | SKIP",
+      "file_path": "",
+      "line_number": null,
+      "message": "",
+      "guideline_section": "Section 5.3",
+      "assigned_role": "CEO",
+      "remediation_task_id": null
+    },
+    {
+      "rule_id": "P0-008",
+      "rule_name": "로깅 필수 항목",
+      "category": "P0",
+      "status": "PASS | FAIL | WARN | SKIP",
+      "file_path": "",
+      "line_number": null,
+      "message": "",
+      "guideline_section": "Section 8.1",
+      "assigned_role": "Engineer",
+      "remediation_task_id": null
+    },
+    {
+      "rule_id": "P0-009",
+      "rule_name": "타임아웃 설정",
+      "category": "P0",
+      "status": "PASS | FAIL | WARN | SKIP",
+      "file_path": "",
+      "line_number": null,
+      "message": "",
+      "guideline_section": "Section 6.2",
+      "assigned_role": "Engineer",
+      "remediation_task_id": null
+    },
+    {
+      "rule_id": "P0-010",
+      "rule_name": "Rate Limit",
+      "category": "P0",
+      "status": "PASS | FAIL | WARN | SKIP",
+      "file_path": "",
+      "line_number": null,
+      "message": "",
+      "guideline_section": "Section 6.3",
+      "assigned_role": "Engineer",
+      "remediation_task_id": null
+    },
+    {
+      "rule_id": "P1-001",
+      "rule_name": "성능 벤치마크",
+      "category": "P1",
+      "status": "PASS | FAIL | WARN | SKIP",
+      "file_path": "",
+      "line_number": null,
+      "message": "",
+      "guideline_section": "Section 9.1",
+      "assigned_role": "Engineer",
+      "remediation_task_id": null
+    },
+    {
+      "rule_id": "P1-002",
+      "rule_name": "테스트 커버리지 80%+",
+      "category": "P1",
+      "status": "PASS | FAIL | WARN | SKIP",
+      "file_path": "",
+      "line_number": null,
+      "message": "",
+      "guideline_section": "Section 10.1",
+      "assigned_role": "Engineer",
+      "remediation_task_id": null
+    },
+    {
+      "rule_id": "P1-003",
+      "rule_name": "API 문서화",
+      "category": "P1",
+      "status": "PASS | FAIL | WARN | SKIP",
+      "file_path": "",
+      "line_number": null,
+      "message": "",
+      "guideline_section": "Section 11.1",
+      "assigned_role": "Engineer",
+      "remediation_task_id": null
+    },
+    {
+      "rule_id": "P1-004",
+      "rule_name": "의존성 취약점 스캔",
+      "category": "P1",
+      "status": "PASS | FAIL | WARN | SKIP",
+      "file_path": "",
+      "line_number": null,
+      "message": "",
+      "guideline_section": "Section 7.4",
+      "assigned_role": "Engineer",
+      "remediation_task_id": null
+    },
+    {
+      "rule_id": "P1-005",
+      "rule_name": "메모리 누수 체크",
+      "category": "P1",
+      "status": "PASS | FAIL | WARN | SKIP",
+      "file_path": "",
+      "line_number": null,
+      "message": "",
+      "guideline_section": "Section 9.2",
+      "assigned_role": "Engineer",
+      "remediation_task_id": null
+    },
+    {
+      "rule_id": "P1-006",
+      "rule_name": "SQL Injection 검사",
+      "category": "P1",
+      "status": "PASS | FAIL | WARN | SKIP",
+      "file_path": "",
+      "line_number": null,
+      "message": "",
+      "guideline_section": "Section 7.5",
+      "assigned_role": "Engineer",
+      "remediation_task_id": null
+    },
+    {
+      "rule_id": "P1-007",
+      "rule_name": "환경변수 하드코딩 없음",
+      "category": "P1",
+      "status": "PASS | FAIL | WARN | SKIP",
+      "file_path": "",
+      "line_number": null,
+      "message": "",
+      "guideline_section": "Section 7.6",
+      "assigned_role": "Engineer",
+      "remediation_task_id": null
+    },
+    {
+      "rule_id": "P1-008",
+      "rule_name": "CORS 설정",
+      "category": "P1",
+      "status": "PASS | FAIL | WARN | SKIP",
+      "file_path": "",
+      "line_number": null,
+      "message": "",
+      "guideline_section": "Section 7.7",
+      "assigned_role": "Engineer",
+      "remediation_task_id": null
+    }
+  ],
+
+  "approvals": {
+    "sre": {
+      "role": "서비스안정화",
+      "required": true,
+      "decision": "PENDING | APPROVE | REJECT | HOLD",
+      "approver": null,
+      "timestamp": null,
+      "comment": null
+    },
+    "engineer": {
+      "role": "Engineer",
+      "required": true,
+      "decision": "PENDING | APPROVE | REJECT | HOLD",
+      "approver": null,
+      "timestamp": null,
+      "comment": null
+    },
+    "pm": {
+      "role": "PM",
+      "required": true,
+      "decision": "PENDING | APPROVE | REJECT | HOLD",
+      "approver": null,
+      "timestamp": null,
+      "comment": null
+    },
+    "ceo": {
+      "role": "CEO",
+      "required": false,
+      "decision": "PENDING | APPROVE | REJECT | HOLD",
+      "approver": null,
+      "timestamp": null,
+      "comment": null
+    }
+  },
+
+  "notion": {
+    "page_id": null,
+    "page_url": null,
+    "synced_at": null
+  },
+
+  "remediation_tasks": []
+}

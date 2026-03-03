@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "generated": true,
-  "skill_count": 57,
+  "skill_count": 59,
   "categories": {
     "documentation": [
       "technical-writing",
@@ -36,6 +36,8 @@
       "agentic-development-principles",
       "agentic-workflow",
       "bmad",
+      "bmad-gds",
+      "bmad-idea",
       "environment-setup",
       "file-organization",
       "git-submodule",
@@ -74,7 +76,8 @@
       "firebase-ai-logic",
       "security-best-practices",
       "system-environment-setup",
-      "monitoring-observability"
+      "monitoring-observability",
+      "llm-monitoring-dashboard"
     ]
   },
   "skills": [
@@ -2264,6 +2267,116 @@
       ]
     },
     {
+      "name": "bmad-gds",
+      "description": "AI-driven Game Development Studio using BMAD methodology. Routes game projects through Pre-production, Design, Architecture, Production, and Game Testing phases with 6 specialized agents. Supports Unity, Unreal Engine, and Godot.",
+      "category": "utilities",
+      "path": "bmad-gds/SKILL.md",
+      "tags": [
+        "bmad",
+        "gds",
+        "game-development",
+        "game-design",
+        "gdd",
+        "unity",
+        "unreal",
+        "godot",
+        "workflow",
+        "multi-agent"
+      ],
+      "platforms": [
+        "Claude",
+        "Gemini",
+        "ChatGPT",
+        "Codex",
+        "OpenCode"
+      ],
+      "allowed_tools": [
+        "Read",
+        "Write",
+        "Edit",
+        "Bash",
+        "Grep",
+        "Glob"
+      ],
+      "commands": [
+        {
+          "command": "bmad-gds-game-brief",
+          "source": "bmad-gds/SKILL.md"
+        },
+        {
+          "command": "bmad-gds-gdd",
+          "source": "bmad-gds/SKILL.md"
+        },
+        {
+          "command": "bmad-gds-game-architecture",
+          "source": "bmad-gds/SKILL.md"
+        },
+        {
+          "command": "bmad-gds-sprint-planning",
+          "source": "bmad-gds/SKILL.md"
+        },
+        {
+          "command": "bmad-gds-dev-story",
+          "source": "bmad-gds/SKILL.md"
+        }
+      ]
+    },
+    {
+      "name": "bmad-idea",
+      "description": "Creative Intelligence Suite (BMAD-CIS) for ideation, design thinking, innovation strategy, problem-solving, and storytelling. 5 named specialist agents with distinct methodologies.",
+      "category": "utilities",
+      "path": "bmad-idea/SKILL.md",
+      "tags": [
+        "bmad",
+        "cis",
+        "creative",
+        "ideation",
+        "brainstorming",
+        "design-thinking",
+        "innovation",
+        "problem-solving",
+        "storytelling",
+        "multi-agent"
+      ],
+      "platforms": [
+        "Claude",
+        "Gemini",
+        "ChatGPT",
+        "Codex",
+        "OpenCode"
+      ],
+      "allowed_tools": [
+        "Read",
+        "Write",
+        "Edit",
+        "Bash",
+        "Grep",
+        "Glob"
+      ],
+      "commands": [
+        {
+          "command": "bmad-cis-brainstorming",
+          "source": "bmad-idea/SKILL.md"
+        },
+        {
+          "command": "bmad-cis-design-thinking",
+          "source": "bmad-idea/SKILL.md"
+        },
+        {
+          "command": "bmad-cis-innovation-strategy",
+          "source": "bmad-idea/SKILL.md"
+        },
+        {
+          "command": "bmad-cis-problem-solving",
+          "source": "bmad-idea/SKILL.md"
+        },
+        {
+          "command": "bmad-cis-storytelling",
+          "source": "bmad-idea/SKILL.md"
+        }
+      ]
+    },
+    {
       "name": "plannotator",
       "description": "Review AI agent plans and git diffs visually with Plannotator. Systematic scripts for install, hook setup, status check, remote config, and diff review. Annotate plans before coding, review diffs after.",
       "category": "utilities",
@@ -2419,6 +2532,17 @@
         "Task"
       ],
       "keyword": "jeo",
+      "version": "1.0.0"
+    },
+    {
+      "name": "llm-monitoring-dashboard",
+      "description": "PM용 관리자 대시보드에 LLM 사용 모니터링 페이지를 자동 생성. Tokuin CLI 기반 토큰/비용/레이턴시 추적 + 사용자 랭킹 시스템 + 비사용자 추적 + 데이터 기반 PM 인사이트 자동 생성 + Cmd+K 검색 + 사용자별 드릴다운 링크 탐색 포함. OpenAI/Anthropic/Gemini/OpenRouter 지원.",
+      "category": "infrastructure",
+      "path": ".agent-skills/llm-monitoring-dashboard/SKILL.md",
+      "tags": ["LLM", "monitoring", "dashboard", "tokuin", "pm-insights", "ranking", "user-tracking", "cost-tracking", "admin"],
+      "platforms": ["Claude", "ChatGPT", "Gemini", "Codex"],
+      "allowed_tools": ["Read", "Write", "Bash", "Grep", "Glob"],
+      "keyword": "llm-monitoring",
       "version": "1.0.0"
     }
   ],

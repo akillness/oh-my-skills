@@ -1,0 +1,22 @@
+N:bmad-idea
+D:Creative Intelligence Suite (BMAD-CIS) for ideation, design thinking, innovation strategy, problem-solving, and storytelling. 5 named specialist agents — no sequential phases, all workflows available immediately.
+G:bmad|cis|creative|ideation|brainstorming|design-thinking|innovation|problem-solving|storytelling|multi-agent|narrative
+
+U[5]:
+  Brainstorm ideas using 36 structured techniques across 7 categories with Carson
+  Run human-centered design thinking through 5 phases with Maya
+  Identify market disruption opportunities and design business models with Victor
+  Diagnose complex problems with systematic root cause analysis using Dr. Quinn
+  Craft compelling narratives and product stories using Sophia's 25 story frameworks
+
+S[5]{n,action,details}:
+  1,Brainstorm,Run bmad-cis-brainstorming or /cis-brainstorm → Carson facilitates using 36 ideation techniques → brainstorming session output
+  2,Design,Run bmad-cis-design-thinking or /cis-design-thinking → Maya guides 5-phase process → design thinking report with prototypes and test plan
+  3,Innovate,Run bmad-cis-innovation-strategy or /cis-innovation-strategy → Victor applies JTBD/Blue Ocean/BMC → innovation strategy with roadmap
+  4,Solve,Run bmad-cis-problem-solving or /cis-problem-solving → Dr. Quinn applies TRIZ/TOC/5-Whys → root cause analysis + solution plan
+  5,Narrate,Run bmad-cis-storytelling or /cis-storytelling → Sophia selects from 25 frameworks → complete narrative with emotional arc
+
+R[3]:
+  All workflows are anytime — no sequential phases. Use any command independently in any order.
+  Agent loading commands (/cis-agent-*) start a direct conversation without running the full workflow.
+  Sophia (storyteller) uses sidecar memory — she remembers story preferences and history across sessions.

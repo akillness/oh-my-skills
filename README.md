@@ -1,12 +1,6 @@
 # Agent Skills
 
-> v2026-02-25 · **65 Skills** · **TOON Format** · **Flat Skill Layout**
-
-[![GitHub Releases](https://img.shields.io/badge/GitHub-Releases-blue)](https://github.com/akillness/skills-template/releases)
-[![Skills](https://img.shields.io/badge/Skills-65-brightgreen)](#skills-list-65-total)
-[![BMAD Deploy Version](https://img.shields.io/badge/BMAD-1.0.0-orange)](docs/bmad/README.md)
-
-![Agent Skills Installer](AgentSkills.png)
+> v2026-03-03 · **69 Skills** · **TOON Format** · **Flat Skill Layout**
 
 > 스킬 구성 및 상세 목록: [.agent-skills/README.md](.agent-skills/README.md)
 
@@ -15,10 +9,10 @@
 ## Contents
 
 - [Quick Start](#quick-start)
-- [What's New](#whats-new-in-v2026-02-25)
+- [What's New](#whats-new-in-v2026-03-03)
 - [설치 (Install)](#설치-install)
 - [실행 가이드](#실행-가이드)
-- [Skills List (65)](#skills-list-65-total)
+- [Skills List (69)](#skills-list-69-total)
 - [Featured Tools](#featured-tools)
 - [Structure](#structure)
 - [Related docs](#related-docs)
@@ -37,14 +31,14 @@ curl -s https://raw.githubusercontent.com/akillness/skills-template/main/setup-a
 
 ---
 
-## What's New in v2026-02-25
+## What's New in v2026-03-03
 
 | 변경 | 내용 |
 |------|------|
-| **신규 `jeo` 스킬** | ralph+plannotator → team/bmad → agent-browser verify → worktree cleanup 완전 자동화 |
-| **Skills list 재구성** | 11개 카테고리, 65개 스킬 표 형식 개편 |
-| **신규 `copilot-coding-agent`** | GitHub Copilot Issue → Draft PR 자동화 |
-| **`agent-browser` 강화** | deterministic workflow + verification/diff + security hardening + references/templates 추가 |
+| **신규 `ai-tool-compliance` 스킬** | 내부 AI 툴 필수 구현 가이드(P0/P1) 기반 컴플라이언스 자동 검증. 4도메인 이진 점수(40/25/20/15), 배포 게이트, 이력 추적 |
+| **`ai-tool-compliance` P1 확장** | 기본 P0 검증 경로는 유지하고(`verify.sh` 기본 동작 변경 없음), 선택적 P1 확장 모드(`--include-p1`)와 P1 성숙도 점수(`p1_maturity_score`)를 추가. 리포트/문서는 append-only로 확장 |
+| **신규 `bmad-gds` 스킬** | BMAD Game Development Studio — Pre-production·Design·Architecture·Production·GameTest 5단계, 6 전문 에이전트 (Unity · Unreal Engine · Godot 지원) |
+| **신규 `bmad-idea` 스킬** | BMAD Creative Intelligence Suite — 브레인스토밍·디자인 씽킹·혁신 전략·문제 해결·스토리텔링 5개 즉시 실행 워크플로우, 5 전문 에이전트 (Carson · Maya · Victor · Dr. Quinn · Sophia) |
 
 ---
 
@@ -172,7 +166,7 @@ npx skills add https://github.com/akillness/skills-template --skill playwriter
 
 ---
 
-## Skills List (65 total)
+## Skills List (69 total)
 
 > Full manifest + descriptions: `.agent-skills/skills.json` · each folder's `SKILL.md`
 
@@ -220,10 +214,11 @@ npx skills add https://github.com/akillness/skills-template --skill playwriter
 | `performance-optimization` | Performance optimization | All platforms |
 | `testing-strategies` | Testing strategies | All platforms |
 
-### Infrastructure (8)
+### Infrastructure (10)
 
 | Skill | Description | Platforms |
 |-------|-------------|-----------|
+| `ai-tool-compliance` | 내부 AI 툴 P0/P1 컴플라이언스 자동 검증 — 4도메인 이진 점수(보안/권한/비용/로그), 배포 게이트, 이력 추적 | All platforms |
 | `deployment-automation` | CI/CD & deployment automation | All platforms |
 | `firebase-ai-logic` | Firebase AI Logic integration | Claude · Gemini |
 | `genkit` | Firebase Genkit AI workflows | Claude · Gemini |
@@ -232,6 +227,7 @@ npx skills add https://github.com/akillness/skills-template --skill playwriter
 | `security-best-practices` | Security best practices | All platforms |
 | `system-environment-setup` | Environment configuration | All platforms |
 | `vercel-deploy` | Vercel deployment | All platforms |
+| `llm-monitoring-dashboard` | LLM 사용 모니터링 대시보드 (Tokuin CLI 기반 비용·토큰·레이턴시 추적 + PM 인사이트 + 사용자 랭킹) | All platforms |
 
 ### Documentation (4)
 
@@ -274,11 +270,13 @@ npx skills add https://github.com/akillness/skills-template --skill playwriter
 |-------|-------------|-----------|
 | `marketing-automation` | Marketing automation *(in development)* | All platforms |
 
-### Utilities (17)
+### Utilities (19)
 
 | Skill | Description | Platforms |
 |-------|-------------|-----------|
 | `agent-browser` | Fast headless browser CLI for AI agents | All platforms |
+| `bmad-gds` | BMAD Game Development Studio — Pre-production through production with 6 specialized agents (Unity · Unreal · Godot) | Claude · Gemini · Codex · OpenCode |
+| `bmad-idea` | BMAD Creative Intelligence Suite — brainstorming, design thinking, innovation strategy, problem-solving, storytelling | Claude · Gemini · Codex · OpenCode |
 | `copilot-coding-agent` | GitHub Copilot Coding Agent — Issue → Draft PR automation | Claude · Codex |
 | `environment-setup` | Environment setup | All platforms |
 | `file-organization` | File & folder organization | All platforms |
@@ -454,21 +452,6 @@ npx skills add https://github.com/akillness/skills-template --skill bmad-orchest
 
 계획(ralph+plannotator) → 실행(team/bmad) → 검증(agent-browser) → 정리(worktree cleanup)의 완전 자동화 오케스트레이션 플로우.
 
-`jeo` 실행은 다음 동작을 자동화합니다.
-
-```bash
-bash scripts/install.sh --all     # 모든 툴/훅 일괄 설치
-bash scripts/check-status.sh      # 현재 설치/상태 점검
-jeo "<작업 설명>"                # plan → execute → verify → cleanup
-```
-
-| Stage | Tool | Notes |
-|------|------|-------|
-| Plan | ralph + plannotator | `plan.md` 승인(`approved=true`) 전에는 execute 진행 불가 |
-| Execute | omc team / bmad | Claude Code는 team 우선, 미지원 환경은 bmad 폴백 |
-| Verify | agent-browser | 웹 UI 작업은 스냅샷/요소 확인을 통해 검증 |
-| Cleanup | worktree-cleanup.sh | 완료 후 남은 worktree 정리 |
-
 ```bash
 bash scripts/install.sh --all   # 전체 설치
 ```
@@ -520,12 +503,16 @@ bash scripts/install.sh --all   # 전체 설치
 
 ## Changelog
 
-**v2026-02-27**:
-- **`.agent-skills/README.md`**: domain 참조를 `supercent-io` → `akillness/skills-template`으로 전면 교체; 스킬 수 57 → 65, 버전 4.5.0 → 4.6.0 업데이트
-- **plannotator**: `setup-shell.sh` 및 Shell Integration (Pattern 9) 제거; `docs/plannotator/README.md` 섹션 번호 재정렬 (5→6 항목 삭제)
-- **plannotator**: Gemini/Codex 수동 플랜 리뷰 예시에서 blocking 강제(`NO &`) 표현 완화
-- **agent-browser**: SKILL.md 운영형 구조로 대폭 확장 (core workflow, verification loop, safeguards, troubleshooting); references/templates 디렉터리 추가
-- **jeo/setup-codex.sh**: `developer_instructions` top-level string 강제 동기화 로직 보강
+**v2026-03-03 (latest, update)**:
+- **bmad-gds**: New skill — BMAD Game Development Studio. Pre-production → Design → Technical → Production → GameTest 5단계 파이프라인, 24개 커맨드, 6 전문 에이전트 (Unity/Unreal/Godot 지원), SKILL.toon + REFERENCE.md 포함
+- **bmad-idea**: New skill — BMAD Creative Intelligence Suite (CIS). 브레인스토밍·디자인 씽킹·혁신 전략·문제 해결·스토리텔링 5개 즉시 실행 워크플로우, 5 named 에이전트 (Carson/Maya/Victor/Dr. Quinn/Sophia), SKILL.toon + REFERENCE.md 포함
+- **ai-tool-compliance P1 확장**: `verify.sh --include-p1` 옵션 추가(기본 P0 유지), `catalog-p1.json`/`catalog-all.json` 카탈로그 추가, `score.sh`에 `p1_maturity_score`/`p0_gate_score` 출력 확장, `gate.sh`에 P1 성숙도 표시 추가
+- **ai-tool-compliance P1 확장**: `verify.sh --include-p1` 옵션 추가(기본 P0 유지), `catalog-p1.json`/`catalog-all.json` 카탈로그 추가, `score.sh`에 `p1_maturity_score`/`p0_gate_score` 출력 확장, `gate.sh`에 P1 성숙도 표시 추가
+- **Workflow Toggle**: `templates/ai-tool-compliance.yml`에 `COMPLIANCE_INCLUDE_P1` 환경변수 추가(기본 `false`), 켜면 CI에서 P0+P1 동시 검증
+- **문서/리포트 확장**: `SKILL.md`와 `risk-score-report.md`에 Notion 표 정렬용 P1 v1.1 섹션을 append-only 방식으로 추가
+
+**v2026-03-03 (latest)**:
+- **ai-tool-compliance**: New skill — 내부 AI 툴 필수 구현 가이드 v1.1 기반 P0/P1 컴플라이언스 자동 검증. 4도메인 이진 점수 체계(보안 40/권한 25/비용 20/로그 15), GitHub Actions 배포 게이트, `.compliance/runs/` 이력 추적, `verify.sh` + `score.sh` 파이프라인
 
 **v2026-02-26**:
 - **agent-browser**: SKILL.md를 운영형 구조로 확장 (core workflow, verification, safeguards, troubleshooting)

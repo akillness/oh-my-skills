@@ -3,7 +3,7 @@
 > 이 파일을 AI 에이전트에게 전달하면 설치를 자동으로 진행합니다.
 >
 > ```bash
-> curl -s https://raw.githubusercontent.com/supercent-io/skills-template/main/setup-all-skills-prompt.md
+> curl -s https://raw.githubusercontent.com/akillness/skills-template/main/setup-all-skills-prompt.md
 > ```
 
 ---
@@ -43,30 +43,30 @@ Step 0 결과에 따라 실행하세요:
 
 **모든 플랫폼 (권장 시작점):**
 ```bash
-npx skills add https://github.com/supercent-io/skills-template --skill jeo
+npx skills add https://github.com/akillness/skills-template --skill jeo
 ```
 
 **Claude Code 전용:**
 ```bash
-npx skills add https://github.com/supercent-io/skills-template \
+npx skills add https://github.com/akillness/skills-template \
   --skill omc --skill plannotator --skill ralph --skill vibe-kanban
 ```
 
 **Gemini CLI 전용:**
 ```bash
-npx skills add https://github.com/supercent-io/skills-template \
+npx skills add https://github.com/akillness/skills-template \
   --skill ohmg --skill ralph --skill vibe-kanban
 ```
 
 **Codex CLI 전용:**
 ```bash
-npx skills add https://github.com/supercent-io/skills-template \
+npx skills add https://github.com/akillness/skills-template \
   --skill oh-my-codex --skill ralph
 ```
 
 **Gemini CLI (확장 설치):**
 ```bash
-gemini extensions install https://github.com/supercent-io/skills-template
+gemini extensions install https://github.com/akillness/skills-template
 ```
 
 ---
@@ -74,7 +74,7 @@ gemini extensions install https://github.com/supercent-io/skills-template
 ### Step 2: 전체 65개 스킬 설치 (사용자가 원하는 경우)
 
 ```bash
-npx skills add https://github.com/supercent-io/skills-template \
+npx skills add https://github.com/akillness/skills-template \
   --skill agent-configuration --skill agent-evaluation \
   --skill agentic-development-principles --skill agentic-principles \
   --skill agentic-workflow --skill bmad-orchestrator \
@@ -137,7 +137,7 @@ curl -s https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/refs/heads
 
 설치 후 스킬 추가:
 ```bash
-npx skills add https://github.com/supercent-io/skills-template
+npx skills add https://github.com/akillness/skills-template
 ```
 
 #### Gemini CLI — 확인
@@ -182,6 +182,8 @@ npx skills info jeo
 | `plannotator` | `plan`, `계획` | 계획 검토 + Feedback loop |
 | `vibe-kanban` | `kanbanview` | 칸반 보드 |
 | `bmad-orchestrator` | `bmad` | 구조화 개발 |
+| `bmad-gds` | `bmad-gds` | 게임 개발 스튜디오 (Unity/Unreal/Godot) |
+| `bmad-idea` | `bmad-idea` | 창의적 아이디어 · 디자인 씽킹 · 혁신 전략 |
 | `agent-browser` | `agent-browser` | 헤드리스 브라우저 자동화 |
 | `oh-my-codex` | `omx` | Codex CLI 멀티에이전트 |
 | `ohmg` | `ohmg` | Gemini / Antigravity 워크플로우 |

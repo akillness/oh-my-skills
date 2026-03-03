@@ -1,0 +1,72 @@
+{
+  "$schema": "https://schemas.ai-tool-compliance/remediation-task/v1.1.json",
+  "$comment": "Template: remediation-task.json — One task per failed/warned rule",
+
+  "task_id": "{{task_id}}",
+  "run_id": "{{run_id}}",
+  "rule_id": "{{rule_id}}",
+  "rule_name": "{{rule_name}}",
+  "rule_category": "P0 | P1",
+  "severity": "BLOCKING | WARNING",
+
+  "owner": "{{owner}}",
+  "assigned_role": "서비스안정화 | Engineer | PM | CEO",
+  "approver_role": "{{approver_role}}",
+
+  "description": "{{description}}",
+  "guideline_section": "{{guideline_section}}",
+
+  "location": {
+    "file_path": "{{file_path}}",
+    "line_number": null,
+    "snippet": "{{code_snippet}}"
+  },
+
+  "remediation": {
+    "options": [
+      {
+        "label": "Option A (Recommended)",
+        "description": "{{option_a_description}}",
+        "code_example": "{{option_a_code}}"
+      },
+      {
+        "label": "Option B",
+        "description": "{{option_b_description}}",
+        "code_example": "{{option_b_code}}"
+      }
+    ],
+    "verify_command": "compliance check --quick --rules {{rule_id}}",
+    "est_effort": "{{est_effort}}"
+  },
+
+  "due_date": "{{due_date}}",
+
+  "evidence": {
+    "before": {
+      "description": "{{evidence_before_description}}",
+      "file_path": "{{evidence_before_file}}",
+      "snippet": "{{evidence_before_snippet}}"
+    },
+    "after": {
+      "description": "{{evidence_after_description}}",
+      "file_path": "{{evidence_after_file}}",
+      "snippet": "{{evidence_after_snippet}}",
+      "test_output": null
+    }
+  },
+
+  "status": "PENDING | IN_PROGRESS | RESOLVED | WONT_FIX",
+  "resolution_note": null,
+  "resolved_at": null,
+  "resolved_by": null,
+
+  "re_verification": {
+    "run_id": null,
+    "score_before": null,
+    "score_after": null,
+    "verified_at": null
+  },
+
+  "created_at": "{{timestamp}}",
+  "updated_at": "{{timestamp}}"
+}

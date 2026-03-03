@@ -1,0 +1,24 @@
+N:bmad-gds
+D:AI-driven Game Development Studio (BMAD-GDS). Routes game projects through Pre-production, Design, Architecture, Production, and Game Testing phases using 6 specialized agents. Supports Unity, Unreal Engine, Godot, and custom engines.
+G:bmad|gds|game-development|game-design|gdd|unity|unreal|godot|multi-agent|workflow|sprint|architecture|playtesting
+
+U[5]:
+  Start a new game project with structured pre-production and design workflow
+  Create Game Design Documents, narrative designs, and technical architecture docs
+  Manage sprints, dev stories, and code reviews for game teams
+  Set up and run automated tests, E2E, playtest plans for Unity/Unreal/Godot
+  Quick prototype, spec, or dev for rapid iteration without full planning overhead
+
+S[6]{n,action,details}:
+  1,Phase1,Run bmad-gds-brainstorm-game → brainstorm session, then bmad-gds-game-brief → game brief doc
+  2,Phase2,Run bmad-gds-gdd → Game Design Document; optionally bmad-gds-narrative → narrative design
+  3,Phase3,Run bmad-gds-game-architecture → technical architecture; optionally bmad-gds-test-design → QA plan
+  4,Phase4,Run bmad-gds-sprint-planning → sprint-status.yaml, then cycle: bmad-gds-create-story → bmad-gds-dev-story → bmad-gds-code-review
+  5,Testing,Run bmad-gds-test-framework for initial setup; use bmad-gds-test-automate|e2e-scaffold|playtest-plan|performance-test as needed
+  6,Anytime,Use bmad-gds-quick-prototype|quick-spec|quick-dev for rapid work; bmad-gds-document-project for existing projects
+
+R[4]:
+  Phases are sequential by default (Pre-production → Design → Technical → Production) but anytime/quick commands bypass phasing
+  Required workflows (marked required=true in module): bmad-gds-game-architecture, bmad-gds-sprint-planning, bmad-gds-create-story, bmad-gds-dev-story
+  Agent routing is automatic: game-designer for design phases, game-architect for technical, game-dev for implementation, game-qa for testing
+  Solo-dev mode (game-solo-dev agent) handles quick-prototype, quick-spec, quick-dev for single-developer workflows

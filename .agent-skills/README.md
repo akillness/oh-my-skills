@@ -68,7 +68,7 @@ repository to the current project.
 
 ---
 
-## Skills List (65 total)
+## Skills List (59 functional)
 
 > Skills marked *(in development)* exist on disk but do not yet have a SKILL.toon file.
 
@@ -112,9 +112,10 @@ repository to the current project.
 | `performance-optimization` | Performance optimization | All platforms |
 | `testing-strategies` | Testing strategies | All platforms |
 
-### Infrastructure (8)
+### Infrastructure (10)
 | Skill | Description | Platforms |
 |-------|-------------|-----------|
+| `ai-tool-compliance` | 내부 AI 툴 P0/P1 컴플라이언스 자동 검증 — 4도메인 이진 점수(보안/권한/비용/로그), 배포 게이트, 이력 추적 | All platforms |
 | `deployment-automation` | CI/CD & deployment automation | All platforms |
 | `firebase-ai-logic` | Firebase AI Logic integration | Claude · Gemini |
 | `genkit` | Firebase Genkit AI workflows (flows, agents, RAG, streaming) | Claude · Gemini |
@@ -123,6 +124,7 @@ repository to the current project.
 | `security-best-practices` | Security best practices | All platforms |
 | `system-environment-setup` | Environment configuration | All platforms |
 | `vercel-deploy` | Vercel deployment | All platforms |
+| `llm-monitoring-dashboard` | LLM 사용 모니터링 대시보드 (Tokuin CLI 기반 비용·토큰·레이턴시 + PM 인사이트 + 사용자 랭킹) | All platforms |
 
 ### Documentation (4)
 | Skill | Description | Platforms |
@@ -300,4 +302,4 @@ npx skills add <skill-name>
 
 ---
 
-**Version**: 4.6.0 | **Updated**: 2026-02-27 | **Skills**: 65 total | **Format**: TOON (Default) | **Structure**: Flat
+**Version**: 4.7.0 | **Updated**: 2026-03-03 | **Skills**: 59 functional | **Format**: TOON (Default) | **Structure**: Flat
