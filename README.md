@@ -1,9 +1,9 @@
 # Agent Skills
 
-> v2026-03-05 · **70 Skills** · **TOON Format** · **Flat Skill Layout**
+> v2026-03-03 (GitHub Release) · **69 Skills** · **TOON Format** · **Flat Skill Layout**
 
- GitHub Releases: https://github.com/akillness/skills-template/releases
- Skills: 70
+ GitHub Releases: https://github.com/akillness/skills-template/releases/tag/v2026-03-03
+ Skills: 69 (release 기준)
  BMAD Deploy Version: 1.0.0
 
 > 스킬 구성 및 상세 목록: [.agent-skills/README.md](.agent-skills/README.md)
