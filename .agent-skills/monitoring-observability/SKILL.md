@@ -1,25 +1,27 @@
 ---
 name: monitoring-observability
 description: Set up monitoring, logging, and observability for applications and infrastructure. Use when implementing health checks, metrics collection, log aggregation, or alerting systems. Handles Prometheus, Grafana, ELK Stack, Datadog, and monitoring best practices.
-tags: [monitoring, observability, logging, metrics, Prometheus, Grafana, alerts]
-platforms: [Claude, ChatGPT, Gemini]
+metadata:
+  tags: monitoring, observability, logging, metrics, Prometheus, Grafana, alerts
+  platforms: Claude, ChatGPT, Gemini
 ---
+
 
 # Monitoring & Observability
 
 
 ## When to use this skill
 
-- **프로덕션 배포 전**: 모니터링 시스템 필수 구축
-- **성능 문제 발생**: 병목 지점 식별
-- **장애 대응**: 빠른 원인 파악
-- **SLA 준수**: 가용성/응답시간 추적
+- **Before Production Deployment**: Essential monitoring system setup
+- **Performance Issues**: Identify bottlenecks
+- **Incident Response**: Quick root cause identification
+- **SLA Compliance**: Track availability/response times
 
 ## Instructions
 
-### Step 1: 메트릭 수집 (Prometheus)
+### Step 1: Metrics Collection (Prometheus)
 
-**애플리케이션 계측** (Node.js):
+**Application Instrumentation** (Node.js):
 ```typescript
 import express from 'express';
 import promClient from 'prom-client';
@@ -95,7 +97,7 @@ rule_files:
   - 'alert_rules.yml'
 ```
 
-### Step 2: 알림 규칙
+### Step 2: Alert Rules
 
 **alert_rules.yml**:
 ```yaml
@@ -155,7 +157,7 @@ groups:
           description: "Memory usage is {{ $value }}%"
 ```
 
-### Step 3: 로그 집계 (Structured Logging)
+### Step 3: Log Aggregation (Structured Logging)
 
 **Winston (Node.js)**:
 ```typescript
@@ -205,9 +207,9 @@ app.use((req, res, next) => {
 });
 ```
 
-### Step 4: Grafana 대시보드
+### Step 4: Grafana Dashboard
 
-**dashboard.json** (예시):
+**dashboard.json** (example):
 ```json
 {
   "dashboard": {
@@ -320,48 +322,48 @@ app.get('/health', async (req, res) => {
 
 ## Output format
 
-### 모니터링 대시보드 구성
+### Monitoring Dashboard Configuration
 
 ```
 Golden Signals:
-1. Latency (응답 시간)
+1. Latency (Response Time)
    - P50, P95, P99 percentiles
-   - API 엔드포인트별
+   - Per API endpoint
 
-2. Traffic (요청량)
+2. Traffic (Request Volume)
    - Requests per second
-   - 엔드포인트별, 상태 코드별
+   - Per endpoint, per status code
 
-3. Errors (에러율)
+3. Errors (Error Rate)
    - 5xx error rate
    - 4xx error rate
-   - 에러 타입별
+   - Per error type
 
-4. Saturation (리소스 사용률)
-   - CPU 사용률
-   - 메모리 사용률
+4. Saturation (Resource Utilization)
+   - CPU usage
+   - Memory usage
    - Disk I/O
    - Network bandwidth
 ```
 
 ## Constraints
 
-### 필수 규칙 (MUST)
+### Required Rules (MUST)
 
-1. **Structured Logging**: JSON 형식 로그
-2. **Metric Labels**: 고유성 유지 (high cardinality 주의)
-3. **Alert Fatigue 방지**: 중요한 알림만
+1. **Structured Logging**: JSON format logs
+2. **Metric Labels**: Maintain uniqueness (be careful of high cardinality)
+3. **Prevent Alert Fatigue**: Only critical alerts
 
-### 금지 사항 (MUST NOT)
+### Prohibited (MUST NOT)
 
-1. **민감정보 로깅 금지**: 비밀번호, API 키 절대 로깅하지 않음
-2. **과도한 메트릭**: 불필요한 메트릭은 리소스 낭비
+1. **Do Not Log Sensitive Data**: Never log passwords, API keys
+2. **Excessive Metrics**: Unnecessary metrics waste resources
 
 ## Best practices
 
-1. **SLO 정의**: Service Level Objectives 명확히
-2. **Runbook 작성**: 알림별 대응 절차 문서화
-3. **Dashboards**: 팀별 필요한 대시보드 커스터마이징
+1. **Define SLO**: Clearly define Service Level Objectives
+2. **Write Runbooks**: Document response procedures per alert
+3. **Dashboards**: Customize dashboards as needed per team
 
 ## References
 
@@ -371,16 +373,16 @@ Golden Signals:
 
 ## Metadata
 
-### 버전
-- **현재 버전**: 1.0.0
-- **최종 업데이트**: 2025-01-01
-- **호환 플랫폼**: Claude, ChatGPT, Gemini
+### Version
+- **Current Version**: 1.0.0
+- **Last Updated**: 2025-01-01
+- **Compatible Platforms**: Claude, ChatGPT, Gemini
 
-### 관련 스킬
-- [deployment](../deployment/SKILL.md): 배포와 함께 모니터링
-- [security](../security/SKILL.md): 보안 이벤트 모니터링
+### Related Skills
+- [deployment](../deployment/SKILL.md): Monitoring alongside deployment
+- [security](../security/SKILL.md): Security event monitoring
 
-### 태그
+### Tags
 `#monitoring` `#observability` `#Prometheus` `#Grafana` `#logging` `#metrics` `#infrastructure`
 
 ## Examples

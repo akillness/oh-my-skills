@@ -2,13 +2,13 @@ N:log-analysis
 D:Analyze application logs to identify errors, performance issues, and security anomalies. Use when...
 G:logs analysis debugging monitoring grep
 U[4]:
-  **오류 디버깅**: 애플리케이션 오류 원인 분석
-  **성능 분석**: 응답 시간, 처리량 분석
-  **보안 감사**: 비정상 접근 패턴 탐지
-  **인시던트 대응**: 장애 발생 시 원인 조사
+  **Error debugging**: analyze the root cause of application errors
+  **Performance analysis**: analyze response times and throughput
+  **Security audit**: detect anomalous access patterns
+  **Incident response**: investigate the root cause during an outage
 S[5]{n,action}:
-  1,로그 파일 위치 파악
-  2,에러 패턴 검색
-  3,패턴 분석
-  4,성능 분석
-  5,보안 분석
+  1,Locate Log Files
+  2,Search for Error Patterns
+  3,Pattern Analysis
+  4,Performance Analysis
+  5,Security Analysis

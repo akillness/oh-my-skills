@@ -1,10 +1,12 @@
 ---
 name: skill-standardization
 description: Standardize and validate SKILL.md files to match the project specification. Use when creating new skills, converting existing skills to standard format, or validating skill file structure. Handles section heading conversion, frontmatter standardization, and missing section detection.
-tags: [skill-management, standardization, validation, automation, scripting]
-platforms: [Claude, ChatGPT, Gemini]
-allowed-tools: [Bash, Read, Write, Edit, Glob, Grep]
+allowed-tools: Bash Read Write Edit Glob Grep
+metadata:
+  tags: skill-management, standardization, validation, automation, scripting
+  platforms: Claude, ChatGPT, Gemini
 ---
+
 
 # Skill Standardization
 
@@ -58,18 +60,18 @@ python3 scripts/final_cleanup.py
 
 ## Section Heading Conversions
 
-| Korean | English |
+| Legacy heading | Standard heading |
 |--------|---------|
-| `## 목적 (Purpose)` | `## Purpose` |
-| `## 사용 시점 (When to Use)` | `## When to use this skill` |
-| `## 작업 절차 (Procedure)` | `## Instructions` |
-| `## 작업 예시 (Examples)` | `## Examples` |
-| `## 베스트 프랙티스` | `## Best practices` |
-| `## 참고 자료` | `## References` |
-| `## 출력 포맷 (Output Format)` | `## Output format` |
-| `## 제약사항 (Constraints)` | `## Constraints` |
-| `## 메타데이터` | `## Metadata` |
-| `### N단계:` | `### Step N:` |
+| `## Purpose (legacy)` | `## Purpose` |
+| `## When to Use (legacy)` | `## When to use this skill` |
+| `## Procedure (legacy)` | `## Instructions` |
+| `## Examples (legacy)` | `## Examples` |
+| `## Best Practices (legacy)` | `## Best practices` |
+| `## References (legacy)` | `## References` |
+| `## Output Format (legacy)` | `## Output format` |
+| `## Constraints (legacy)` | `## Constraints` |
+| `## Metadata (legacy)` | `## Metadata` |
+| `### Step N (legacy):` | `### Step N:` |
 
 ## Standard SKILL.md Structure
 
@@ -119,10 +121,10 @@ import re
 filepath = Path('backend/new-skill/SKILL.md')
 content = filepath.read_text()
 
-# Convert Korean to English
-content = content.replace('## 베스트 프랙티스', '## Best practices')
-content = content.replace('## 참고 자료', '## References')
-content = re.sub(r'### (\d+)단계:', r'### Step \1:', content)
+# Normalize legacy headings to standard
+content = content.replace('## Best Practices', '## Best practices')
+content = content.replace('## Reference', '## References')
+content = re.sub(r'### Step (\d+):', r'### Step \1:', content)
 
 filepath.write_text(content)
 ```
@@ -143,5 +145,5 @@ grep -E "^## (When to use|Instructions|Examples|Best practices|References)" SKIL
 
 ## References
 
-- [CONTRIBUTING.md](/CONTRIBUTING.md) - Full specification for SKILL.md files
-- [templates/basic-skill-template/SKILL.md](/templates/basic-skill-template/SKILL.md) - Standard template
+- [README.md](../../README.md) - Repository overview and SKILL.md conventions
+- [.agent-skills/README.md](../README.md) - Skill repository structure and examples

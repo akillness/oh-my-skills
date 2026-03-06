@@ -2,13 +2,13 @@ N:code-refactoring
 D:Simplify and refactor code while preserving behavior, improving clarity, and reducing complexity....
 G:refactoring code-quality DRY SOLID design-patterns
 U[4]:
-  **코드 리뷰**: 복잡하거나 중복된 코드 발견
-  **새 기능 추가 전**: 기존 코드 정리
-  **버그 수정 후**: 근본 원인 제거
-  **기술 부채 해소**: 정기적인 리팩토링
+  **Code review**: Discovering complex or duplicated code
+  **Before adding new features**: Cleaning up existing code
+  **After bug fixes**: Removing root causes
+  **Resolving technical debt**: Regular refactoring
 S[5]{n,action}:
-  1,Extract Method (메서드 추출)
-  2,Remove Duplication (중복 제거)
+  1,Extract Method
+  2,Remove Duplication
   3,Replace Conditional with Polymorphism
   4,Introduce Parameter Object
-  5,SOLID 원칙 적용
+  5,Apply SOLID Principles

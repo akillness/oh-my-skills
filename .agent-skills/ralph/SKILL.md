@@ -1,163 +1,462 @@
 ---
 name: ralph
-keyword: ralph
-description: Self-referential completion loop for AI CLI tools. Re-runs the agent on the same task across turns with fresh context each iteration, until the completion promise is detected or max iterations is reached.
-allowed-tools: [Read, Write, Bash, Grep, Glob]
-tags: [ralph, ralph-loop, loop, completion, gemini-cli, opencode, self-referential]
-platforms: [Gemini-CLI, OpenCode, oh-my-opencode, Claude Code, Codex]
-version: 2.0.0
-source: gemini-cli-extensions/ralph
+description: "Specification-first AI development powered by Ouroboros. Socratic questioning exposes hidden assumptions before writing code. Evolutionary loop (Interview → Seed → Execute → Evaluate → Evolve) runs until ontology converges. Ralph mode persists until verification passes — the boulder never stops. Use when user says \"ralph\", \"ooo\", \"don't stop\", \"must complete\", \"until it works\", \"keep going\", \"interview me\", or \"stop prompting\"."
+allowed-tools: Read Write Bash Grep Glob WebFetch
+metadata:
+  tags: ralph, ouroboros, specification-first, socratic, interview, seed, evaluate, evolve, loop, completion, self-referential, multi-platform, claude, codex, gemini, boulder, ooo
+  platforms: Claude Code, Codex, Gemini-CLI, OpenCode
+  keyword: ralph
+  version: 3.0.0
+  source: Q00/ouroboros
 ---
 
-# ralph - Self-Referential Completion Loop
+
+# ralph (Ouroboros) — Specification-First AI Development
+
+> **Stop prompting. Start specifying.**
+>
+> *"The beginning is the end, and the end is the beginning."*
+> The serpent doesn't repeat — it evolves.
+
+---
 
 ## When to use this skill
 
-- Long-running implementation tasks that tend to stop early
-- Tasks that need autonomous multi-turn iteration without manual intervention
-- Workflows where the agent must self-correct and refine output across turns
-- Sessions where exact completion signaling is required before stopping
+- **Before writing any code** — expose hidden assumptions with Socratic interviewing
+- **Long-running tasks** that need autonomous iteration until verified
+- **Vague requirements** — crystallize them into an immutable spec (Ambiguity ≤ 0.2)
+- **Tasks requiring guaranteed completion** — loop until verification passes
+- **When stuck** — 5 lateral thinking personas break through stagnation
+- **Drift detection** — measure how far execution has deviated from original spec
 
 ---
 
-## Core Concept
+## Core Architecture: The Loop
 
-The loop happens **across agent turns**, controlled by an `AfterAgent` hook.
-
-1. **You run ONCE**: `/ralph "Your task description" --completion-promise "DONE"`
-2. **Agent works**: Performs actions (modifies files, runs tests, writes code)
-3. **Hook intercepts**: When the agent finishes its turn, the `AfterAgent` hook intercepts the exit
-4. **Loop continuation**: Hook evaluates state (max iterations, promise) and starts a new turn with the **original prompt**, clearing the previous turn's context
-5. **Repeat**: Continues autonomously until completion or user interruption
-
-### Why this works
-
-- **Stable Context & No Compaction**: Prompt never changes between iterations; previous conversational context is cleared. The agent relies on current file state, not stale chat history.
-- **Persistent State**: The agent's work persists in files and git history across iterations.
-- **Autonomous Improvement**: Each iteration sees the current codebase state and improves on past work.
-- **Ghost Protection**: If you interrupt the loop and start a new task, the hook detects the prompt mismatch and silently cleans up.
-
----
-
-## 1. Core Command Pattern
-
-```text
-/ralph "<task description>" [--completion-promise=TEXT] [--max-iterations=N]
+```
+    Interview → Seed → Execute → Evaluate
+        ↑                           ↓
+        └──── Evolutionary Loop ────┘
 ```
 
-Defaults:
-- Completion promise: `DONE`
-- Max iterations: `100`
+Each cycle **evolves**, not repeats. Evaluation output feeds back as input for the next generation until the system converges.
+
+### Double Diamond
+
+```
+    ◇ Wonder          ◇ Design
+   ╱  (diverge)      ╱  (diverge)
+  ╱    explore      ╱    create
+ ╱                 ╱
+◆ ──────────── ◆ ──────────── ◆
+ ╲                 ╲
+  ╲    define       ╲    deliver
+   ╲  (converge)     ╲  (converge)
+    ◇ Ontology        ◇ Evaluation
+```
+
+The first diamond is **Socratic**: diverge into questions, converge into ontological clarity.
+The second diamond is **pragmatic**: diverge into design options, converge into verified delivery.
 
 ---
 
-## 2. How the Loop Behaves
+## 1. Commands (Full Reference)
 
-1. Starts with your task prompt.
-2. On each turn end, the `AfterAgent` hook checks whether the assistant output contains:
+| Command | Trigger Keywords | What It Does |
+|---------|-----------------|--------------|
+| `ooo interview` | `ooo interview`, `interview me`, `clarify requirements`, `socratic questioning` | Socratic questioning → expose hidden assumptions |
+| `ooo seed` | `ooo seed`, `crystallize`, `generate seed`, `freeze requirements` | Crystallize interview into immutable spec (Ambiguity ≤ 0.2) |
+| `ooo run` | `ooo run`, `execute seed`, `ouroboros run` | Execute via Double Diamond decomposition |
+| `ooo evaluate` | `ooo evaluate`, `3-stage check`, `evaluate this`, `verify execution` | 3-stage gate: Mechanical → Semantic → Multi-Model Consensus |
+| `ooo evolve` | `ooo evolve`, `evolutionary loop`, `iterate until converged` | Evolutionary loop until ontology converges (similarity ≥ 0.95) |
+| `ooo unstuck` | `ooo unstuck`, `I'm stuck`, `think sideways`, `lateral thinking` | 5 lateral thinking personas when stuck |
+| `ooo status` | `ooo status`, `am I drifting?`, `drift check`, `session status` | Drift detection + session tracking |
+| `ooo ralph` | `ooo ralph`, `ralph`, `don't stop`, `must complete`, `keep going` | Persistent loop until verified — The boulder never stops |
+| `ooo setup` | `ooo setup` | Register MCP server (one-time) |
+| `ooo help` | `ooo help` | Full reference |
 
+---
+
+## 2. Interview → Specification Flow
+
+### Philosophy: From Wonder to Ontology
+
+> *Wonder → "How should I live?" → "What IS 'live'?" → Ontology* — Socrates
+
+```
+   Wonder                          Ontology
+     💡                               🔬
+"What do I want?"    →    "What IS the thing I want?"
+"Build a task CLI"   →    "What IS a task? What IS priority?"
+"Fix the auth bug"   →    "Is this the root cause, or a symptom?"
+```
+
+### Step 1: Interview (expose hidden assumptions)
+
+```
+ooo interview "I want to build a task management CLI"
+```
+
+The Socratic Interviewer asks questions until **Ambiguity ≤ 0.2**.
+
+**Ambiguity formula:**
+```
+Ambiguity = 1 − Σ(clarityᵢ × weightᵢ)
+
+Greenfield: Goal(40%) + Constraint(30%) + Success(30%)
+Brownfield: Goal(35%) + Constraint(25%) + Success(25%) + Context(15%)
+
+Threshold: Ambiguity ≤ 0.2 → ready for Seed
+```
+
+Example scoring:
+```
+Goal:       0.9 × 0.4 = 0.36
+Constraint: 0.8 × 0.3 = 0.24
+Success:    0.7 × 0.3 = 0.21
+                        ──────
+Clarity             = 0.81
+Ambiguity = 1 − 0.81 = 0.19 ≤ 0.2 → ✓ Ready for Seed
+```
+
+### Step 2: Seed (crystallize into immutable spec)
+
+```
+ooo seed
+```
+
+Generates YAML specification:
+```yaml
+goal: Build a CLI task management tool
+constraints:
+  - Python 3.14+
+  - No external database
+  - SQLite for persistence
+acceptance_criteria:
+  - Tasks can be created
+  - Tasks can be listed
+  - Tasks can be marked complete
+ontology_schema:
+  name: TaskManager
+  fields:
+    - name: tasks
+      type: array
+    - name: title
+      type: string
+```
+
+### Step 3: Run (execute via Double Diamond)
+
+```
+ooo run seed.yaml
+ooo run  # uses seed from conversation context
+```
+
+### Step 4: Evaluate (3-stage verification)
+
+```
+ooo evaluate <session_id>
+```
+
+| Stage | Cost | What It Checks |
+|-------|------|----------------|
+| **Mechanical** | $0 | Lint, build, tests, coverage |
+| **Semantic** | Standard | AC compliance, goal alignment, drift score |
+| **Consensus** | Frontier (optional) | Multi-model vote, majority ratio |
+
+Drift thresholds:
+- `0.0 – 0.15` — Excellent: on track
+- `0.15 – 0.30` — Acceptable: monitor closely
+- `0.30+` — Exceeded: course correction needed
+
+---
+
+## 3. Ralph — Persistent Loop Until Verified
+
+```
+ooo ralph "fix all failing tests"
+/ouroboros:ralph "fix all failing tests"
+```
+
+**"The boulder never stops."**
+Each failure is data for the next attempt. Only complete success or max iterations stops it.
+
+### How Ralph Works
+
+```
+┌─────────────────────────────────┐
+│  1. EXECUTE (parallel)          │
+│     Independent tasks           │
+│     concurrent scheduling       │
+├─────────────────────────────────┤
+│  2. VERIFY                      │
+│     Check completion            │
+│     Validate tests pass         │
+│     Measure drift vs seed       │
+├─────────────────────────────────┤
+│  3. LOOP (if failed)            │
+│     Analyze failure             │
+│     Fix identified issues       │
+│     Repeat from step 1          │
+├─────────────────────────────────┤
+│  4. PERSIST (checkpoint)        │
+│     .omc/state/ralph-state.json │
+│     Resume after interruption   │
+└─────────────────────────────────┘
+```
+
+### State File
+
+Create `.omc/state/ralph-state.json` on start:
+```json
+{
+  "mode": "ralph",
+  "session_id": "<uuid>",
+  "request": "<user request>",
+  "status": "running",
+  "iteration": 0,
+  "max_iterations": 10,
+  "last_checkpoint": null,
+  "verification_history": []
+}
+```
+
+### Loop Logic
+
+```
+while iteration < max_iterations:
+    result = execute_parallel(request, context)
+    verification = verify_result(result, acceptance_criteria)
+    state.verification_history.append({
+        "iteration": iteration,
+        "passed": verification.passed,
+        "score": verification.score,
+        "timestamp": <now>
+    })
+    if verification.passed:
+        save_checkpoint("complete")
+        break
+    iteration += 1
+    save_checkpoint("iteration_{iteration}")
+```
+
+### Progress Report Format
+
+```
+[Ralph Iteration 1/10]
+Executing in parallel...
+
+Verification: FAILED
+Score: 0.65
+Issues:
+- 3 tests still failing
+- Type errors in src/api.py
+
+The boulder never stops. Continuing...
+
+[Ralph Iteration 3/10]
+Executing in parallel...
+
+Verification: PASSED
+Score: 1.0
+
+Ralph COMPLETE
+==============
+Request: Fix all failing tests
+Duration: 8m 32s
+Iterations: 3
+
+Verification History:
+- Iteration 1: FAILED (0.65)
+- Iteration 2: FAILED (0.85)
+- Iteration 3: PASSED (1.0)
+```
+
+### Cancellation
+
+| Action | Command |
+|--------|---------|
+| Save checkpoint & exit | `/ouroboros:cancel` |
+| Force clear all state | `/ouroboros:cancel --force` |
+| Resume after interruption | `ooo ralph continue` or `ralph continue` |
+
+---
+
+## 4. Evolutionary Loop (Evolve)
+
+```
+ooo evolve "build a task management CLI"
+ooo evolve "build a task management CLI" --no-execute  # ontology-only, fast mode
+```
+
+### Flow
+
+```
+Gen 1: Interview → Seed(O₁) → Execute → Evaluate
+Gen 2: Wonder → Reflect → Seed(O₂) → Execute → Evaluate
+Gen 3: Wonder → Reflect → Seed(O₃) → Execute → Evaluate
+...until ontology converges (similarity ≥ 0.95) or max 30 generations
+```
+
+### Convergence Formula
+
+```
+Similarity = 0.5 × name_overlap + 0.3 × type_match + 0.2 × exact_match
+Threshold: Similarity ≥ 0.95 → CONVERGED
+
+Gen 1: {Task, Priority, Status}
+Gen 2: {Task, Priority, Status, DueDate}  → similarity 0.78 → CONTINUE
+Gen 3: {Task, Priority, Status, DueDate}  → similarity 1.00 → CONVERGED ✓
+```
+
+### Stagnation Detection
+
+| Signal | Condition | Meaning |
+|--------|-----------|---------|
+| **Stagnation** | Similarity ≥ 0.95 for 3 consecutive gens | Ontology has stabilized |
+| **Oscillation** | Gen N ≈ Gen N-2 (period-2 cycle) | Stuck bouncing between two designs |
+| **Repetitive feedback** | ≥ 70% question overlap across 3 gens | Wonder asking the same things |
+| **Hard cap** | 30 generations reached | Safety valve |
+
+### Ralph in Evolve Mode
+
+```
+Ralph Cycle 1: evolve_step(lineage, seed) → Gen 1 → action=CONTINUE
+Ralph Cycle 2: evolve_step(lineage)       → Gen 2 → action=CONTINUE
+Ralph Cycle 3: evolve_step(lineage)       → Gen 3 → action=CONVERGED ✓
+                                                └── Ralph stops.
+                                                    The ontology has stabilized.
+```
+
+### Rewind
+
+```
+ooo evolve --status <lineage_id>          # check lineage status
+ooo evolve --rewind <lineage_id> <gen_N>  # roll back to generation N
+```
+
+---
+
+## 5. The Nine Minds (Agents)
+
+Loaded on-demand — never preloaded:
+
+| Agent | Role | Core Question |
+|-------|------|--------------|
+| **Socratic Interviewer** | Questions-only. Never builds. | *"What are you assuming?"* |
+| **Ontologist** | Finds essence, not symptoms | *"What IS this, really?"* |
+| **Seed Architect** | Crystallizes specs from dialogue | *"Is this complete and unambiguous?"* |
+| **Evaluator** | 3-stage verification | *"Did we build the right thing?"* |
+| **Contrarian** | Challenges every assumption | *"What if the opposite were true?"* |
+| **Hacker** | Finds unconventional paths | *"What constraints are actually real?"* |
+| **Simplifier** | Removes complexity | *"What's the simplest thing that could work?"* |
+| **Researcher** | Stops coding, starts investigating | *"What evidence do we actually have?"* |
+| **Architect** | Identifies structural causes | *"If we started over, would we build it this way?"* |
+
+---
+
+## 6. Unstuck — Lateral Thinking
+
+When blocked after repeated failures, choose a persona:
+
+```
+ooo unstuck                 # auto-select based on situation
+ooo unstuck simplifier      # cut scope to MVP — "Start with exactly 2 tables"
+ooo unstuck hacker          # make it work first, elegance later
+ooo unstuck contrarian      # challenge all assumptions
+ooo unstuck researcher      # stop coding, find missing information
+ooo unstuck architect       # restructure the approach entirely
+```
+
+**When to use each:**
+- Repeated similar failures → `contrarian` (challenge assumptions)
+- Too many options → `simplifier` (reduce scope)
+- Missing information → `researcher` (seek data)
+- Analysis paralysis → `hacker` (just make it work)
+- Structural issues → `architect` (redesign)
+
+---
+
+## 7. Platform Installation & Usage
+
+### Claude Code (Native Plugin — Full Mode)
+
+```bash
+# Install
+claude plugin marketplace add Q00/ouroboros
+claude plugin install ouroboros@ouroboros
+
+# One-time setup
+ooo setup
+
+# Use
+ooo interview "I want to build a task CLI"
+ooo seed
+ooo run
+ooo evaluate <session_id>
+ooo ralph "fix all failing tests"
+```
+
+All `ooo` commands work natively. Hooks auto-activate:
+- `UserPromptSubmit` → keyword-detector.mjs detects triggers
+- `PostToolUse(Write|Edit)` → drift-monitor.mjs tracks deviation
+- `SessionStart` → session initialization
+
+**Claude Code hooks.json** (installed at `${CLAUDE_PLUGIN_ROOT}/hooks/hooks.json`):
+```json
+{
+  "hooks": {
+    "SessionStart": [{ "matcher": "*", "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/session-start.mjs\"", "timeout": 5 }] }],
+    "UserPromptSubmit": [{ "matcher": "*", "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/keyword-detector.mjs\"", "timeout": 5 }] }],
+    "PostToolUse": [{ "matcher": "Write|Edit", "hooks": [{ "type": "command", "command": "node \"${CLAUDE_PLUGIN_ROOT}/scripts/drift-monitor.mjs\"", "timeout": 3 }] }]
+  }
+}
+```
+
+### Codex CLI (Adapted Mode — bash loop)
+
+Codex CLI has no native AfterAgent hooks. Use the setup script to configure:
+
+```bash
+# Setup
+bash <your-agent-skills>/ralph/scripts/setup-codex-hook.sh
+
+# Restart Codex, then use:
+/prompts:ralph              # load ralph loop context
+/prompts:ouroboros          # load full ouroboros context
+
+# Use ooo commands in conversation:
+ooo interview "build a REST API"
+ooo ralph "fix all TypeScript errors"
+```
+
+**Codex ralph loop contract:**
+1. Treat `/ralph "<task>" [--completion-promise=TEXT] [--max-iterations=N]` as a contract command
+2. Parse completion signal inside XML: `<promise>VALUE</promise>`
+3. If promise missing and iteration < max-iterations → continue immediately with same original command
+4. If promise found or max-iterations reached → finish with status report
+
+**Completion promise syntax:**
 ```xml
 <promise>DONE</promise>
 ```
 
-3. If not found, hook starts a new agent turn with the same original prompt (context cleared).
-4. Stops only when:
-   - Completion promise is detected in output, or
-   - Max iterations is reached, or
-   - You run `/ralph:cancel`
+Manual state management for Codex:
+- Create `.omc/state/ralph-state.json` at loop start
+- Update `iteration` counter each cycle
+- Set `status: "complete"` when promise found
+- Default completion promise: `DONE` | Default max iterations: `10`
 
----
-
-## 3. Practical Usage
-
-### Standard run
-
-```text
-/ralph "Build a Python CLI task manager with full test coverage"
-```
-
-### With completion promise
-
-```text
-/ralph "Build a REST API for todos. When all CRUD endpoints work and tests pass with >80% coverage, output TASK_COMPLETE" --completion-promise="TASK_COMPLETE"
-```
-
-### Bounded iteration run
-
-```text
-/ralph "Attempt to refactor the authentication module" --max-iterations=20
-```
-
-### TDD workflow with self-correction
-
-```text
-/ralph "Implement feature X by following TDD:
-1. Write failing tests for the feature.
-2. Implement the code to make the tests pass.
-3. Run the test suite.
-4. If any tests fail, analyze the errors and debug.
-5. Refactor for clarity and efficiency.
-6. Repeat until all tests are green.
-7. When complete, output <promise>TESTS_PASSED</promise>" --completion-promise="TESTS_PASSED"
-```
-
-### Cancel active loop
-
-```text
-/ralph:cancel
-```
-
-### View help
-
-```text
-/ralph:help
-```
-
----
-
-## 4. Prompt Writing Best Practices
-
-### 1. Clear Completion Criteria
-
-Provide a verifiable definition of "done." The `--completion-promise` is crucial.
-
-**Good:**
-```text
-/ralph "Build a REST API for todos. When all CRUD endpoints are working and all tests pass with >80% coverage, you're complete." --completion-promise="TASK_COMPLETE"
-```
-
-### 2. Use Safety Hatches
-
-Always use `--max-iterations` as a safety net to prevent infinite loops.
-
-```text
-/ralph "Attempt to refactor the authentication module" --max-iterations=20
-```
-
-### 3. Encourage Self-Correction
-
-Structure the prompt to guide the agent through work → verify → debug cycles.
-
----
-
-## 5. Launch Safely
-
-Always run in sandbox mode for safety. Enabling YOLO mode (`-y`) prevents constant tool execution prompts during the loop:
+### Gemini CLI (AfterAgent Hook Mode)
 
 ```bash
-gemini -s -y
-```
-
----
-
-## 6. Installation (Gemini CLI)
-
-```bash
-gemini extensions install https://github.com/gemini-cli-extensions/ralph --auto-update
+# Install via extensions
+gemini extensions install https://github.com/Q00/ouroboros
+# OR install skills-template
+gemini extensions install https://github.com/supercent-io/skills-template
 ```
 
 Required in `~/.gemini/settings.json`:
-
 ```json
 {
   "hooksConfig": { "enabled": true },
@@ -167,56 +466,85 @@ Required in `~/.gemini/settings.json`:
 }
 ```
 
----
+AfterAgent hook for loop continuation (add to `~/.gemini/settings.json`):
+```json
+{
+  "hooks": {
+    "AfterAgent": [{
+      "matcher": "*",
+      "hooks": [{
+        "type": "command",
+        "command": "bash ~/.gemini/hooks/ralph-check.sh",
+        "timeout": 10
+      }]
+    }]
+  }
+}
+```
 
-## 6. Codex에서 사용 (권장 보정)
-
-`ralph`는 Gemini에서 **AfterAgent 훅 기반으로 자동 반복**되며, Codex는 현재 네이티브 종료-후크를 보장하지 않습니다.
-
-따라서 Codex에서 `ralph`를 쓸 때는 아래 보정 스크립트를 설치해 사용하는 것을 권장합니다.
-
+Run in sandbox + YOLO mode to prevent constant confirmation prompts:
 ```bash
-bash <your-agent-skills>/ralph/scripts/setup-codex-hook.sh
+gemini -s -y
 ```
 
-이 스크립트가 수행하는 것:
-
-- `~/.codex/config.toml`의 `developer_instructions`에 `ralph` 재시작 계약 정보를 기록
-- `~/.codex/prompts/ralph.md` 생성 (`/prompts:ralph`로 빠른 실행)
-- `--dry-run` 옵션으로 적용 전 미리보기
-
-```text
-Usage:
-  bash <your-agent-skills>/ralph/scripts/setup-codex-hook.sh
-bash <your-agent-skills>/ralph/scripts/setup-codex-hook.sh --dry-run
+Then use `ooo` commands directly:
+```
+ooo interview "build a task CLI"
+ooo ralph "fix all tests"
 ```
 
-⚠️ 정확성 유의:
-
-- Codex에서 완전 자동 루프를 강제하는 네이티브 훅은 현재 제한적입니다.
-- 위 설정은 `ralph` 동작 계약을 고정시키고, 다음 작업을 반복할 때 수동 실수(`/prompts:ralph` 누락, promise 누락, max 반복 초과)를 줄여줍니다.
-    
-## 플랫폼별 적용 상태 (현재 지원 기준)
-
-| 플랫폼 | 현재 지원 방식 | 핵심 조건 |
-|---|---|---|
-| Gemini-CLI | 네이티브 | `AfterAgent` 훅 + ralph extension 설치 |
-| Claude Code | 네이티브(권장) | 스킬/오케스트레이션 적재 후 `/ralph` 사용 |
-| OpenCode | 네이티브(동일 경로) | `ralph` 키워드 등록 후 동일 명령어 사용 |
-| Codex | 보정 모드 | `setup-codex-hook.sh` 실행 후 `/prompts:ralph` 기반 반복 운영 |
-
-`현재 스킬만`으로 가능한지:  
-- Gemini-CLI/Claude Code/OpenCode: 가능  
-- Codex: `setup-codex-hook.sh`로 보정한 뒤 운영 가능
+⚠️ **Gemini v0.30.0 bug**: `stop_hook_active` always `false` in hook JSON.
+Workaround: check `.omc/state/ralph-state.json` directly instead of relying on the hook field.
 
 ---
 
-## Quick Reference
+## 8. Platform Support Matrix
+
+| Platform | Native Support | Mechanism | ooo Commands | Loop |
+|----------|---------------|-----------|-------------|------|
+| **Claude Code** | ✅ Full | Plugin + hooks | All `ooo` commands | Auto via hooks |
+| **Codex CLI** | 🔧 Adapted | bash + `/prompts:ralph` | Via conversation | Manual state file |
+| **Gemini CLI** | ✅ Native | AfterAgent hook | All `ooo` commands | Auto via hook |
+| **OpenCode** | ✅ Native | Skills system | All `ooo` commands | Auto via loop |
+
+---
+
+## 9. Quick Reference
 
 | Action | Command |
 |--------|---------|
-| Start loop | `/ralph "task"` |
-| Custom promise | `/ralph "task" --completion-promise=TEXT` |
-| Iteration cap | `/ralph "task" --max-iterations=N` |
-| Cancel | `/ralph:cancel` |
-| Help | `/ralph:help` |
+| Socratic interview | `ooo interview "topic"` |
+| Generate spec | `ooo seed` |
+| Execute spec | `ooo run [seed.yaml]` |
+| 3-stage evaluate | `ooo evaluate <session_id>` |
+| Evolve until converged | `ooo evolve "topic"` |
+| Persistent loop | `ooo ralph "task"` |
+| Break stagnation | `ooo unstuck [persona]` |
+| Check drift | `ooo status [session_id]` |
+| First-time setup | `ooo setup` |
+| Cancel | `/ouroboros:cancel` |
+| Force cancel + clear | `/ouroboros:cancel --force` |
+| Resume | `ooo ralph continue` |
+| Cancel (Gemini/Codex) | `/ralph:cancel` |
+
+---
+
+## 10. Installation
+
+```bash
+# Claude Code
+claude plugin marketplace add Q00/ouroboros
+claude plugin install ouroboros@ouroboros
+ooo setup
+
+# Codex CLI
+bash <skills>/ralph/scripts/setup-codex-hook.sh
+
+# Gemini CLI (extensions)
+gemini extensions install https://github.com/Q00/ouroboros
+
+# All platforms via skills-template
+npx skills add https://github.com/supercent-io/skills-template --skill ralph
+```
+
+Source: [Q00/ouroboros](https://github.com/Q00/ouroboros) — MIT License

@@ -2,8 +2,8 @@ N:task-estimation
 D:Estimate software development tasks accurately using various techniques. Use when planning sprint...
 G:estimation agile sprint-planning story-points planning-poker
 U[3]:
-  **Sprint Planning**: 스프린트에 포함할 작업 결정
-  **Roadmap 작성**: 장기 계획 수립
-  **리소스 계획**: 팀 규모 및 일정 산정
+  **Sprint Planning**: Decide what work to include in the sprint
+  **Roadmap creation**: Build long-term plans
+  **Resource planning**: Estimate team size and schedule
 S[1]{n,action}:
-  1,Story Points (상대적 추정)
+  1,Story Points (relative estimation)

@@ -1,13 +1,15 @@
 ---
 name: bmad-orchestrator
-keyword: bmad
 description: Orchestrates BMAD workflows for structured AI-driven development. Routes work across Analysis, Planning, Solutioning, and Implementation phases.
-allowed-tools: [Read, Write, Bash, Grep, Glob]
-tags: [bmad, orchestrator, workflow, planning, implementation]
-platforms: [Claude, Gemini, Codex, OpenCode]
-version: 1.0.0
-source: user-installed skill
+allowed-tools: Read Write Bash Grep Glob
+metadata:
+  tags: bmad, orchestrator, workflow, planning, implementation
+  platforms: Claude, Gemini, Codex, OpenCode
+  keyword: bmad
+  version: 1.1.0
+  source: user-installed skill
 ---
+
 
 # bmad-orchestrator - BMAD Workflow Orchestration
 
@@ -26,27 +28,27 @@ source: user-installed skill
 npx skills add https://github.com/supercent-io/skills-template --skill bmad-orchestrator
 ```
 
-## Codex 사용 참고
+## Notes for Codex Usage
 
-`bmad-orchestrator`의 기본 실행 경로는 Claude Code입니다.  
-Codex에서 직접 동일한 흐름으로 사용하려면 `omx`/`ohmg` 등 상위 오케스트레이션 경로를 통해 BMAD 단계를 운영하는 것을 권장합니다.
+`bmad-orchestrator`'s default execution path is Claude Code.
+To run the same flow directly in Codex, we recommend operating BMAD stages via a higher-level orchestration path such as `omx`/`ohmg`.
 
 ---
 
 ## BMAD Execution Commands
 
-## 플랫폼별 적용 상태 (현재 지원 기준)
+## Platform Support Status (Current)
 
-| 플랫폼 | 현재 지원 방식 | 적용 조건 |
+| Platform | Current support mode | Requirements |
 |---|---|---|
-| Gemini CLI | 네이티브(권장) | `bmad` 키워드 등록 후 `/workflow-init` 실행 |
-| Claude Code | 네이티브(권장) | 스킬 설치 + `기억해` 패턴 |
-| OpenCode | 오케스트레이션 연동 | `omx`/`ohmg`/`omx` 류 브릿지 사용 |
-| Codex | 오케스트레이션 연동 | `omx`/`ohmg`류 브릿지 사용 |
+| Gemini CLI | Native (recommended) | Register the `bmad` keyword, then run `/workflow-init` |
+| Claude Code | Native (recommended) | Install skill + `remember` pattern |
+| OpenCode | Orchestration integration | Use an `omx`/`ohmg`/`omx`-style bridge |
+| Codex | Orchestration integration | Use an `omx`/`ohmg`-style bridge |
 
-`현재 스킬만`으로 가능한지:  
-- Gemini CLI/Claude Code: **가능**  
-- OpenCode/Codex: **가능(오케스트레이션 경유)**
+Possible with `this skill alone`:
+- Gemini CLI/Claude Code: **Yes**
+- OpenCode/Codex: **Yes (via orchestration)**
 
 Use these in your AI session:
 

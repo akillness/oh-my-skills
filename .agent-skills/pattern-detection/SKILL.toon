@@ -2,13 +2,13 @@ N:pattern-detection
 D:Detect patterns, anomalies, and trends in code and data. Use when identifying code smells, findin...
 G:patterns anomalies regex code-analysis security
 U[4]:
-  **코드 리뷰**: 문제 패턴 사전 감지
-  **보안 검토**: 취약점 패턴 스캔
-  **리팩토링**: 중복 코드 식별
-  **모니터링**: 이상 징후 알림
+  **Code review**: Proactively detect problematic patterns
+  **Security review**: Scan for vulnerability patterns
+  **Refactoring**: Identify duplicate code
+  **Monitoring**: Alert on anomalies
 S[5]{n,action}:
-  1,코드 스멜 패턴 감지
-  2,보안 취약점 패턴
-  3,코드 구조 패턴
-  4,데이터 이상 패턴
-  5,트렌드 분석
+  1,Detect code smell patterns
+  2,Security vulnerability patterns
+  3,Code structure patterns
+  4,Data anomaly patterns
+  5,Trend analysis

@@ -36,6 +36,8 @@ if ! git rev-parse --git-dir >/dev/null 2>&1; then
   exit 1
 fi
 
+GIT_ROOT=$(git rev-parse --show-toplevel)
+
 # ── List all worktrees ─────────────────────────────────────────────────────────
 info "Current worktrees:"
 git worktree list
@@ -44,6 +46,7 @@ echo ""
 # ── Identify stale worktrees ──────────────────────────────────────────────────
 MAIN_WORKTREE=$(git worktree list | head -1 | awk '{print $1}')
 WORKTREES_TO_REMOVE=()
+DIRTY_WORKTREES=()
 
 while IFS= read -r line; do
   WORKTREE_PATH=$(echo "$line" | awk '{print $1}')
@@ -53,18 +56,31 @@ while IFS= read -r line; do
 
   if $FORCE; then
     WORKTREES_TO_REMOVE+=("$WORKTREE_PATH")
+  elif [[ -z "$(git -C "$WORKTREE_PATH" status --porcelain 2>/dev/null)" ]]; then
+    WORKTREES_TO_REMOVE+=("$WORKTREE_PATH")
+  else
+    DIRTY_WORKTREES+=("$WORKTREE_PATH")
   fi
 done < <(git worktree list | tail -n +2)
 
 # ── List mode ─────────────────────────────────────────────────────────────────
 if $LIST_ONLY; then
-  if [[ ${#WORKTREES_TO_REMOVE[@]} -eq 0 ]]; then
+  if [[ ${#WORKTREES_TO_REMOVE[@]} -eq 0 ]] && [[ ${#DIRTY_WORKTREES[@]} -eq 0 ]]; then
     ok "No extra worktrees found"
   else
-    echo "Worktrees to remove:"
-    for wt in "${WORKTREES_TO_REMOVE[@]}"; do
-      echo "  - $wt"
-    done
+    if [[ ${#WORKTREES_TO_REMOVE[@]} -gt 0 ]]; then
+      echo "Worktrees ready to remove:"
+      for wt in "${WORKTREES_TO_REMOVE[@]}"; do
+        echo "  - $wt"
+      done
+    fi
+    if [[ ${#DIRTY_WORKTREES[@]} -gt 0 ]]; then
+      echo "Dirty worktrees skipped by default:"
+      for wt in "${DIRTY_WORKTREES[@]}"; do
+        echo "  - $wt"
+      done
+      echo "Use --force to remove dirty worktrees after reviewing them."
+    fi
   fi
   exit 0
 fi
@@ -79,14 +95,23 @@ else
       echo -e "${YELLOW}[DRY-RUN]${NC} Would remove: $WORKTREE_PATH"
     else
       info "Removing: $WORKTREE_PATH"
-      git worktree remove "$WORKTREE_PATH" --force 2>/dev/null || \
-        git worktree remove "$WORKTREE_PATH" 2>/dev/null || \
-        warn "Could not remove $WORKTREE_PATH (may already be gone)"
-      # Also remove the directory if it still exists
-      [[ -d "$WORKTREE_PATH" ]] && rm -rf "$WORKTREE_PATH" || true
-      ok "Removed: $WORKTREE_PATH"
+      if $FORCE; then
+        if git worktree remove "$WORKTREE_PATH" --force 2>/dev/null; then
+          ok "Removed: $WORKTREE_PATH"
+        else
+          warn "Could not remove $WORKTREE_PATH with --force"
+        fi
+      elif git worktree remove "$WORKTREE_PATH" 2>/dev/null; then
+        ok "Removed: $WORKTREE_PATH"
+      else
+        warn "Could not remove $WORKTREE_PATH (dirty or already gone)"
+      fi
     fi
   done
+fi
+
+if [[ ${#DIRTY_WORKTREES[@]} -gt 0 ]] && ! $FORCE; then
+  warn "Skipped ${#DIRTY_WORKTREES[@]} dirty worktree(s). Re-run with --force after review."
 fi
 
 # ── Prune stale worktree entries ──────────────────────────────────────────────
@@ -99,19 +124,19 @@ else
 fi
 
 # ── Update JEO state ──────────────────────────────────────────────────────────
-STATE_FILE=".omc/state/jeo-state.json"
+STATE_FILE="$GIT_ROOT/.omc/state/jeo-state.json"
 if [[ -f "$STATE_FILE" ]] && command -v python3 >/dev/null 2>&1; then
   if $DRY_RUN; then
-    echo -e "${YELLOW}[DRY-RUN]${NC} Would update JEO state: phase=cleanup, worktrees=[]"
+    echo -e "${YELLOW}[DRY-RUN]${NC} Would update JEO state: phase=cleanup, cleanup_completed=true"
   else
-    python3 - <<'PYEOF'
+    STATE_FILE="$STATE_FILE" python3 - <<'PYEOF'
 import json, os
-state_path = ".omc/state/jeo-state.json"
+state_path = os.environ["STATE_FILE"]
 try:
     with open(state_path) as f:
         state = json.load(f)
-    state["phase"] = "cleanup"
-    state["worktrees"] = []
+    state["phase"] = "done"
+    # state["worktrees"] = []  # 미구현 필드 — SKILL.md 초기 스키마에서도 제거됨. 향후 멀티-worktree 추적 구현 시 복원.
     state["cleanup_completed"] = True
     with open(state_path, "w") as f:
         json.dump(state, f, indent=2)

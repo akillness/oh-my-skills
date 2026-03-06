@@ -1,12 +1,13 @@
 ---
 name: vercel-deploy
-description: Deploy applications and websites to Vercel instantly. Use when asked to "Deploy my app", "Deploy this to production", "Create a preview deployment", or "Push this live". No authentication required - returns preview URL and claimable deployment link.
-tags: [deployment, vercel, preview, production, hosting, serverless]
-platforms: [Claude]
+description: "Deploy applications and websites to Vercel instantly. Use when asked to \"Deploy my app\", \"Deploy this to production\", \"Create a preview deployment\", or \"Push this live\". No authentication required - returns preview URL and claimable deployment link."
 metadata:
   author: vercel
-  version: "1.0.0"
+  version: 1.0.0
+  tags: deployment, vercel, preview, production, hosting, serverless
+  platforms: Claude
 ---
+
 
 # Vercel Deploy
 
@@ -14,10 +15,10 @@ Deploy any project to Vercel instantly. No authentication required.
 
 ## When to use this skill
 
-- **앱 배포**: "Deploy my app" 요청 시
-- **프리뷰 배포**: "Create a preview deployment" 요청 시
-- **프로덕션 배포**: "Deploy this to production" 요청 시
-- **링크 공유**: "Deploy and give me the link" 요청 시
+- **App deployment**: when asked "Deploy my app"
+- **Preview deployment**: when asked "Create a preview deployment"
+- **Production deployment**: when asked "Deploy this to production"
+- **Share link**: when asked "Deploy and give me the link"
 
 ## How It Works
 
@@ -28,11 +29,11 @@ Deploy any project to Vercel instantly. No authentication required.
 
 ## Instructions
 
-### Step 1: 프로젝트 준비
+### Step 1: Prepare Project
 
-배포할 프로젝트 디렉토리를 확인합니다.
+Confirm the project directory to deploy.
 
-**지원 프레임워크**:
+**Supported frameworks**:
 - **React**: Next.js, Gatsby, Create React App, Remix, React Router
 - **Vue**: Nuxt, Vitepress, Vuepress, Gridsome
 - **Svelte**: SvelteKit, Svelte, Sapper
@@ -41,9 +42,9 @@ Deploy any project to Vercel instantly. No authentication required.
 - **Build Tools**: Vite, Parcel
 - **And more**: Blitz, Hydrogen, RedwoodJS, Storybook, Sanity, etc.
 
-### Step 2: 배포 실행
+### Step 2: Run Deployment
 
-**스크립트 사용** (claude.ai 환경):
+**Use the script** (claude.ai environment):
 ```bash
 bash /mnt/skills/user/vercel-deploy/scripts/deploy.sh [path]
 ```
@@ -63,15 +64,15 @@ bash /mnt/skills/user/vercel-deploy/scripts/deploy.sh /path/to/project
 bash /mnt/skills/user/vercel-deploy/scripts/deploy.sh /path/to/project.tgz
 ```
 
-### Step 3: 결과 확인
+### Step 3: Verify Result
 
-배포 성공 시 두 개의 URL이 반환됩니다:
-- **Preview URL**: 즉시 접근 가능한 라이브 사이트
-- **Claim URL**: Vercel 계정으로 배포 이전
+On successful deployment, two URLs are returned:
+- **Preview URL**: live site you can access immediately
+- **Claim URL**: transfer this deployment to your Vercel account
 
 ## Output Format
 
-### 콘솔 출력
+### Console Output
 
 ```
 Preparing deployment...
@@ -84,7 +85,7 @@ Preview URL: https://skill-deploy-abc123.vercel.app
 Claim URL:   https://vercel.com/claim-deployment?code=...
 ```
 
-### JSON 출력 (프로그래밍 용)
+### JSON Output (for automation)
 
 ```json
 {
@@ -131,30 +132,30 @@ Deployment failed due to network restrictions. To fix this:
 
 ### Framework Not Detected
 
-프레임워크가 감지되지 않으면:
-1. `package.json` 존재 여부 확인
-2. dependencies에 프레임워크 패키지 포함 확인
-3. 수동으로 `framework` 파라미터 지정
+If the framework is not detected:
+1. Check that `package.json` exists
+2. Check that your dependencies include the framework package
+3. Manually set the `framework` parameter
 
 ## Constraints
 
-### 필수 규칙 (MUST)
+### Required Rules (MUST)
 
-1. **두 URL 모두 표시**: Preview URL과 Claim URL 모두 사용자에게 표시
-2. **프레임워크 감지**: package.json에서 자동 감지
-3. **에러 메시지 표시**: 배포 실패 시 명확한 에러 메시지
+1. **Show both URLs**: show both the Preview URL and Claim URL to the user
+2. **Framework detection**: auto-detect from package.json
+3. **Show error messages**: show a clear error message if deployment fails
 
-### 금지 사항 (MUST NOT)
+### Prohibited (MUST NOT)
 
-1. **node_modules 포함**: tarball에 node_modules 포함하지 않음
-2. **.git 포함**: tarball에 .git 디렉토리 포함하지 않음
-3. **인증 정보 하드코딩**: 인증 필요 없음 (claimable deploy)
+1. **Include node_modules**: do not include node_modules in the tarball
+2. **Include .git**: do not include the .git directory in the tarball
+3. **Hardcode credentials**: no authentication required (claimable deploy)
 
 ## Best practices
 
-1. **프레임워크 자동 감지**: package.json 분석으로 최적 설정
-2. **Clean Tarball**: node_modules, .git 제외로 빠른 업로드
-3. **명확한 출력**: Preview URL과 Claim URL 구분 표시
+1. **Automatic framework detection**: pick optimal settings by analyzing package.json
+2. **Clean Tarball**: exclude node_modules and .git for faster uploads
+3. **Clear output**: clearly distinguish the Preview URL and Claim URL
 
 ## References
 
@@ -163,14 +164,14 @@ Deployment failed due to network restrictions. To fix this:
 
 ## Metadata
 
-### 버전
-- **현재 버전**: 1.0.0
-- **최종 업데이트**: 2026-01-22
-- **호환 플랫폼**: Claude (claude.ai)
-- **원본 출처**: vercel/agent-skills
+### Version
+- **Current version**: 1.0.0
+- **Last updated**: 2026-01-22
+- **Supported platforms**: Claude (claude.ai)
+- **Source**: vercel/agent-skills
 
-### 관련 스킬
-- [deployment-automation](../deployment-automation/SKILL.md): CI/CD 및 Docker/K8s 배포
+### Related Skills
+- [deployment-automation](../deployment-automation/SKILL.md): CI/CD and Docker/K8s deployments
 
-### 태그
+### Tags
 `#deployment` `#vercel` `#preview` `#production` `#hosting` `#serverless` `#infrastructure`

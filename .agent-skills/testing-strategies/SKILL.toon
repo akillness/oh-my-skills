@@ -2,13 +2,13 @@ N:testing-strategies
 D:Design comprehensive testing strategies for software quality assurance. Use when planning test co...
 G:testing test-strategy TDD unit-test integration-test
 U[4]:
-  **신규 프로젝트**: 테스트 전략 수립
-  **품질 문제**: 버그 빈번히 발생
-  **리팩토링 전**: 안전망 구축
-  **CI/CD 구축**: 자동화된 테스트
+  **New project**: define a testing strategy
+  **Quality issues**: bugs happen frequently
+  **Before refactoring**: build a safety net
+  **CI/CD setup**: automated tests
 S[5]{n,action}:
-  1,Test Pyramid 이해
-  2,Unit Testing 전략
+  1,Understand the Test Pyramid
+  2,Unit testing strategy
   3,Integration Testing
   4,E2E Testing (Playwright)
   5,TDD (Test-Driven Development)

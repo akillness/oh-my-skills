@@ -2,13 +2,13 @@ N:performance-optimization
 D:Optimize application performance for speed, efficiency, and scalability. Use when improving page ...
 G:performance optimization React lazy-loading caching
 U[4]:
-  **느린 페이지 로드**: Lighthouse 점수 낮음
-  **느린 렌더링**: 사용자 인터랙션 지연
-  **큰 번들 크기**: 다운로드 시간 증가
-  **느린 쿼리**: 데이터베이스 병목
+  **Slow page loads**: low Lighthouse score
+  **Slow rendering**: delayed user interactions
+  **Large bundle size**: increased download time
+  **Slow queries**: database bottlenecks
 S[5]{n,action}:
-  1,성능 측정
-  2,React 최적화
-  3,번들 크기 최적화
-  4,이미지 최적화
-  5,데이터베이스 쿼리 최적화
+  1,Measure performance
+  2,Optimize React
+  3,Optimize bundle size
+  4,Optimize images
+  5,Optimize database queries

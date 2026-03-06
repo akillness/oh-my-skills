@@ -66,10 +66,34 @@ if [[ -f "${HOME}/.claude/settings.json" ]]; then
   else
     warn "Claude Code — plannotator hook not found in settings.json"; ((WARN++)) || true
   fi
-  if grep -q "CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS" "${HOME}/.claude/settings.json" 2>/dev/null; then
+  TEAMS_ENABLED=false
+  if [[ "${CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS:-}" =~ ^(1|true|True|yes|YES)$ ]]; then
+    TEAMS_ENABLED=true
+  elif python3 -c "
+import json, os, sys
+try:
+    s = json.load(open(os.path.expanduser('~/.claude/settings.json')))
+    val = s.get('env', {}).get('CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS', '')
+    sys.exit(0 if str(val) in ('1', 'true', 'True', 'yes') else 1)
+except Exception:
+    sys.exit(1)
+" 2>/dev/null; then
+    TEAMS_ENABLED=true
+  fi
+  if $TEAMS_ENABLED; then
     ok "Claude Code — experimental agent teams enabled"; ((PASS++)) || true
   else
     warn "Claude Code — experimental agent teams not enabled"; ((WARN++)) || true
+  fi
+  if grep -q '"agentation"' "${HOME}/.claude/settings.json" 2>/dev/null; then
+    ok "Claude Code — agentation MCP configured"; ((PASS++)) || true
+  else
+    warn "Claude Code — agentation MCP not configured"; ((WARN++)) || true
+  fi
+  if grep -q "localhost:4747/pending" "${HOME}/.claude/settings.json" 2>/dev/null; then
+    ok "Claude Code — agentation prompt hook configured"; ((PASS++)) || true
+  else
+    warn "Claude Code — agentation prompt hook not configured"; ((WARN++)) || true
   fi
 else
   warn "Claude Code — ~/.claude/settings.json not found"; ((WARN++)) || true
@@ -99,6 +123,16 @@ PYEOF
   else
     warn "Codex CLI — /prompts:jeo not found"; ((WARN++)) || true
   fi
+  if grep -q "jeo-notify.py" "${HOME}/.codex/config.toml" 2>/dev/null; then
+    ok "Codex CLI — notify hook configured"; ((PASS++)) || true
+  else
+    warn "Codex CLI — notify hook missing"; ((WARN++)) || true
+  fi
+  if grep -q 'agent-turn-complete' "${HOME}/.codex/config.toml" 2>/dev/null; then
+    ok "Codex CLI — tui notifications include agent-turn-complete"; ((PASS++)) || true
+  else
+    warn "Codex CLI — tui notifications missing agent-turn-complete"; ((WARN++)) || true
+  fi
 else
   warn "Codex CLI — ~/.codex/config.toml not found"; ((WARN++)) || true
 fi
@@ -122,7 +156,7 @@ if [[ -f "${HOME}/.gemini/GEMINI.md" ]]; then
 fi
 
 # OpenCode
-for candidate in "./opencode.json" "${HOME}/opencode.json"; do
+for candidate in "./opencode.json" "${HOME}/opencode.json" "${HOME}/.config/opencode/opencode.json"; do
   if [[ -f "$candidate" ]]; then
     if grep -q "plannotator" "$candidate" 2>/dev/null; then
       ok "OpenCode — plannotator plugin configured ($candidate)"; ((PASS++)) || true
@@ -136,14 +170,20 @@ echo ""
 
 # ── JEO State ─────────────────────────────────────────────────────────────────
 info "JEO State"
-STATE_FILE=".omc/state/jeo-state.json"
+GIT_ROOT=$(git rev-parse --show-toplevel 2>/dev/null || pwd)
+STATE_FILE="$GIT_ROOT/.omc/state/jeo-state.json"
+PHASE="unknown"
 if [[ -f "$STATE_FILE" ]]; then
   ok "State file found: $STATE_FILE"
   if command -v python3 >/dev/null 2>&1; then
     PHASE=$(python3 -c "import json; d=json.load(open('$STATE_FILE')); print(d.get('phase','unknown'))" 2>/dev/null || echo "unknown")
     TASK=$(python3 -c "import json; d=json.load(open('$STATE_FILE')); print(d.get('task','(none)'))" 2>/dev/null || echo "(none)")
+    RETRY=$(python3 -c "import json; d=json.load(open('$STATE_FILE')); print(d.get('retry_count',0))" 2>/dev/null || echo "0")
+    LAST_ERR=$(python3 -c "import json; d=json.load(open('$STATE_FILE')); e=d.get('last_error'); print(e if e else '(none)')" 2>/dev/null || echo "(none)")
     echo "     Current phase: $PHASE"
     echo "     Task: $TASK"
+    [[ "$RETRY" -gt 0 ]] && echo "     Retry count: $RETRY"
+    [[ "$LAST_ERR" != "(none)" ]] && echo -e "     ${RED}Last error: $LAST_ERR${NC}"
   fi
   if $RESUME; then
     echo ""
@@ -155,27 +195,36 @@ else
   warn "No active JEO state (no workflow in progress)"
   if $RESUME && command -v python3 >/dev/null 2>&1; then
     info "Initializing fresh JEO state file for new session..."
-    mkdir -p ".omc/state"
-    python3 - <<'PYEOF'
-import json, datetime, os
+    mkdir -p "$GIT_ROOT/.omc/state" "$GIT_ROOT/.omc/plans"
+    GIT_ROOT="$GIT_ROOT" python3 - <<'PYEOF'
+import json, datetime, os, uuid
 now = datetime.datetime.utcnow().isoformat() + "Z"
+git_root = os.environ["GIT_ROOT"]
 state = {
+    "mode": "jeo",
     "phase": "plan",
-    "task": "",
+    "session_id": str(uuid.uuid4()),
+    "task": "resumed session",
     "plan_approved": False,
-    "plan_path": ".omc/plans/jeo-plan.md",
+    "plan_review_method": None,
+    "checkpoint": None,
+    "last_error": None,
+    "retry_count": 0,
     "team_available": False,
-    "worktrees": [],
-    "bmad_phase": None,
+    "agentation": {
+        "active": False,
+        "session_id": None,
+        "annotations": {"pending": 0, "acknowledged": 0, "resolved": 0}
+    },
     "created_at": now,
-    "updated_at": now,
-    "cleanup_completed": False
+    "updated_at": now
 }
-os.makedirs(".omc/state", exist_ok=True)
-os.makedirs(".omc/plans", exist_ok=True)
-with open(".omc/state/jeo-state.json", "w") as f:
+os.makedirs(os.path.join(git_root, ".omc", "state"), exist_ok=True)
+os.makedirs(os.path.join(git_root, ".omc", "plans"), exist_ok=True)
+state_path = os.path.join(git_root, ".omc", "state", "jeo-state.json")
+with open(state_path, "w") as f:
     json.dump(state, f, indent=2)
-print("✓ Fresh JEO state initialized at .omc/state/jeo-state.json (phase: plan)")
+print(f"✓ Fresh JEO state initialized at {state_path} (phase: plan)")
 PYEOF
   elif [[ -z "${1:-}" ]]; then
     echo "     Tip: Run with --resume to initialize state for a new session"

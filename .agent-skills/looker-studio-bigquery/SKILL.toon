@@ -2,21 +2,21 @@ N:looker-studio-bigquery
 D:Design and configure Looker Studio dashboards with BigQuery data sources. Use when creating analy...
 G:Looker-Studio BigQuery dashboard analytics visualization
 U[5]:
-  **분석 대시보드 생성**: BigQuery 데이터를 시각화하여 비즈니스 인사이트 도출
-  **실시간 리포팅**: 자동 새로고침되는 대시보드 구축
-  **성능 최적화**: 대용량 데이터셋의 쿼리 비용 및 로딩 시간 최적화
-  **데이터 파이프라인**: 스케줄된 쿼리로 ETL 프로세스 자동화
-  **팀 협업**: 공유 가능한 인터랙티브 대시보드 구축
+  **Analytics dashboard creation**: Visualizing BigQuery data to derive business insights
+  **Real-time reporting**: Building auto-refreshing dashboards
+  **Performance optimization**: Optimizing query costs and loading time for large datasets
+  **Data pipeline**: Automating ETL processes with scheduled queries
+  **Team collaboration**: Building shareable interactive dashboards
 S[8]{n,action}:
-  1,GCP BigQuery 환경 준비
-  2,Looker Studio에서 BigQuery 연결하기
-  3,스케줄된 쿼리로 성능 최적화
-  4,대시보드 레이아웃 설계
-  5,인터랙티브 필터 및 컨트롤
-  6,쿼리 성능 최적화
-  7,Community Connector 개발 (고급)
-  8,보안 및 접근 제어
+  1,Prepare GCP BigQuery Environment
+  2,Connect BigQuery in Looker Studio
+  3,Performance Optimization with Scheduled Queries
+  4,Dashboard Layout Design
+  5,Interactive Filters and Controls
+  6,Query Performance Optimization
+  7,Community Connector Development (Advanced)
+  8,Security and Access Control
 R[3]:
-  **Looker Studio 기본 캐싱**
-  **BigQuery 캐싱**
-  **스케줄된 쿼리 활용**
+  **Looker Studio default caching**
+  **BigQuery caching**
+  **Utilizing Scheduled Queries**

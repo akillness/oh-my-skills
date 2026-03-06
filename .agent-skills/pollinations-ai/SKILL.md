@@ -1,13 +1,11 @@
 ---
 name: pollinations-ai
-description: Generate and save images using Pollinations.ai's free, open-source API. No signup required. Supports URL-based generation, custom parameters (width, height, model, seed), and automatic file saving. Perfect for quick prototypes, marketing assets, and creative workflows.
-tags: [image-generation, pollinations, free, api, creative, ai-art, url-based]
-platforms: [Claude, ChatGPT, Gemini, Codex]
-allowed-tools:
-  - Bash
-  - Write
-  - Read
+description: "Generate and save images using Pollinations.ai's free, open-source API. No signup required. Supports URL-based generation, custom parameters (width, height, model, seed), and automatic file saving. Perfect for quick prototypes, marketing assets, and creative workflows."
+metadata:
+  tags: image-generation, pollinations, free, api, creative, ai-art, url-based
+  platforms: Claude, ChatGPT, Gemini, Codex
 ---
+
 
 # Pollinations.ai Image Generation
 

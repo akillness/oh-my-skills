@@ -1,46 +1,48 @@
 ---
 name: looker-studio-bigquery
 description: Design and configure Looker Studio dashboards with BigQuery data sources. Use when creating analytics dashboards, connecting BigQuery to visualization tools, or optimizing data pipeline performance. Handles BigQuery connections, custom SQL queries, scheduled queries, dashboard design, and performance optimization.
-tags: [Looker-Studio, BigQuery, dashboard, analytics, visualization, GCP, data-studio, SQL]
-platforms: [Claude, ChatGPT, Gemini]
+metadata:
+  tags: Looker-Studio, BigQuery, dashboard, analytics, visualization, GCP, data-studio, SQL
+  platforms: Claude, ChatGPT, Gemini
 ---
+
 
 # Looker Studio BigQuery Integration
 
 ## When to use this skill
 
-- **분석 대시보드 생성**: BigQuery 데이터를 시각화하여 비즈니스 인사이트 도출
-- **실시간 리포팅**: 자동 새로고침되는 대시보드 구축
-- **성능 최적화**: 대용량 데이터셋의 쿼리 비용 및 로딩 시간 최적화
-- **데이터 파이프라인**: 스케줄된 쿼리로 ETL 프로세스 자동화
-- **팀 협업**: 공유 가능한 인터랙티브 대시보드 구축
+- **Analytics dashboard creation**: Visualizing BigQuery data to derive business insights
+- **Real-time reporting**: Building auto-refreshing dashboards
+- **Performance optimization**: Optimizing query costs and loading time for large datasets
+- **Data pipeline**: Automating ETL processes with scheduled queries
+- **Team collaboration**: Building shareable interactive dashboards
 
 ## Instructions
 
-### Step 1: GCP BigQuery 환경 준비
+### Step 1: Prepare GCP BigQuery Environment
 
-**프로젝트 생성 및 활성화**
+**Project creation and activation**
 
-Google Cloud Console에서 새 프로젝트를 생성하고 BigQuery API를 활성화합니다.
+Create a new project in Google Cloud Console and enable the BigQuery API.
 
 ```bash
-# gcloud CLI를 사용한 프로젝트 생성
+# Create project using gcloud CLI
 gcloud projects create my-analytics-project
 gcloud config set project my-analytics-project
 gcloud services enable bigquery.googleapis.com
 ```
 
-**데이터셋 및 테이블 생성**
+**Create dataset and table**
 
 ```sql
--- 데이터셋 생성
+-- Create dataset
 CREATE SCHEMA `my-project.analytics_dataset`
   OPTIONS(
-    description="분석용 데이터셋",
+    description="Analytics dataset",
     location="US"
   );
 
--- 예제 테이블 생성 (GA4 데이터)
+-- Create example table (GA4 data)
 CREATE TABLE `my-project.analytics_dataset.events` (
   event_date DATE,
   event_name STRING,
@@ -52,29 +54,29 @@ CREATE TABLE `my-project.analytics_dataset.events` (
 );
 ```
 
-**IAM 권한 설정**
+**IAM permission configuration**
 
-Looker Studio에서 BigQuery에 접근할 수 있도록 IAM 권한을 부여합니다:
+Grant IAM permissions so Looker Studio can access BigQuery:
 
-| 역할 | 설명 |
+| Role | Description |
 |------|------|
-| `BigQuery Data Viewer` | 테이블 조회 권한 |
-| `BigQuery User` | 쿼리 실행 권한 |
-| `BigQuery Job User` | 작업 실행 권한 |
+| `BigQuery Data Viewer` | Table read permission |
+| `BigQuery User` | Query execution permission |
+| `BigQuery Job User` | Job execution permission |
 
-### Step 2: Looker Studio에서 BigQuery 연결하기
+### Step 2: Connecting BigQuery in Looker Studio
 
-**네이티브 BigQuery 커넥터 사용 (권장)**
+**Using native BigQuery connector (recommended)**
 
-1. Looker Studio 홈페이지에서 **+ 만들기** → **데이터 소스** 클릭
-2. "BigQuery"로 검색하여 Google BigQuery 커넥터 선택
-3. Google 계정으로 인증
-4. 프로젝트, 데이터셋, 테이블 선택
-5. **연결**을 클릭하여 데이터 소스 생성
+1. On Looker Studio homepage, click **+ Create** → **Data Source**
+2. Search for "BigQuery" and select Google BigQuery connector
+3. Authenticate with Google account
+4. Select project, dataset, and table
+5. Click **Connect** to create data source
 
-**맞춤 SQL 쿼리 방식**
+**Custom SQL query approach**
 
-복잡한 데이터 변환이 필요할 때 SQL을 직접 작성합니다:
+Write SQL directly when complex data transformation is needed:
 
 ```sql
 SELECT
@@ -89,12 +91,12 @@ GROUP BY event_date, event_name
 ORDER BY event_date DESC
 ```
 
-**장점:**
-- 복잡한 데이터 변환을 SQL에서 처리
-- BigQuery에서 데이터를 미리 집계하여 쿼리 비용 절감
-- 매번 모든 데이터를 로드하지 않아 성능 향상
+**Advantages:**
+- Handle complex data transformations in SQL
+- Pre-aggregate data in BigQuery to reduce query costs
+- Improved performance by not loading all data every time
 
-**여러 테이블 조인 방식**
+**Multiple table join approach**
 
 ```sql
 SELECT
@@ -111,12 +113,12 @@ WHERE e.event_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 90 DAY)
 GROUP BY e.event_date, e.event_name, u.user_country, u.user_tier
 ```
 
-### Step 3: 스케줄된 쿼리로 성능 최적화
+### Step 3: Performance Optimization with Scheduled Queries
 
-라이브 쿼리 대신 **스케줄된 쿼리**를 사용하여 주기적으로 데이터를 미리 계산합니다:
+Use **scheduled queries** instead of live queries to periodically pre-compute data:
 
 ```sql
--- BigQuery에서 매일 집계 데이터를 계산하여 저장
+-- Calculate and store aggregated data daily in BigQuery
 CREATE OR REPLACE TABLE `my-project.analytics_dataset.daily_summary` AS
 SELECT
   CURRENT_DATE() as report_date,
@@ -131,130 +133,130 @@ WHERE event_date = CURRENT_DATE() - 1
 GROUP BY event_name, user_country
 ```
 
-BigQuery UI에서 **스케줄된 쿼리**로 설정:
-- 매일 자동 실행
-- 결과를 새로운 테이블에 저장
-- Looker Studio는 미리 계산된 테이블에 연결
+Configure as **scheduled query** in BigQuery UI:
+- Runs automatically daily
+- Saves results to a new table
+- Looker Studio connects to the pre-computed table
 
-**장점:**
-- Looker Studio 로딩 시간 단축 (50-80%)
-- BigQuery 비용 절감 (스캔 데이터 감소)
-- 대시보드 새로고침 속도 향상
+**Advantages:**
+- Reduce Looker Studio loading time (50-80%)
+- Reduce BigQuery costs (less data scanned)
+- Improved dashboard refresh speed
 
-### Step 4: 대시보드 레이아웃 설계
+### Step 4: Dashboard Layout Design
 
-**F-패턴 레이아웃**
+**F-pattern layout**
 
-사용자의 자연스러운 읽기 흐름을 따르는 F-패턴을 사용합니다:
+Use the F-pattern that follows the natural reading flow of users:
 
 ```
 ┌─────────────────────────────────────┐
-│ 헤더: 로고 | 필터/날짜선택기        │  ← 사용자가 먼저 본다
+│ Header: Logo | Filters/Date Picker  │  ← Users see this first
 ├─────────────────────────────────────┤
-│ KPI 1  │ KPI 2  │ KPI 3  │ KPI 4   │  ← 핵심 지표 (3-4개)
+│ KPI 1  │ KPI 2  │ KPI 3  │ KPI 4   │  ← Key metrics (3-4)
 ├─────────────────────────────────────┤
 │                                     │
-│ 주요 차트 (시계열 또는 비교)        │  ← 깊이 있는 인사이트
+│ Main Chart (time series/comparison) │  ← Deep insights
 │                                     │
 ├─────────────────────────────────────┤
-│ 구체적 데이터 테이블                │  ← 상세 분석
-│ (드릴다운 가능)                     │
+│ Concrete data table                 │  ← Detailed analysis
+│ (Drilldown enabled)                 │
 ├─────────────────────────────────────┤
-│ 추가 인사이트 / 맵 / 히트맵          │
+│ Additional Insights / Map / Heatmap │
 └─────────────────────────────────────┘
 ```
 
-**대시보드 구성 요소**
+**Dashboard components**
 
-| 요소 | 목적 | 예시 |
-|------|------|------|
-| **헤더** | 대시보드 제목, 로고, 필터 배치 | "2026년 Q1 판매 분석" |
-| **KPI 타일** | 주요 지표 한눈에 표시 | 총 매출, 전월 대비 성장률, 활성 사용자 |
-| **추세 차트** | 시간 경과에 따른 변화 | 라인 차트로 일일/주간 매출 추이 |
-| **비교 차트** | 카테고리 간 비교 | 막대 차트로 지역/상품별 판매량 비교 |
-| **분포 차트** | 데이터 분포 시각화 | 히트맵, 산점도, 버블 차트 |
-| **상세 테이블** | 정확한 수치 제공 | 조건부 서식으로 임계값 강조 |
-| **맵** | 지리적 데이터 | 국가/지역별 매출 분포 |
+| Element | Purpose | Example |
+|---------|------|------|
+| **Header** | Dashboard title, logo, filter placement | "2026 Q1 Sales Analysis" |
+| **KPI tiles** | Display key metrics at a glance | Total revenue, MoM growth rate, active users |
+| **Trend charts** | Changes over time | Line chart showing daily/weekly revenue trend |
+| **Comparison charts** | Compare across categories | Bar chart comparing sales by region/product |
+| **Distribution charts** | Visualize data distribution | Heatmap, scatter plot, bubble chart |
+| **Detail tables** | Provide exact figures | Conditional formatting to highlight thresholds |
+| **Map** | Geographic data | Revenue distribution by country/region |
 
-**실제 예시: 전자상거래 대시보드**
+**Real example: E-commerce dashboard**
 
 ```
 ┌──────────────────────────────────────────────────┐
-│ 📊 2026년 1월 판매 분석 | 🔽 국가 선택 | 📅 날짜  │
+│ 📊 Jan 2026 Sales Analysis | 🔽 Country | 📅 Date │
 ├──────────────────────────────────────────────────┤
-│ 총 매출: $125,000  │ 주문수: 3,200   │ 전환율: 3.5% │
+│ Total Revenue: $125,000  │ Orders: 3,200   │ Conversion: 3.5% │
 ├──────────────────────────────────────────────────┤
-│         일일 매출 추이 (라인 차트)                │
-│    ↗ 상승 추세: +15% vs 지난달                   │
+│         Daily Revenue Trend (Line Chart)          │
+│    ↗ Upward trend: +15% vs last month             │
 ├──────────────────────────────────────────────────┤
-│ 카테고리별 판매    │  상위 제품 Top 10            │
-│ (막대 차트)        │  (테이블, 정렬 가능)        │
+│ Sales by Category  │  Top 10 Products             │
+│ (Bar chart)        │  (Table, sortable)           │
 ├──────────────────────────────────────────────────┤
-│        지역별 매출 분포 (맵)                      │
+│        Revenue Distribution by Region (Map)       │
 └──────────────────────────────────────────────────┘
 ```
 
-### Step 5: 인터랙티브 필터 및 컨트롤
+### Step 5: Interactive Filters and Controls
 
-**필터 종류**
+**Filter types**
 
-**1. 날짜 범위 필터** (필수)
-- 캘린더로 특정 기간 선택
-- "지난 7일", "이번 달" 같은 사전 정의 옵션
-- 데이터셋과 연결하여 모든 차트에 자동 반영
+**1. Date range filter** (required)
+- Select specific period via calendar
+- Pre-defined options like "Last 7 days", "This month"
+- Connected to dataset, auto-applied to all charts
 
-**2. 드롭다운 필터**
+**2. Dropdown filter**
 ```
-예: 국가 선택 필터
-- 모든 국가
-- 한국
-- 일본
-- 미국
-선택하면 해당 국가 데이터만 표시
+Example: Country selection filter
+- All countries
+- South Korea
+- Japan
+- United States
+Shows only data for the selected country
 ```
 
-**3. 고급 필터** (SQL 기반)
+**3. Advanced filter** (SQL-based)
 ```sql
--- 매출액이 $10,000 이상인 고객만 표시
+-- Show only customers with revenue >= $10,000
 WHERE customer_revenue >= 10000
 ```
 
-**필터 구현 예시**
+**Filter implementation example**
 
 ```sql
--- 1. 날짜 필터
+-- 1. Date filter
 event_date >= DATE_SUB(CURRENT_DATE(), INTERVAL @date_range_days DAY)
 
--- 2. 드롭다운 필터 (사용자 입력)
+-- 2. Dropdown filter (user input)
 WHERE country = @selected_country
 
--- 3. 복합 필터
+-- 3. Composite filter
 WHERE event_date >= @start_date
   AND event_date <= @end_date
   AND country IN (@country_list)
   AND revenue >= @min_revenue
 ```
 
-### Step 6: 쿼리 성능 최적화
+### Step 6: Query Performance Optimization
 
-**1. 파티션 키 사용**
+**1. Using partition keys**
 
 ```sql
--- ❌ 비효율적인 쿼리
+-- ❌ Inefficient query
 SELECT * FROM events
 WHERE DATE(event_timestamp) >= '2026-01-01'
 
--- ✅ 최적화된 쿼리 (파티션 사용)
+-- ✅ Optimized query (using partition)
 SELECT * FROM events
-WHERE event_date >= '2026-01-01'  -- 파티션 키 직접 사용
+WHERE event_date >= '2026-01-01'  -- use partition key directly
 ```
 
-**2. 데이터 추출 (Extract and Load)**
+**2. Data extraction (Extract and Load)**
 
-매일 밤 Looker Studio 전용 테이블에 데이터를 추출합니다:
+Extract data to a Looker Studio-dedicated table each night:
 
 ```sql
--- 매일 자정에 실행되는 스케줄 쿼리
+-- Scheduled query running at midnight every day
 CREATE OR REPLACE TABLE `my-project.looker_studio_data.dashboard_snapshot` AS
 SELECT
   event_date,
@@ -269,24 +271,24 @@ WHERE event_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 90 DAY)
 GROUP BY event_date, event_name, country, device_category;
 ```
 
-**3. 캐싱 전략**
+**3. Caching strategy**
 
-- **Looker Studio 기본 캐싱**: 자동으로 3시간 동안 캐시
-- **BigQuery 캐싱**: 동일한 쿼리는 이전 결과 재사용 (6시간)
-- **스케줄된 쿼리 활용**: 야간에 미리 계산
+- **Looker Studio default caching**: Automatically caches for 3 hours
+- **BigQuery caching**: Identical queries reuse previous results (6 hours)
+- **Utilizing scheduled queries**: Pre-compute at night
 
-**4. 대시보드 복잡도 관리**
+**4. Dashboard complexity management**
 
-- 한 대시보드에 최대 20-25개 차트만 사용
-- 차트가 많으면 여러 탭(페이지)으로 분산
-- 상관없는 메트릭끼리 그룹화하지 않기
+- Use a maximum of 20-25 charts per dashboard
+- Distribute across multiple tabs (pages) if many charts
+- Do not group unrelated metrics together
 
-### Step 7: Community Connector 개발 (고급)
+### Step 7: Community Connector Development (Advanced)
 
-더 복잡한 요구사항이 있다면 Community Connector를 개발합니다:
+Develop a Community Connector for more complex requirements:
 
 ```javascript
-// Community Connector 예시 (Apps Script)
+// Community Connector example (Apps Script)
 function getConfig() {
   return {
     configParams: [
@@ -308,101 +310,101 @@ function getData(request) {
   const projectId = request.configParams.project_id;
   const datasetId = request.configParams.dataset_id;
 
-  // BigQuery에서 데이터 로드
+  // Load data from BigQuery
   const bq = BigQuery.newDataset(projectId, datasetId);
-  // ... 데이터 처리 로직
+  // ... Data processing logic
 
   return { rows: data };
 }
 ```
 
-**Community Connector의 장점:**
-- 중앙 집중식 청구 (서비스 계정 사용)
-- 커스텀 캐싱 로직
-- 사전 정의된 쿼리 템플릿
-- 사용자 설정 파라미터화
+**Community Connector advantages:**
+- Centralized billing (using service account)
+- Custom caching logic
+- Pre-defined query templates
+- Parameterized user settings
 
-### Step 8: 보안 및 접근 제어
+### Step 8: Security and Access Control
 
-**BigQuery 수준의 보안**
+**BigQuery-level security**
 
 ```sql
--- 특정 사용자에게만 테이블 접근 권한 부여
+-- Grant table access permission to specific users only
 GRANT `roles/bigquery.dataViewer`
 ON TABLE `my-project.analytics_dataset.events`
 TO "user@example.com";
 
--- 행 수준 보안 (Row-Level Security)
+-- Row-Level Security
 CREATE OR REPLACE ROW ACCESS POLICY rls_by_country
 ON `my-project.analytics_dataset.events`
 GRANT ('editor@company.com') TO ('KR'),
       ('viewer@company.com') TO ('US', 'JP');
 ```
 
-**Looker Studio 수준의 보안**
+**Looker Studio-level security**
 
-- 대시보드 공유 시 뷰어 권한 설정 (Viewer/Editor)
-- 특정 사용자/그룹에만 공유
-- 데이터 소스별 권한 관리
+- Set viewer permissions when sharing dashboards (Viewer/Editor)
+- Share with specific users/groups only
+- Manage permissions per data source
 
 ## Output format
 
-### 대시보드 설정 체크리스트
+### Dashboard Setup Checklist
 
 ```markdown
 ## Dashboard Setup Checklist
 
-### 데이터 소스 설정
-- [ ] BigQuery 프로젝트/데이터셋 준비
-- [ ] IAM 권한 설정 완료
-- [ ] 스케줄된 쿼리 구성 (성능 최적화)
-- [ ] 데이터 소스 연결 테스트
+### Data Source Configuration
+- [ ] BigQuery project/dataset prepared
+- [ ] IAM permissions configured
+- [ ] Scheduled queries configured (performance optimization)
+- [ ] Data source connection tested
 
-### 대시보드 설계
-- [ ] F-패턴 레이아웃 적용
-- [ ] KPI 타일 배치 (3-4개)
-- [ ] 주요 차트 추가 (추세/비교)
-- [ ] 상세 테이블 포함
-- [ ] 인터랙티브 필터 추가
+### Dashboard Design
+- [ ] F-pattern layout applied
+- [ ] KPI tiles placed (3-4)
+- [ ] Main charts added (trend/comparison)
+- [ ] Detail table included
+- [ ] Interactive filters added
 
-### 성능 최적화
-- [ ] 파티션 키 활용 확인
-- [ ] 쿼리 비용 최적화
-- [ ] 캐싱 전략 적용
-- [ ] 차트 수 20-25개 이하 확인
+### Performance Optimization
+- [ ] Partition key usage verified
+- [ ] Query cost optimized
+- [ ] Caching strategy applied
+- [ ] Chart count verified (20-25 or fewer)
 
-### 공유 및 보안
-- [ ] 접근 권한 설정
-- [ ] 데이터 보안 검토
-- [ ] 공유 링크 생성
+### Sharing and Security
+- [ ] Access permissions configured
+- [ ] Data security reviewed
+- [ ] Sharing link created
 ```
 
 ## Constraints
 
-### 필수 규칙 (MUST)
+### Mandatory Rules (MUST)
 
-1. **날짜 필터 필수**: 모든 대시보드에 날짜 범위 필터 포함
-2. **파티션 사용**: BigQuery 쿼리에서 파티션 키 직접 사용
-3. **권한 분리**: 데이터 소스별 접근 권한 명확히 설정
+1. **Date filter required**: Include date range filter in all dashboards
+2. **Use partitions**: Directly use partition keys in BigQuery queries
+3. **Permission separation**: Clearly configure access permissions per data source
 
-### 금지 사항 (MUST NOT)
+### Prohibited (MUST NOT)
 
-1. **과도한 차트**: 한 대시보드에 25개 초과 차트 배치 금지
-2. **SELECT ***: 전체 컬럼 조회 대신 필요한 컬럼만 선택
-3. **라이브 쿼리 남용**: 대용량 테이블에 직접 연결 지양
+1. **Excessive charts**: Do not place more than 25 charts on a single dashboard
+2. **SELECT ***: Select only necessary columns instead of all columns
+3. **Overusing live queries**: Avoid directly connecting to large tables
 
 ## Best practices
 
-| 항목 | 권장사항 |
+| Item | Recommendation |
 |------|---------|
-| **데이터 새로고침** | 스케줄된 쿼리 사용, 야간에 실행 |
-| **대시보드 크기** | 최대 25개 차트, 필요시 여러 페이지로 분산 |
-| **필터 구성** | 날짜 필터 필수, 3-5개 추가 필터로 제한 |
-| **색상 팔레트** | 회사 브랜드 3-4가지 색상만 사용 |
-| **타이틀/레이블** | 명확한 설명으로 직관성 확보 |
-| **차트 선택** | KPI → 추세 → 비교 → 상세 순서로 배치 |
-| **응답 속도** | 평균 2-3초 이내 로딩 목표 |
-| **비용 관리** | 월 BigQuery 스캔량 5TB 이내 |
+| **Data refresh** | Use scheduled queries, run at night |
+| **Dashboard size** | Max 25 charts, distribute to multiple pages if needed |
+| **Filter configuration** | Date filter required, limit to 3-5 additional filters |
+| **Color palette** | Use only 3-4 company brand colors |
+| **Title/Labels** | Use clear descriptions for intuitiveness |
+| **Chart selection** | Place in order: KPI → Trend → Comparison → Detail |
+| **Response speed** | Target average loading within 2-3 seconds |
+| **Cost management** | Keep monthly BigQuery scanned data within 5TB |
 
 ## References
 
@@ -414,24 +416,24 @@ GRANT ('editor@company.com') TO ('KR'),
 
 ## Metadata
 
-### 버전
-- **현재 버전**: 1.0.0
-- **최종 업데이트**: 2026-01-14
-- **호환 플랫폼**: Claude, ChatGPT, Gemini
+### Version
+- **Current Version**: 1.0.0
+- **Last Updated**: 2026-01-14
+- **Compatible Platforms**: Claude, ChatGPT, Gemini
 
-### 관련 스킬
-- [monitoring-observability](../monitoring-observability/SKILL.md): 데이터 수집 및 모니터링
-- [database-schema-design](../../backend/database-schema-design/SKILL.md): 데이터 모델링
+### Related Skills
+- [monitoring-observability](../monitoring-observability/SKILL.md): Data collection and monitoring
+- [database-schema-design](../../backend/database-schema-design/SKILL.md): Data modeling
 
-### 태그
+### Tags
 `#Looker-Studio` `#BigQuery` `#dashboard` `#analytics` `#visualization` `#GCP`
 
 ## Examples
 
-### Example 1: 기본 대시보드 생성
+### Example 1: Creating a Basic Dashboard
 
 ```sql
--- 1. 일일 요약 테이블 생성
+-- 1. Create daily summary table
 CREATE OR REPLACE TABLE `my-project.looker_data.daily_metrics` AS
 SELECT
   event_date,
@@ -442,15 +444,15 @@ FROM `my-project.analytics.events`
 WHERE event_date >= DATE_SUB(CURRENT_DATE(), INTERVAL 30 DAY)
 GROUP BY event_date;
 
--- 2. Looker Studio에서 이 테이블에 연결
--- 3. KPI 스코어카드 추가: DAU, 총 매출
--- 4. 라인 차트로 일일 추세 시각화
+-- 2. Connect to this table in Looker Studio
+-- 3. Add KPI scorecards: DAU, total revenue
+-- 4. Visualize daily trend with line chart
 ```
 
-### Example 2: 고급 분석 대시보드
+### Example 2: Advanced Analytics Dashboard
 
 ```sql
--- 코호트 분석을 위한 데이터 준비
+-- Prepare data for cohort analysis
 CREATE OR REPLACE TABLE `my-project.looker_data.cohort_analysis` AS
 WITH user_cohort AS (
   SELECT

@@ -1,0 +1,23 @@
+N:presentation-builder
+D:Professional PPTX presentation builder aligned with brand guidelines. Generates pitch decks, roadmaps, and product decks with slide-by-slide content and speaker notes using structured briefs and validation steps.
+G:presentation pptx slides storytelling branding pitch-deck
+
+U[3]:
+  Generate professional slide decks — auto-generate presentations from prompts
+  Ensure brand consistency — adhere to color/font/style guidelines
+  Reusable templates — standardize pitch/roadmap/product decks
+S[5]{n,action,details}:
+  1,Brand Kit,Define colors(primary/secondary/accent)·fonts(heading/body)·logo·style(tone/corners/shadows)
+  2,Deck Brief,Meta(title/audience/goal/duration) + slide list(number/type/title/key message)
+  3,Generate Slides,Generate layouts per slide type (Title/Agenda/Problem/Solution/Features/Stats/Team/CTA)
+  4,Review,Layout balance·typography hierarchy·one idea per slide·data source verification
+  5,Export Handoff,presentation.pptx + assets/ + editing notes + font embedding/resolution/link check
+R[4]:
+  One idea per slide — avoid overcrowding
+  Use speaker notes to minimize text on slides
+  Use only defined brand tokens — no arbitrary colors/fonts
+  Logical narrative arc — Problem→Solution→Evidence→CTA
+E[3]{desc,in,out}:
+  "Roadmap Deck","Create a 5-slide roadmap deck for Q2-Q4. Target: Engineering leadership","Title·Executive Summary·Gantt Timeline·Dependencies & Risks·Next Steps slides"
+  "Investor Pitch Deck","Build a 10-slide investor pitch deck for AI SaaS, Series A $5M target","Slide-by-slide content+speaker notes+visualization·brand style·clear Ask slide"
+  "Product Demo Deck","Create an 8-slide product demo deck for enterprise. Focus: Features, integrations, security","Feature showcase·integration diagram·security compliance·success stories·Trial CTA"

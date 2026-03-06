@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "generated": true,
-  "skill_count": 59,
+  "skill_count": 61,
   "categories": {
     "documentation": [
       "technical-writing",
@@ -52,6 +52,7 @@
       "prompt-repetition",
       "omc",
       "ralph",
+      "ralphmode",
       "skill-standardization",
       "workflow-automation"
     ],
@@ -2496,7 +2497,7 @@
     },
     {
       "name": "jeo",
-      "description": "JEO \u2014 Integrated AI agent orchestration. ralph+plannotator for visual plan review, team/bmad for parallel execution, agent-browser for vibe-kanban tracking, auto worktree cleanup. Installs: omc, omx, ohmg, bmad, ralph, plannotator, agent-browser, playwriter, vibe-kanban. Keyword: jeo.",
+      "description": "JEO — Integrated AI agent orchestration. ralph+plannotator for visual plan review, team/bmad for parallel execution, agent-browser for browser verification, agentation (agentui keyword) for UI annotation watch-loop, auto worktree cleanup. Installs: omc, omx, ohmg, bmad, ralph, plannotator, agent-browser, agentation. Keywords: jeo, agentui.",
       "category": "utilities",
       "path": "jeo/SKILL.md",
       "tags": [
@@ -2507,6 +2508,9 @@
         "team",
         "bmad",
         "vibe-kanban",
+        "agentation",
+        "agentui",
+        "ui-feedback",
         "agent-browser",
         "omc",
         "omx",
@@ -2535,6 +2539,37 @@
       "version": "1.0.0"
     },
     {
+      "name": "ralphmode",
+      "description": "Configure Claude Code, Codex CLI, and Gemini CLI for Ralph-style automation with fewer approval prompts while keeping project boundaries, secret denylists, and sandbox-first safety rules intact.",
+      "category": "utilities",
+      "path": "ralphmode/SKILL.md",
+      "tags": [
+        "ralph",
+        "permissions",
+        "automation",
+        "claude-code",
+        "codex-cli",
+        "gemini-cli",
+        "sandbox",
+        "trusted-folders",
+        "bypass"
+      ],
+      "platforms": [
+        "Claude Code",
+        "Codex CLI",
+        "Gemini CLI"
+      ],
+      "allowed_tools": [
+        "Read",
+        "Write",
+        "Bash",
+        "Grep",
+        "Glob"
+      ],
+      "keyword": "ralphmode",
+      "version": "0.1.0"
+    },
+    {
       "name": "llm-monitoring-dashboard",
       "description": "PM용 관리자 대시보드에 LLM 사용 모니터링 페이지를 자동 생성. Tokuin CLI 기반 토큰/비용/레이턴시 추적 + 사용자 랭킹 시스템 + 비사용자 추적 + 데이터 기반 PM 인사이트 자동 생성 + Cmd+K 검색 + 사용자별 드릴다운 링크 탐색 포함. OpenAI/Anthropic/Gemini/OpenRouter 지원.",
       "category": "infrastructure",
@@ -2543,6 +2578,17 @@
       "platforms": ["Claude", "ChatGPT", "Gemini", "Codex"],
       "allowed_tools": ["Read", "Write", "Bash", "Grep", "Glob"],
       "keyword": "llm-monitoring",
+      "version": "1.0.0"
+    },
+    {
+      "name": "agentation",
+      "description": "Visual UI annotation tool for AI agents. Humans click elements and leave feedback; agents receive CSS selectors, bounding boxes, and React component trees for precise code targeting. Supports MCP watch-loop, Claude Code hooks, webhook delivery, and autonomous self-driving critique with agent-browser.",
+      "category": "frontend",
+      "path": ".agent-skills/agentation/SKILL.md",
+      "tags": ["ui-feedback", "visual-feedback", "mcp", "react", "annotation", "css-selector", "design-review", "agent-browser"],
+      "platforms": ["Claude", "Gemini", "ChatGPT", "Codex", "Cursor", "Windsurf", "OpenCode"],
+      "allowed_tools": ["Read", "Write", "Bash", "Grep", "Glob"],
+      "keyword": "agentation",
       "version": "1.0.0"
     }
   ],

@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # JEO Skill — Master Installation Script
-# Installs and configures: ralph, omc, omx, ohmg, bmad, agent-browser, playwriter, plannotator
-# Usage: bash install.sh [--all] [--with-omc] [--with-plannotator] [--with-browser] [--dry-run]
+# Installs and configures: ralph, omc, omx, ohmg, bmad, agent-browser, playwriter, plannotator, agentation
+# Usage: bash install.sh [--all] [--with-omc] [--with-plannotator] [--with-browser] [--with-agentation] [--dry-run]
 
 set -euo pipefail
 
@@ -20,6 +20,7 @@ DRY_RUN=false
 INSTALL_ALL=false
 INSTALL_OMC=false
 INSTALL_PLANNOTATOR=false
+INSTALL_AGENTATION=false
 INSTALL_BROWSER=false
 INSTALL_BMAD=false
 INSTALL_OMX=false
@@ -34,6 +35,7 @@ for arg in "$@"; do
     --with-bmad)       INSTALL_BMAD=true ;;
     --with-omx)        INSTALL_OMX=true ;;
     --with-ohmg)       INSTALL_OHMG=true ;;
+    --with-agentation) INSTALL_AGENTATION=true ;;
     --dry-run)         DRY_RUN=true ;;
     -h|--help)
       echo "JEO Master Installer"
@@ -46,6 +48,7 @@ for arg in "$@"; do
       echo "  --with-bmad        Install BMAD orchestrator"
       echo "  --with-omx         Install omx (OpenCode multi-agent)"
       echo "  --with-ohmg        Install ohmg (Gemini multi-agent)"
+      echo "  --with-agentation  Install agentation MCP (UI annotation \u2194 agent)"
       echo "  --dry-run          Preview without executing"
       exit 0
       ;;
@@ -54,13 +57,13 @@ done
 
 if $INSTALL_ALL; then
   INSTALL_OMC=true; INSTALL_PLANNOTATOR=true
-  INSTALL_BROWSER=true; INSTALL_BMAD=true; INSTALL_OMX=true; INSTALL_OHMG=true
+  INSTALL_BROWSER=true; INSTALL_BMAD=true; INSTALL_OMX=true; INSTALL_OHMG=true; INSTALL_AGENTATION=true
 fi
 
 echo ""
 echo "╔══════════════════════════════════════════╗"
 echo "║   JEO Skill — Integrated Orchestration  ║"
-echo "║   Version 1.0.0                          ║"
+echo "║   Version 1.1.0                          ║"
 echo "╚══════════════════════════════════════════╝"
 echo ""
 
@@ -83,7 +86,14 @@ info "Detected OS: $OS"
 # ── Check prerequisites ────────────────────────────────────────────────────────
 info "Checking prerequisites..."
 MISSING_DEPS=()
-command -v node >/dev/null 2>&1 || MISSING_DEPS+=("node (>=18)")
+if command -v node >/dev/null 2>&1; then
+  NODE_VER=$(node --version 2>/dev/null | grep -oE '[0-9]+' | head -1)
+  if [[ -z "$NODE_VER" ]] || [[ "$NODE_VER" -lt 18 ]]; then
+    MISSING_DEPS+=("node >=18 (현재: $(node --version 2>/dev/null || echo 'unknown'))")
+  fi
+else
+  MISSING_DEPS+=("node >=18")
+fi
 command -v npm >/dev/null 2>&1  || MISSING_DEPS+=("npm")
 command -v git >/dev/null 2>&1  || MISSING_DEPS+=("git")
 command -v bash >/dev/null 2>&1 || MISSING_DEPS+=("bash")
@@ -185,7 +195,21 @@ if $INSTALL_BMAD; then
   fi
 fi
 
-# ── 8. Setup platform integrations ────────────────────────────────────────────
+# ── 8. agentation MCP ────────────────────────────────────────────────────────────────────────────
+if $INSTALL_AGENTATION; then
+  echo ""
+  info "Installing agentation MCP..."
+  if command -v npx >/dev/null 2>&1; then
+    run "npx -y agentation-mcp doctor 2>/dev/null || npx -y agentation-mcp --version 2>/dev/null || true"
+    ok "agentation-mcp available via npx"
+    info "Start server: npx agentation-mcp server"
+    info "Add to React app: <Agentation endpoint=\"http://localhost:4747\" />"
+  else
+    warn "npx not found — install Node.js first"
+  fi
+fi
+
+# ── 9. Setup platform integrations ────────────────────────────────────────────────────────────────────────────
 if $INSTALL_ALL; then
   echo ""
   info "Setting up platform integrations..."
@@ -207,4 +231,5 @@ echo "Next steps:"
 echo "  1. bash scripts/check-status.sh    — Verify all integrations"
 echo "  2. Restart your AI tools (Claude Code, Gemini CLI, OpenCode, Codex)"
 echo "  3. Use keyword 'jeo' to activate the orchestration workflow"
+echo "  4. Use keyword 'annotate' inside jeo to start agentation watch loop (agentui is a deprecated alias)"
 echo ""

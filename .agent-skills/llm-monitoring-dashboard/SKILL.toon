@@ -1,0 +1,28 @@
+N:llm-monitoring-dashboard
+D:Automated generation of an LLM monitoring page for PM admin dashboards. Includes Tokuin CLI-based token/cost/latency tracking, user ranking, non-user tracking, automatic PM insight generation, Cmd+K global search, and per-user drilldowns. Supports OpenAI/Anthropic/Gemini/OpenRouter.
+G:LLM monitoring dashboard tokuin pm-insights ranking user-tracking cost-tracking Next.js React admin
+
+U[5]:
+  LLM Cost Visibility — Real-time API cost monitoring by team and individual
+  PM Reporting Dashboard — Weekly reports on who uses AI, how much, and how
+  Adoption Rate Management — Track non-users and monitor AI adoption rates
+  Model Optimization Basis — Data-driven model switching and cost-reduction decisions
+  Extend Existing Admin Page — Add an LLM monitoring tab
+S[6]{n,action,details}:
+  0,Safety Check,bash safety-guard.sh — Validate Tokuin installation, API key hardcoding, .env gitignore, port conflicts, and data/ directory
+  1,Install Tokuin,curl -fsSL install.sh | bash; tokuin --version; echo "test" | tokuin --model gpt-4 (dry-run)
+  2,Collect Pipeline,categorize_prompt.py + collect-metrics.sh — Save JSONL with user context (5-minute cron)
+  3,Dashboard Frame,Next.js (recommended) or lightweight HTML — Design-token CSS variables, routing structure, SQLite DB initialization
+  4,PM Insights,User ranking API (cost-based) + non-user tracking + automatic PM insight generation
+  5,Weekly Report,generate-pm-report.sh (every Monday 09:00) + check-alerts.sh (hourly cost alerts)
+R[5]:
+  Always run Step 0 (safety-guard.sh) first
+  `--dry-run` is the default; live API calls require explicit `--allow-live`
+  API keys must be managed via environment variables/.env — never hardcode in code/HTML/logs
+  Use a consistent 3-level status color system (ok/warn/danger)
+  Do not store raw user prompts in DB — only SHA-256 hashes are allowed
+E[4]{desc,in,out}:
+  "Quick Start","bash safety-guard.sh && tokuin install && LLM_USER_ID=dev-alice bash collect-metrics.sh 'test'","Generate data/metrics.jsonl + lightweight HTML dashboard at http://localhost:3000"
+  "Multi-user Simulation","for user in alice bob pm-charlie; do LLM_USER_ID=$user bash collect-metrics.sh '...'; done","Per-user cost ranking + non-user status + PM insights dashboard"
+  "Weekly PM Report","bash generate-pm-report.sh","reports/pm-weekly-YYYY-MM-DD.md (Executive Summary + TOP 5 + inactive users + recommended actions)"
+  "Cost Alert Test","COST_THRESHOLD_USD=0.01 bash check-alerts.sh","Print ALERT when threshold exceeded + Slack notification (if configured)"

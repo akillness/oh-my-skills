@@ -2,8 +2,8 @@ N:standup-meeting
 D:Conduct effective daily standup meetings for agile teams. Use when facilitating standups, trackin...
 G:standup daily-scrum agile team-sync blockers
 U[3]:
-  **매일**: 같은 시간, 같은 장소
-  **스프린트 중**: 팀 동기화 필요 시
-  **원격 팀**: 비동기 스탠드업
+  **Daily**: same time, same place
+  **During a sprint**: when team sync is needed
+  **Remote teams**: async standup
 S[1]{n,action}:
-  1,3 Questions 포맷
+  1,3 Questions format

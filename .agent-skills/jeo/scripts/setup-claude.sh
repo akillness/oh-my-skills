@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # JEO Skill — Claude Code Plugin & Hook Setup
-# Configures: omc plugin, plannotator hook, jeo workflow in ~/.claude/settings.json
+# Configures: omc plugin, plannotator hook, agentation MCP, jeo workflow in ~/.claude/settings.json
 # Usage: bash setup-claude.sh [--dry-run]
 
 set -euo pipefail
@@ -41,74 +41,92 @@ info "Configuring ~/.claude/settings.json..."
 
 mkdir -p "$(dirname "$CLAUDE_SETTINGS")"
 
-# Read existing settings or create empty
 if [[ -f "$CLAUDE_SETTINGS" ]]; then
-  # Backup
   if ! $DRY_RUN; then
     cp "$CLAUDE_SETTINGS" "${CLAUDE_SETTINGS}.jeo.bak"
     ok "Backup created: ${CLAUDE_SETTINGS}.jeo.bak"
   fi
-  EXISTING=$(cat "$CLAUDE_SETTINGS")
-else
-  EXISTING="{}"
 fi
 
-# Check if plannotator hook already configured
-if echo "$EXISTING" | grep -q "plannotator"; then
-  ok "plannotator hook already configured in settings.json"
+if $DRY_RUN; then
+  echo -e "${YELLOW}[DRY-RUN]${NC} Would sync plannotator hook, agent teams, agentation MCP, and UserPromptSubmit hook in $CLAUDE_SETTINGS"
 else
-  if $DRY_RUN; then
-    echo -e "${YELLOW}[DRY-RUN]${NC} Would add plannotator PermissionRequest hook to $CLAUDE_SETTINGS"
-  else
-    # Use python3 to safely merge JSON
-    python3 - <<'PYEOF'
-import json, sys, os
+  python3 - <<'PYEOF'
+import json
+import os
 
 settings_path = os.path.expanduser("~/.claude/settings.json")
+agentation_cmd = (
+    "curl -sf --connect-timeout 1 http://localhost:4747/pending 2>/dev/null | "
+    "python3 -c \"import sys,json;d=json.load(sys.stdin);"
+    "c=d['count'];exit(0) if c==0 else print(f'=== AGENTATION: {c} UI annotations pending ===')\" "
+    "2>/dev/null;exit 0"
+)
+
 try:
     with open(settings_path) as f:
         settings = json.load(f)
 except (FileNotFoundError, json.JSONDecodeError):
     settings = {}
 
-# Add PermissionRequest hook for plannotator (official plannotator method)
+changed = False
+messages = []
+
 hooks = settings.setdefault("hooks", {})
 perm_req = hooks.setdefault("PermissionRequest", [])
+plannotator_entry = next((entry for entry in perm_req if entry.get("matcher") == "ExitPlanMode"), None)
+if plannotator_entry is None:
+    plannotator_entry = {"matcher": "ExitPlanMode", "hooks": []}
+    perm_req.append(plannotator_entry)
+    changed = True
 
-# Check if plannotator hook already exists
-planno_exists = any(
-    entry.get("matcher") == "ExitPlanMode" and
-    any(h.get("command", "").startswith("plannotator") for h in entry.get("hooks", []))
-    for entry in perm_req
-)
-
-if not planno_exists:
-    perm_req.append({
-        "matcher": "ExitPlanMode",
-        "hooks": [{
-            "type": "command",
-            "command": "plannotator",
-            "timeout": 1800
-        }]
+if not any(h.get("command", "").startswith("plannotator") for h in plannotator_entry.get("hooks", [])):
+    plannotator_entry.setdefault("hooks", []).append({
+        "type": "command",
+        "command": "plannotator",
+        "timeout": 1800,
     })
-    with open(settings_path, "w") as f:
-        json.dump(settings, f, indent=2)
-    print("✓ plannotator PermissionRequest hook added")
+    changed = True
+    messages.append("✓ plannotator PermissionRequest hook added")
 else:
-    print("✓ plannotator hook already present")
+    messages.append("✓ plannotator hook already present")
 
-# Enable experimental agent teams (check inside env dict, not top-level)
-if not settings.get("env", {}).get("CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS"):
-    env = settings.setdefault("env", {})
+env = settings.setdefault("env", {})
+if env.get("CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS") != "1":
     env["CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS"] = "1"
+    changed = True
+    messages.append("✓ Experimental agent teams enabled")
+else:
+    messages.append("✓ Experimental agent teams already enabled")
+
+mcp_servers = settings.setdefault("mcpServers", {})
+if "agentation" not in mcp_servers:
+    mcp_servers["agentation"] = {
+        "command": "npx",
+        "args": ["-y", "agentation-mcp", "server"],
+    }
+    changed = True
+    messages.append("✓ agentation MCP server registered")
+else:
+    messages.append("✓ agentation MCP already registered")
+
+user_prompt = hooks.setdefault("UserPromptSubmit", [])
+if not any(h.get("command", "").startswith("curl -sf --connect-timeout 1 http://localhost:4747") for h in user_prompt):
+    user_prompt.append({"type": "command", "command": agentation_cmd})
+    changed = True
+    messages.append("✓ agentation UserPromptSubmit hook added")
+else:
+    messages.append("✓ agentation UserPromptSubmit hook already present")
+
+if changed or not os.path.exists(settings_path):
+    os.makedirs(os.path.dirname(settings_path), exist_ok=True)
     with open(settings_path, "w") as f:
         json.dump(settings, f, indent=2)
-    print("✓ Experimental agent teams enabled")
-else:
-    print("✓ Experimental agent teams already enabled")
+
+for message in messages:
+    print(message)
 PYEOF
-    ok "Claude Code settings updated"
-  fi
+  ok "Claude Code settings synced"
 fi
 
 # ── 3. Instructions ───────────────────────────────────────────────────────────

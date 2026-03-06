@@ -1,13 +1,15 @@
 ---
 name: ohmg
-keyword: ohmg
 description: Ultimate multi-agent framework for Google Antigravity. Orchestrates specialized domain agents (PM, Frontend, Backend, Mobile, QA, Debug) via Serena Memory.
-allowed-tools: [Read, Write, Bash, Grep, Glob]
-tags: [ohmg, multi-agent, orchestration, gemini, antigravity, serena-memory, workflow]
-platforms: [Gemini, Claude, Codex, Antigravity]
-version: 1.0.0
-source: first-fluke/oh-my-ag
+allowed-tools: Read Write Bash Grep Glob
+metadata:
+  tags: ohmg, multi-agent, orchestration, gemini, antigravity, serena-memory, workflow
+  platforms: Gemini, Claude, Codex, Antigravity
+  keyword: ohmg
+  version: 1.0.0
+  source: first-fluke/oh-my-ag
 ---
+
 
 # oh-my-ag (ohmg) - Multi-Agent Orchestrator
 

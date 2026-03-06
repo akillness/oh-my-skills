@@ -1,13 +1,14 @@
 ---
-name: vercel-react-best-practices
+name: react-best-practices
 description: React and Next.js performance optimization guidelines from Vercel Engineering. Use when writing, reviewing, or refactoring React/Next.js code to ensure optimal performance patterns. Triggers on tasks involving React components, Next.js pages, data fetching, bundle optimization, or performance improvements.
-tags: [React, Next.js, performance, optimization, vercel, waterfalls, bundle-size, RSC]
-platforms: [Claude, ChatGPT, Gemini]
 license: MIT
 metadata:
   author: vercel
-  version: "1.0.0"
+  version: 1.0.0
+  tags: React, Next.js, performance, optimization, vercel, waterfalls, bundle-size, RSC
+  platforms: Claude, ChatGPT, Gemini
 ---
+
 
 # Vercel React Best Practices
 
@@ -175,17 +176,17 @@ const addItems = useCallback((newItems) => {
 
 ## Constraints
 
-### 필수 규칙 (MUST)
+### Required Rules (MUST)
 
-1. **Waterfall 제거**: Promise.all, Suspense 사용
-2. **번들 최적화**: barrel imports 금지, dynamic imports 사용
-3. **RSC 경계**: 필요한 데이터만 직렬화
+1. **Eliminate waterfalls**: Use Promise.all, Suspense
+2. **Bundle optimization**: Prohibit barrel imports, use dynamic imports
+3. **RSC boundaries**: Serialize only the data you need
 
-### 금지 사항 (MUST NOT)
+### Prohibited (MUST NOT)
 
-1. **Sequential await**: 독립적인 fetch를 순차 실행하지 않음
-2. **Array mutations**: sort() 대신 toSorted() 사용
-3. **Inline objects in React.cache**: 캐시 미스 발생
+1. **Sequential await**: Do not run independent fetches sequentially
+2. **Array mutations**: Use toSorted() instead of sort()
+3. **Inline objects in React.cache**: Causes cache misses
 
 ## References
 
@@ -198,15 +199,15 @@ const addItems = useCallback((newItems) => {
 
 ## Metadata
 
-### 버전
-- **현재 버전**: 1.0.0
-- **최종 업데이트**: 2026-01-22
-- **호환 플랫폼**: Claude, ChatGPT, Gemini
-- **원본 출처**: vercel/agent-skills
+### Version
+- **Current version**: 1.0.0
+- **Last updated**: 2026-01-22
+- **Supported platforms**: Claude, ChatGPT, Gemini
+- **Source**: vercel/agent-skills
 
-### 관련 스킬
-- [performance-optimization](../../code-quality/performance-optimization/SKILL.md): 일반 성능 최적화
-- [state-management](../state-management/SKILL.md): 상태 관리
+### Related Skills
+- [performance-optimization](../performance-optimization/SKILL.md): General performance optimization
+- [state-management](../state-management/SKILL.md): State management
 
-### 태그
+### Tags
 `#React` `#Next.js` `#performance` `#optimization` `#vercel` `#waterfalls` `#bundle-size` `#RSC` `#frontend`

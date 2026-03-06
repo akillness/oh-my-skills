@@ -2,14 +2,14 @@ N:backend-testing
 D:Write comprehensive backend tests including unit tests, integration tests, and API tests. Use whe...
 G:testing backend unit-test integration-test API-test
 U[5]:
-  **새 기능 개발**: TDD(Test-Driven Development) 방식으로 테스트 먼저 작성
-  **API 엔드포인트 추가**: REST API의 성공/실패 케이스 테스트
-  **버그 수정**: 회귀 방지를 위한 테스트 추가
-  **리팩토링 전**: 기존 동작을 보장하는 테스트 작성
-  **CI/CD 설정**: 자동화된 테스트 파이프라인 구축
+  **Developing new features**: Write tests first using Test-Driven Development (TDD)
+  **Adding API endpoints**: Test success/failure cases of REST APIs
+  **Bug fixing**: Add tests to prevent regressions
+  **Before refactoring**: Write tests to ensure existing behavior
+  **CI/CD setup**: Build an automated testing pipeline
 S[5]{n,action}:
-  1,테스트 환경 설정
-  2,Unit Test 작성 (비즈니스 로직)
-  3,Integration Test (API 엔드포인트)
-  4,인증/권한 테스트
-  5,Mocking 및 테스트 격리
+  1,Set up test environment
+  2,Write Unit Tests (business logic)
+  3,Integration Test (API endpoints)
+  4,Authentication/Authorization testing
+  5,Mocking and test isolation

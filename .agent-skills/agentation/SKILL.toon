@@ -1,0 +1,32 @@
+N:agentation
+D:Visual UI annotation tool for AI agents. Humans click elements and leave feedback; agents receive CSS selectors, bounding boxes, and React component trees for precise code targeting. MCP watch-loop with full multi-platform support: Claude Code (mcpServers + UserPromptSubmit hook), Codex CLI (config.toml [[mcp_servers]] + developer_instructions), Gemini CLI (mcpServers + AfterAgent hook), OpenCode (mcp type:local). Agent-browser self-driving support.
+G:agentation ui-feedback visual-feedback mcp react annotation css-selector design-review agent-browser watch-loop claude-code codex gemini-cli opencode
+U[7]:
+  Point at UI elements for precise agent feedback without writing selectors
+  Run iterative UI/UX review cycles between human and coding agent
+  Build MCP watch-loop where agent auto-fixes every annotation
+  Capture CSS selectors and React component trees for exact code targeting
+  Autonomous design critique via agent-browser self-driving pattern
+  Inject visual annotations into platform hooks for passive context
+  Setup all 4 platforms with single bash setup-agentation-mcp.sh --all
+S[8]{n,action,details}:
+  1,Install,npm install agentation -D && npm install agentation-mcp -D
+  2,Mount,Add <Agentation endpoint="http://localhost:4747" /> in dev layout
+  3,Start Server,npx agentation-mcp server (starts HTTP:4747 + MCP stdio)
+  4,Register Claude,claude mcp add agentation -- npx -y agentation-mcp server | or ~/.claude/claude_desktop_config.json mcpServers
+  5,Register Codex,~/.codex/config.toml [[mcp_servers]] name="agentation" command="npx" args=["-y","agentation-mcp","server"]
+  6,Register Gemini,~/.gemini/settings.json mcpServers.agentation | or: gemini mcp add agentation npx -y agentation-mcp server
+  7,Register OpenCode,~/.config/opencode/opencode.json mcp.agentation type=local command=["npx","-y","agentation-mcp","server"]
+  8,Watch Loop,agentation_watch_annotations → acknowledge → fix code via elementPath → resolve with summary → repeat
+R[6]:
+  Only mount Agentation in NODE_ENV=development — never in production
+  elementPath is a valid CSS selector — use it as grep/search target in codebase
+  Call agentation_acknowledge immediately when starting a fix
+  Include summary in agentation_resolve for human traceability
+  Re-snapshot with agent-browser after DOM changes in self-driving mode
+  Use severity blocking to prioritize critical UX annotations
+  Run bash scripts/setup-agentation-mcp.sh --all to configure all platforms at once
+E[3]{desc,in,out}:
+  "MCP watch loop","agentation_watch_annotations({batchWindowSeconds:10})","Returns batch of pending annotations with elementPath, comment, boundingBox"
+  "Fix and resolve","agentation_acknowledge(id); edit code; agentation_resolve(id, summary)","Annotation status transitions: pending → acknowledged → resolved"
+  "All-platform setup","bash scripts/setup-agentation-mcp.sh --all","Writes mcpServers to ~/.claude/, [[mcp_servers]] to ~/.codex/config.toml, mcpServers to ~/.gemini/, mcp to ~/.config/opencode/"

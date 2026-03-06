@@ -2,13 +2,13 @@ N:security-best-practices
 D:Implement security best practices for web applications and infrastructure. Use when securing APIs...
 G:security HTTPS CORS XSS SQL-injection
 U[4]:
-  **신규 프로젝트**: 처음부터 보안 고려
-  **보안 감사**: 취약점 점검 및 수정
-  **API 공개**: 외부 접근 API 보안 강화
-  **컴플라이언스**: GDPR, PCI-DSS 등 준수
+  **New project**: consider security from the start
+  **Security audit**: inspect and fix vulnerabilities
+  **Public API**: harden APIs accessible externally
+  **Compliance**: comply with GDPR, PCI-DSS, etc.
 S[5]{n,action}:
-  1,HTTPS 강제 및 보안 헤더
-  2,Input Validation (SQL Injection, XSS 방지)
-  3,CSRF 방지
-  4,Secrets 관리
-  5,API 인증 보안
+  1,Enforce HTTPS and security headers
+  2,Input validation (SQL Injection, XSS prevention)
+  3,Prevent CSRF
+  4,Manage secrets
+  5,Secure API authentication

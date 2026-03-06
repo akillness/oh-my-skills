@@ -86,81 +86,95 @@ parse_workflows() {
   # Headers
   echo -e "${GREEN}Phase 1: Analysis${NC} (Optional)"
 
-  # Parse workflows - simplified version without yq dependency
-  while IFS= read -r line; do
-    if [[ $line =~ ^[[:space:]]*-[[:space:]]*name:[[:space:]]*(.+) ]]; then
-      name="${BASH_REMATCH[1]}"
-      name=$(echo "$name" | tr -d '"' | xargs)
-
-      # Read next few lines for phase, status, command
-      phase=""
-      status=""
-      command=""
-      description=""
-
-      while IFS= read -r detail_line; do
-        if [[ $detail_line =~ ^[[:space:]]*phase:[[:space:]]*(.+) ]]; then
-          phase="${BASH_REMATCH[1]}"
-        elif [[ $detail_line =~ ^[[:space:]]*status:[[:space:]]*(.+) ]]; then
-          status="${BASH_REMATCH[1]}"
-          status=$(echo "$status" | tr -d '"' | xargs)
-        elif [[ $detail_line =~ ^[[:space:]]*command:[[:space:]]*(.+) ]]; then
-          command="${BASH_REMATCH[1]}"
-          command=$(echo "$command" | tr -d '"' | xargs)
-        elif [[ $detail_line =~ ^[[:space:]]*description:[[:space:]]*(.+) ]]; then
-          description="${BASH_REMATCH[1]}"
-          description=$(echo "$description" | tr -d '"' | xargs)
-        elif [[ $detail_line =~ ^[[:space:]]*-[[:space:]]*name: ]] || [[ -z "$detail_line" ]]; then
-          break
-        fi
-      done
-
-      # Print phase headers
-      if [ "$phase" != "$current_phase" ]; then
-        current_phase=$phase
-        echo ""
-        case $phase in
-          2)
-            echo -e "${GREEN}Phase 2: Planning${NC} (Required)"
-            ;;
-          3)
-            echo -e "${GREEN}Phase 3: Solutioning${NC} (Conditional)"
-            ;;
-          4)
-            echo -e "${GREEN}Phase 4: Implementation${NC} (Required)"
-            ;;
-        esac
-      fi
-
-      # Determine status icon and color
-      if [[ $status == /* ]] || [[ $status == docs/* ]]; then
-        # Completed - has file path
-        echo -e "  ${GREEN}✓${NC} ${name} ${GRAY}(${status})${NC}"
-
-        # Track phase completion
-        case $phase in
-          2) phase_2_complete=true ;;
-          3) phase_3_complete=true ;;
-          4) phase_4_started=true ;;
-        esac
-      elif [[ $status == "required" ]]; then
-        echo -e "  ${YELLOW}⚠${NC} ${name} ${YELLOW}(required - NOT STARTED)${NC}"
-        if [ -z "$recommended_workflow" ]; then
-          recommended_workflow="$command"
-        fi
-        phase_complete=false
-      elif [[ $status == "recommended" ]]; then
-        echo -e "  ${BLUE}→${NC} ${name} ${BLUE}(recommended)${NC}"
-        if [ -z "$recommended_workflow" ]; then
-          recommended_workflow="$command"
-        fi
-      elif [[ $status == "skipped" ]]; then
-        echo -e "  ${GRAY}-${NC} ${name} ${GRAY}(skipped)${NC}"
-      else
-        echo -e "  ${GRAY}-${NC} ${name} ${GRAY}(${status})${NC}"
-      fi
+  # Parse workflows using python3 to avoid nested while loop stdin consumption bug
+  while IFS='|' read -r name phase status command; do
+    # Print phase headers
+    if [ "$phase" != "$current_phase" ]; then
+      current_phase=$phase
+      echo ""
+      case $phase in
+        2)
+          echo -e "${GREEN}Phase 2: Planning${NC} (Required)"
+          ;;
+        3)
+          echo -e "${GREEN}Phase 3: Solutioning${NC} (Conditional)"
+          ;;
+        4)
+          echo -e "${GREEN}Phase 4: Implementation${NC} (Required)"
+          ;;
+      esac
     fi
-  done < "$STATUS_FILE"
+
+    # Determine status icon and color
+    if [[ $status == /* ]] || [[ $status == docs/* ]]; then
+      # Completed - has file path
+      echo -e "  ${GREEN}✓${NC} ${name} ${GRAY}(${status})${NC}"
+
+      # Track phase completion
+      case $phase in
+        2) phase_2_complete=true ;;
+        3) phase_3_complete=true ;;
+        4) phase_4_started=true ;;
+      esac
+    elif [[ $status == "required" ]]; then
+      echo -e "  ${YELLOW}⚠${NC} ${name} ${YELLOW}(required - NOT STARTED)${NC}"
+      if [ -z "$recommended_workflow" ]; then
+        recommended_workflow="$command"
+      fi
+      phase_complete=false
+    elif [[ $status == "recommended" ]]; then
+      echo -e "  ${BLUE}→${NC} ${name} ${BLUE}(recommended)${NC}"
+      if [ -z "$recommended_workflow" ]; then
+        recommended_workflow="$command"
+      fi
+    elif [[ $status == "skipped" ]]; then
+      echo -e "  ${GRAY}-${NC} ${name} ${GRAY}(skipped)${NC}"
+    else
+      echo -e "  ${GRAY}-${NC} ${name} ${GRAY}(${status})${NC}"
+    fi
+  done < <(python3 -c "
+import sys
+
+with open(sys.argv[1]) as f:
+    content = f.read()
+
+workflows = []
+current = {}
+in_workflows = False
+
+for line in content.split('\n'):
+    stripped = line.strip()
+
+    if stripped == 'workflow_status:':
+        in_workflows = True
+        continue
+
+    if not in_workflows:
+        continue
+
+    if stripped.startswith('- name:'):
+        if current:
+            workflows.append(current)
+        current = {'name': stripped[7:].strip().strip('\"')}
+    elif current and stripped.startswith('phase:'):
+        current['phase'] = stripped[6:].strip().strip('\"')
+    elif current and stripped.startswith('status:'):
+        current['status'] = stripped[7:].strip().strip('\"')
+    elif current and stripped.startswith('command:'):
+        current['command'] = stripped[8:].strip().strip('\"')
+    elif current and stripped.startswith('description:'):
+        current['description'] = stripped[12:].strip().strip('\"')
+
+if current:
+    workflows.append(current)
+
+for wf in workflows:
+    name = wf.get('name', '')
+    phase = wf.get('phase', '')
+    status = wf.get('status', '')
+    command = wf.get('command', '')
+    print(f'{name}|{phase}|{status}|{command}')
+" "$STATUS_FILE" 2>/dev/null)
 
   # Recommendations
   echo ""

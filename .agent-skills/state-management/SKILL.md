@@ -1,38 +1,40 @@
 ---
 name: state-management
 description: Implement state management patterns for frontend applications. Use when managing global state, handling complex data flows, or coordinating state across components. Handles React Context, Redux, Zustand, Recoil, and state management best practices.
-tags: [state-management, React, Redux, Context, Zustand, Recoil, global-state]
-platforms: [Claude, ChatGPT, Gemini]
+metadata:
+  tags: state-management, React, Redux, Context, Zustand, Recoil, global-state
+  platforms: Claude, ChatGPT, Gemini
 ---
+
 
 # State Management
 
 
 ## When to use this skill
 
-- **전역 상태 필요**: 여러 컴포넌트가 같은 데이터 공유
-- **Props Drilling 문제**: 5단계 이상 props 전달
-- **복잡한 상태 로직**: 인증, 장바구니, 테마 등
-- **상태 동기화**: 서버 데이터와 클라이언트 상태 동기화
+- **Global State Required**: Multiple components share the same data
+- **Props Drilling Problem**: Passing props through 5+ levels
+- **Complex State Logic**: Authentication, shopping cart, themes, etc.
+- **State Synchronization**: Sync server data with client state
 
 ## Instructions
 
-### Step 1: 상태 범위 결정
+### Step 1: Determine State Scope
 
-로컬 vs 전역 상태를 구분합니다.
+Distinguish between local and global state.
 
-**판단 기준**:
-- **로컬 상태**: 단일 컴포넌트에서만 사용
-  - 폼 입력값, 토글 상태, 드롭다운 열림/닫힘
-  - `useState`, `useReducer` 사용
+**Decision Criteria**:
+- **Local State**: Used only within a single component
+  - Form input values, toggle states, dropdown open/close
+  - Use `useState`, `useReducer`
 
-- **전역 상태**: 여러 컴포넌트에서 공유
-  - 사용자 인증, 장바구니, 테마, 언어 설정
-  - Context API, Redux, Zustand 사용
+- **Global State**: Shared across multiple components
+  - User authentication, shopping cart, theme, language settings
+  - Use Context API, Redux, Zustand
 
-**예시**:
+**Example**:
 ```tsx
-// ✅ 로컬 상태 (단일 컴포넌트)
+// ✅ Local state (single component)
 function SearchBox() {
   const [query, setQuery] = useState('');
   const [isOpen, setIsOpen] = useState(false);
@@ -49,16 +51,16 @@ function SearchBox() {
   );
 }
 
-// ✅ 전역 상태 (여러 컴포넌트)
-// 사용자 인증 정보는 Header, Profile, Settings 등에서 사용
-const { user, logout } = useAuth();  // Context 또는 Zustand
+// ✅ Global state (multiple components)
+// User authentication info is used in Header, Profile, Settings, etc.
+const { user, logout } = useAuth();  // Context or Zustand
 ```
 
-### Step 2: React Context API (간단한 전역 상태)
+### Step 2: React Context API (Simple Global State)
 
-가벼운 전역 상태 관리에 적합합니다.
+Suitable for lightweight global state management.
 
-**예시** (인증 Context):
+**Example** (Authentication Context):
 ```tsx
 // contexts/AuthContext.tsx
 import { createContext, useContext, useState, ReactNode } from 'react';
@@ -120,7 +122,7 @@ export function useAuth() {
 }
 ```
 
-**사용**:
+**Usage**:
 ```tsx
 // App.tsx
 function App() {
@@ -153,16 +155,16 @@ function Header() {
 }
 ```
 
-### Step 3: Zustand (현대적이고 간결한 상태 관리)
+### Step 3: Zustand (Modern and Concise State Management)
 
-Redux보다 간단하고 보일러플레이트가 적습니다.
+Simpler than Redux with less boilerplate.
 
-**설치**:
+**Installation**:
 ```bash
 npm install zustand
 ```
 
-**예시** (장바구니):
+**Example** (Shopping Cart):
 ```tsx
 // stores/cartStore.ts
 import { create } from 'zustand';
@@ -227,7 +229,7 @@ export const useCartStore = create<CartStore>()(
 );
 ```
 
-**사용**:
+**Usage**:
 ```tsx
 // components/ProductCard.tsx
 function ProductCard({ product }) {
@@ -266,16 +268,16 @@ function Cart() {
 }
 ```
 
-### Step 4: Redux Toolkit (대규모 앱)
+### Step 4: Redux Toolkit (Large-Scale Apps)
 
-복잡한 상태 로직과 미들웨어가 필요한 경우 사용합니다.
+Use when complex state logic and middleware are required.
 
-**설치**:
+**Installation**:
 ```bash
 npm install @reduxjs/toolkit react-redux
 ```
 
-**예시** (Todo):
+**Example** (Todo):
 ```tsx
 // store/todosSlice.ts
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
@@ -296,7 +298,7 @@ const initialState: TodosState = {
   status: 'idle'
 };
 
-// 비동기 액션
+// Async action
 export const fetchTodos = createAsyncThunk('todos/fetch', async () => {
   const response = await fetch('/api/todos');
   return response.json();
@@ -355,7 +357,7 @@ export type RootState = ReturnType<typeof store.getState>;
 export type AppDispatch = typeof store.dispatch;
 ```
 
-**사용**:
+**Usage**:
 ```tsx
 // App.tsx
 import { Provider } from 'react-redux';
@@ -398,9 +400,9 @@ function TodoList() {
 }
 ```
 
-### Step 5: 서버 상태 관리 (React Query / TanStack Query)
+### Step 5: Server State Management (React Query / TanStack Query)
 
-API 데이터 fetching 및 캐싱에 특화되어 있습니다.
+Specialized for API data fetching and caching.
 
 ```tsx
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -408,17 +410,17 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 function UserProfile({ userId }: { userId: string }) {
   const queryClient = useQueryClient();
 
-  // GET: 사용자 정보 조회
+  // GET: Fetch user info
   const { data: user, isLoading, error } = useQuery({
     queryKey: ['user', userId],
     queryFn: async () => {
       const res = await fetch(`/api/users/${userId}`);
       return res.json();
     },
-    staleTime: 5 * 60 * 1000,  // 5분간 캐시
+    staleTime: 5 * 60 * 1000,  // Cache for 5 minutes
   });
 
-  // POST: 사용자 정보 수정
+  // POST: Update user info
   const mutation = useMutation({
     mutationFn: async (updatedUser: Partial<User>) => {
       const res = await fetch(`/api/users/${userId}`, {
@@ -428,7 +430,7 @@ function UserProfile({ userId }: { userId: string }) {
       return res.json();
     },
     onSuccess: () => {
-      // 캐시 무효화 및 재조회
+      // Invalidate cache and refetch
       queryClient.invalidateQueries({ queryKey: ['user', userId] });
     }
   });
@@ -450,74 +452,74 @@ function UserProfile({ userId }: { userId: string }) {
 
 ## Output format
 
-### 상태 관리 도구 선택 가이드
+### State Management Tool Selection Guide
 
 ```
-상황별 추천 도구:
+Recommended tools by scenario:
 
-1. 간단한 전역 상태 (테마, 언어)
+1. Simple global state (theme, language)
    → React Context API
 
-2. 중간 복잡도 (장바구니, 사용자 설정)
+2. Medium complexity (shopping cart, user settings)
    → Zustand
 
-3. 대규모 앱, 복잡한 로직, 미들웨어 필요
+3. Large-scale apps, complex logic, middleware required
    → Redux Toolkit
 
-4. 서버 데이터 fetching/caching
+4. Server data fetching/caching
    → React Query (TanStack Query)
 
-5. 폼 상태
+5. Form state
    → React Hook Form + Zod
 ```
 
 ## Constraints
 
-### 필수 규칙 (MUST)
+### Required Rules (MUST)
 
-1. **상태 불변성**: 상태는 절대 직접 수정하지 않음
+1. **State Immutability**: Never mutate state directly
    ```tsx
-   // ❌ 나쁜 예
+   // ❌ Bad example
    state.items.push(newItem);
 
-   // ✅ 좋은 예
+   // ✅ Good example
    setState({ items: [...state.items, newItem] });
    ```
 
-2. **최소 상태 원칙**: 파생 가능한 값은 상태로 저장하지 않음
+2. **Minimal State Principle**: Do not store derivable values in state
    ```tsx
-   // ❌ 나쁜 예
+   // ❌ Bad example
    const [items, setItems] = useState([]);
-   const [count, setCount] = useState(0);  // items.length로 계산 가능
+   const [count, setCount] = useState(0);  // Can be calculated as items.length
 
-   // ✅ 좋은 예
+   // ✅ Good example
    const [items, setItems] = useState([]);
-   const count = items.length;  // 파생 값
+   const count = items.length;  // Derived value
    ```
 
-3. **단일 진실의 원천**: 같은 데이터를 여러 곳에 중복 저장 금지
+3. **Single Source of Truth**: Do not duplicate the same data in multiple places
 
-### 금지 사항 (MUST NOT)
+### Prohibited Rules (MUST NOT)
 
-1. **Props Drilling 과다**: 5단계 이상 props 전달 금지
-   - Context 또는 상태 관리 라이브러리 사용
+1. **Excessive Props Drilling**: Prohibited when passing props through 5+ levels
+   - Use Context or a state management library
 
-2. **모든 것을 전역 상태로**: 로컬 상태로 충분한 경우 전역 상태 사용 지양
+2. **Avoid Making Everything Global State**: Prefer local state when sufficient
 
 ## Best practices
 
-1. **선택적 구독**: 필요한 상태만 구독
+1. **Selective Subscription**: Subscribe only to the state you need
    ```tsx
-   // ✅ 좋은 예: 필요한 것만
+   // ✅ Good: only what you need
    const items = useCartStore(state => state.items);
 
-   // ❌ 나쁜 예: 전체 구독
+   // ❌ Bad: subscribing to everything
    const { items, addItem, removeItem, updateQuantity, clearCart } = useCartStore();
    ```
 
-2. **액션 이름 명확히**: `update` → `updateUserProfile`
+2. **Clear Action Names**: `update` → `updateUserProfile`
 
-3. **TypeScript 사용**: 타입 안정성 확보
+3. **Use TypeScript**: Ensure type safety
 
 ## References
 
@@ -529,16 +531,16 @@ function UserProfile({ userId }: { userId: string }) {
 
 ## Metadata
 
-### 버전
-- **현재 버전**: 1.0.0
-- **최종 업데이트**: 2025-01-01
-- **호환 플랫폼**: Claude, ChatGPT, Gemini
+### Version
+- **Current Version**: 1.0.0
+- **Last Updated**: 2025-01-01
+- **Compatible Platforms**: Claude, ChatGPT, Gemini
 
-### 관련 스킬
-- [ui-component-patterns](../ui-component-patterns/SKILL.md): 컴포넌트와 상태 통합
-- [backend-testing](../../backend/backend-testing/SKILL.md): 상태 로직 테스트
+### Related Skills
+- [ui-component-patterns](../ui-component-patterns/SKILL.md): Component and state integration
+- [backend-testing](../../backend/backend-testing/SKILL.md): Testing state logic
 
-### 태그
+### Tags
 `#state-management` `#React` `#Redux` `#Zustand` `#Context` `#global-state` `#frontend`
 
 ## Examples

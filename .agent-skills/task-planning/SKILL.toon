@@ -2,11 +2,11 @@ N:task-planning
 D:Plan and organize software development tasks effectively. Use when breaking down features, creati...
 G:task-planning user-stories backlog sprint-planning agile
 U[3]:
-  **피처 개발**: 새 기능을 작은 태스크로 분할
-  **Sprint Planning**: 스프린트에 포함할 작업 선정
-  **Backlog Grooming**: 백로그 정리 및 우선순위 설정
+  **Feature development**: Break down a new feature into small tasks
+  **Sprint Planning**: Select work to include in the sprint
+  **Backlog Grooming**: Clean up the backlog and set priorities
 S[1]{n,action}:
-  1,User Story 작성 (INVEST)
+  1,Write User Stories (INVEST)
 R[6]:
   **I**ndependent
   **N**egotiable

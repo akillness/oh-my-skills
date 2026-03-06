@@ -117,8 +117,58 @@ sys.exit(proc.returncode)
 STATUS_FILE="docs/bmm-workflow-status.yaml"
 WORKFLOW_NAME="$BASENAME"
 
-# Extract workflow name from filename (e.g., prd-myapp-2026 → prd)
-WORKFLOW_NAME=$(echo "$BASENAME" | cut -d'-' -f1)
+# Extract workflow name by matching filename against bmm-workflow-status.yaml
+# Handles hyphenated names like product-brief, tech-spec, ux-design
+find_workflow_name() {
+  local doc_basename
+  doc_basename=$(basename "$DOC_FILE" .md)
+  local status_yaml="$STATUS_FILE"
+
+  if [ ! -f "$status_yaml" ]; then
+    echo ""
+    return
+  fi
+
+  if command -v yq &>/dev/null; then
+    # yq: find the name whose entry matches any leading segment of the filename
+    yq eval '.workflow_status[].name' "$status_yaml" 2>/dev/null | while IFS= read -r name; do
+      if [[ "$doc_basename" == "$name"* ]]; then
+        echo "$name"
+        return
+      fi
+    done | head -1
+  else
+    # python3 fallback: parse YAML names with grep/sed, no external modules needed
+    python3 - <<PYEOF 2>/dev/null
+import os, re
+status_yaml = "$status_yaml"
+doc_basename = "$doc_basename"
+try:
+    with open(status_yaml) as f:
+        content = f.read()
+    names = re.findall(r"""^\s*-\s+name:\s*["']?([^"'\n]+)["']?""", content, re.MULTILINE)
+    for name in names:
+        name = name.strip()
+        if doc_basename.startswith(name):
+            print(name)
+            break
+except Exception:
+    pass
+PYEOF
+  fi
+}
+
+WORKFLOW_NAME=$(find_workflow_name)
+
+# Fallback: strip trailing date/project suffix (e.g., product-brief-myapp-2026 -> product-brief)
+if [[ -z "$WORKFLOW_NAME" ]]; then
+  WORKFLOW_NAME=$(echo "$BASENAME" | sed 's/-[0-9]\{4\}[^-]*$//' | sed 's/-[a-zA-Z0-9]*$//')
+fi
+
+# Final fallback: original single-field cut
+if [[ -z "$WORKFLOW_NAME" ]]; then
+  WORKFLOW_NAME=$(echo "$BASENAME" | cut -d'-' -f1)
+fi
 
 if [ -f "$STATUS_FILE" ]; then
   echo ""

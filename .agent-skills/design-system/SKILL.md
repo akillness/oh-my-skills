@@ -1,23 +1,21 @@
 ---
-name: frontend-design-system
+name: design-system
 description: Produce production-grade UI designs using clear design tokens, layout rules, motion guidance, and accessibility checks for consistent, scalable frontend development.
-tags: [frontend, design, ui, ux, typography, animation, design-tokens, accessibility]
-platforms: [Claude, ChatGPT, Gemini, Codex]
-allowed-tools:
-  - Write
-  - Read
-  - Task
+metadata:
+  tags: frontend, design, ui, ux, typography, animation, design-tokens, accessibility
+  platforms: Claude, ChatGPT, Gemini, Codex
 ---
+
 
 # Frontend Design System
 
-프로덕션 수준의 UI 디자인을 위한 스킬입니다. 명확한 디자인 토큰, 레이아웃 규칙, 모션 가이드라인, 접근성 체크를 통해 일관되고 확장 가능한 프론트엔드 개발을 지원합니다.
+This is a skill for production-grade UI design. It supports consistent and scalable frontend development through clear design tokens, layout rules, motion guidelines, and accessibility checks.
 
 ## When to use this skill
 
-- **프로덕션 품질 UI 필요**: 프롬프트에서 고품질 UI 생성
-- **일관된 디자인 언어**: 화면 간 일관된 시각적 언어
-- **타이포그래피/레이아웃/모션 가이드**: 체계적인 디자인 시스템
+- **Production-quality UI needed**: Generate high-quality UI from prompts
+- **Consistent design language**: Consistent visual language across screens
+- **Typography/layout/motion guide**: Systematic design system
 
 ---
 
@@ -139,8 +137,8 @@ page_spec:
   type: "landing" | "dashboard" | "form" | "blog" | "e-commerce"
 
   hierarchy:
-    primary_action: [주요 CTA]
-    secondary_actions: [부가 액션들]
+    primary_action: [Primary CTA]
+    secondary_actions: [secondary actions]
     information_architecture:
       - section: hero
         priority: 1
@@ -162,7 +160,7 @@ page_spec:
 
 ### Step 3: Generate UI Output
 
-**섹션별 컴포넌트 구조**:
+**Section-by-section component structure**:
 
 ```tsx
 // Hero Section
@@ -193,7 +191,7 @@ page_spec:
 </section>
 ```
 
-**모션/인터랙션 노트**:
+**Motion/Interaction notes**:
 
 ```css
 /* Motion Guidelines */
@@ -337,34 +335,34 @@ and success confirmation.
 ## Best practices
 
 1. **Start with content hierarchy**: UI follows content priority
-2. **Consistent spacing scale**: 8px 기반 시스템, ad-hoc 간격 금지
-3. **Motion with intent**: 의미 있는 전환만 애니메이션
-4. **Test on mobile**: 레이아웃 무결성 확인
-5. **Accessibility first**: 디자인 단계에서 접근성 고려
+2. **Consistent spacing scale**: 8px-based system, no ad-hoc spacing
+3. **Motion with intent**: Animate only meaningful transitions
+4. **Test on mobile**: Verify layout integrity
+5. **Accessibility first**: Consider accessibility at the design stage
 
 ---
 
 ## Common pitfalls
 
-- **효과와 그라데이션 과용**: 단순함 유지
-- **일관성 없는 타이포그래피 스케일**: 정의된 스케일 사용
-- **접근성 고려 누락**: 색상 대비, 키보드 네비게이션
+- **Overuse of effects and gradients**: Maintain simplicity
+- **Inconsistent typography scale**: Use the defined scale
+- **Missing accessibility considerations**: Color contrast, keyboard navigation
 
 ---
 
 ## Troubleshooting
 
 ### Issue: UI feels generic
-**Cause**: 시각적 방향이나 토큰 없음
-**Solution**: 스타일 레퍼런스와 팔레트 제공
+**Cause**: No visual direction or tokens
+**Solution**: Provide style references and palette
 
 ### Issue: Layout breaks on mobile
-**Cause**: 반응형 그리드 규칙 없음
-**Solution**: 브레이크포인트와 스태킹 동작 정의
+**Cause**: No responsive grid rules
+**Solution**: Define breakpoints and stacking behavior
 
 ### Issue: Inconsistent components
-**Cause**: 토큰 미사용
-**Solution**: 모든 값을 토큰에서 참조
+**Cause**: Tokens not in use
+**Solution**: Reference all values from tokens
 
 ---
 
@@ -406,17 +404,17 @@ and success confirmation.
 
 ### Validation & Retrospectives
 
-- **Round 1 (Orchestrator)**: 시각적 방향, 섹션 완전성
-- **Round 2 (Analyst)**: 접근성, 계층 구조 리뷰
-- **Round 3 (Executor)**: 핸드오프 체크리스트 검증
+- **Round 1 (Orchestrator)**: Visual direction, section completeness
+- **Round 2 (Analyst)**: Accessibility, hierarchy review
+- **Round 3 (Executor)**: Handoff checklist verification
 
 ### Agent Roles
 
 | Agent | Role |
 |-------|------|
-| Claude | 토큰 정의, 컴포넌트 설계 |
-| Gemini | 접근성 분석, 레퍼런스 리서치 |
-| Codex | CSS/컴포넌트 코드 생성 |
+| Claude | Token definition, component design |
+| Gemini | Accessibility analysis, reference research |
+| Codex | CSS/component code generation |
 
 ---
 

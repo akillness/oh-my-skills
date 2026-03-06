@@ -1,0 +1,26 @@
+N:design-system
+D:Production-grade UI design. Clear design tokens, layout rules, motion guidelines, accessibility checks for consistent, scalable frontend development.
+G:frontend design ui ux typography animation design-tokens accessibility
+
+U[5]:
+  Production-quality UI generation — consistent visual language based on design tokens
+  Layout + UX goals definition — page hierarchy, responsive rules
+  UI component generation — structure by section (Hero, Features, Pricing)
+  Accessibility validation — WCAG 2.1 AA color contrast, keyboard navigation, screen reader
+  Design handoff — component spec, token summary, file delivery
+S[5]{n,action,details}:
+  1,Define Tokens,Define color/typography/spacing/radius/shadow tokens (design-tokens.ts)
+  2,Layout Spec,page_spec YAML — define type/hierarchy/responsive breakpoints
+  3,Generate UI,Generate component structure by section (Hero→Badge+Heading+CTA)
+  4,Motion Notes,Define duration/easing with CSS variables; hover/page transition animations
+  5,A11y Audit,Check contrast 4.5:1·focus visibility·semantic HTML·alt text
+R[5]:
+  8px-based spacing system — no ad-hoc gaps
+  Animate only meaningful transitions (motion with intent)
+  Accessibility considered at design stage (no post-hoc additions)
+  All values referenced from tokens (no inline hardcoding)
+  Test mobile first — verify responsive integrity
+E[3]{desc,in,out}:
+  "SaaS landing page","Design a SaaS landing page with modern typography, soft gradients, and subtle motion","Section layout·typography scale (H1:48px→Body:16px)·color palette·motion spec·component list"
+  "Admin dashboard","Create a clean admin dashboard with data cards, filters, and tables","12-column grid·component spec (card/table/filter)·visual hierarchy doc·responsive spec"
+  "Mobile form","Design a multi-step form optimized for mobile with progress indicator","Step-by-step flow·form field spec·error/success states·touch target 44px minimum"

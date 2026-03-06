@@ -1,48 +1,50 @@
 ---
 name: ui-component-patterns
 description: Build reusable, maintainable UI components following modern design patterns. Use when creating component libraries, implementing design systems, or building scalable frontend architectures. Handles React patterns, composition, prop design, TypeScript, and component best practices.
-tags: [UI-components, React, design-patterns, composition, TypeScript, reusable]
-platforms: [Claude, ChatGPT, Gemini]
+metadata:
+  tags: UI-components, React, design-patterns, composition, TypeScript, reusable
+  platforms: Claude, ChatGPT, Gemini
 ---
+
 
 # UI Component Patterns
 
 
 ## When to use this skill
 
-- **컴포넌트 라이브러리 구축**: 재사용 가능한 UI 컴포넌트 제작
-- **디자인 시스템 구현**: 일관된 UI 패턴 적용
-- **복잡한 UI**: 여러 변형이 필요한 컴포넌트 (Button, Modal, Dropdown)
-- **리팩토링**: 중복 코드를 컴포넌트로 추출
+- **Building Component Libraries**: Creating reusable UI components
+- **Implementing Design Systems**: Applying consistent UI patterns
+- **Complex UI**: Components requiring multiple variants (Button, Modal, Dropdown)
+- **Refactoring**: Extracting duplicate code into components
 
 ## Instructions
 
-### Step 1: Props API 설계
+### Step 1: Props API Design
 
-사용하기 쉽고 확장 가능한 Props를 설계합니다.
+Design Props that are easy to use and extensible.
 
-**원칙**:
-- 명확한 이름
-- 합리적인 기본값
-- TypeScript로 타입 정의
-- 선택적 Props는 optional (?)
+**Principles**:
+- Clear names
+- Reasonable defaults
+- Type definitions with TypeScript
+- Optional Props use optional marker (?)
 
-**예시** (Button):
+**Example** (Button):
 ```tsx
 interface ButtonProps {
-  // 필수
+  // Required
   children: React.ReactNode;
 
-  // 선택적 (기본값 있음)
+  // Optional (with defaults)
   variant?: 'primary' | 'secondary' | 'outline' | 'ghost';
   size?: 'sm' | 'md' | 'lg';
   disabled?: boolean;
   isLoading?: boolean;
 
-  // 이벤트 핸들러
+  // Event handlers
   onClick?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 
-  // HTML 속성 상속
+  // HTML attribute inheritance
   type?: 'button' | 'submit' | 'reset';
   className?: string;
 }
@@ -76,19 +78,19 @@ function Button({
   );
 }
 
-// 사용 예시
+// Usage example
 <Button variant="primary" size="lg" onClick={() => alert('Clicked!')}>
   Click Me
 </Button>
 ```
 
-### Step 2: Composition Pattern (합성 패턴)
+### Step 2: Composition Pattern
 
-작은 컴포넌트를 조합하여 복잡한 UI를 만듭니다.
+Combine small components to build complex UI.
 
-**예시** (Card):
+**Example** (Card):
 ```tsx
-// Card 컴포넌트 (Container)
+// Card component (Container)
 interface CardProps {
   children: React.ReactNode;
   className?: string;
@@ -113,14 +115,14 @@ function CardFooter({ children }: { children: React.ReactNode }) {
   return <div className="card-footer">{children}</div>;
 }
 
-// Compound Component 패턴
+// Compound Component pattern
 Card.Header = CardHeader;
 Card.Body = CardBody;
 Card.Footer = CardFooter;
 
 export default Card;
 
-// 사용
+// Usage
 import Card from './Card';
 
 function ProductCard() {
@@ -143,9 +145,9 @@ function ProductCard() {
 
 ### Step 3: Render Props / Children as Function
 
-유연한 커스터마이징을 위한 패턴입니다.
+A pattern for flexible customization.
 
-**예시** (Dropdown):
+**Example** (Dropdown):
 ```tsx
 interface DropdownProps<T> {
   items: T[];
@@ -183,7 +185,7 @@ function Dropdown<T>({ items, renderItem, onSelect, placeholder }: DropdownProps
   );
 }
 
-// 사용
+// Usage
 interface User {
   id: string;
   name: string;
@@ -209,11 +211,11 @@ function UserDropdown() {
 }
 ```
 
-### Step 4: Custom Hooks로 로직 분리
+### Step 4: Separating Logic with Custom Hooks
 
-UI와 비즈니스 로직을 분리합니다.
+Separate UI from business logic.
 
-**예시** (Modal):
+**Example** (Modal):
 ```tsx
 // hooks/useModal.ts
 function useModal(initialOpen = false) {
@@ -250,7 +252,7 @@ function Modal({ isOpen, onClose, title, children }: ModalProps) {
   );
 }
 
-// 사용
+// Usage
 function App() {
   const { isOpen, open, close } = useModal();
 
@@ -265,36 +267,36 @@ function App() {
 }
 ```
 
-### Step 5: 성능 최적화
+### Step 5: Performance Optimization
 
-불필요한 리렌더링을 방지합니다.
+Prevent unnecessary re-renders.
 
 **React.memo**:
 ```tsx
-// ❌ 나쁜 예: 부모가 리렌더링될 때마다 자식도 리렌더링
+// ❌ Bad: child re-renders every time parent re-renders
 function ExpensiveComponent({ data }) {
   console.log('Rendering...');
-  return <div>{/* 복잡한 UI */}</div>;
+  return <div>{/* Complex UI */}</div>;
 }
 
-// ✅ 좋은 예: props가 변경될 때만 리렌더링
+// ✅ Good: re-renders only when props change
 const ExpensiveComponent = React.memo(({ data }) => {
   console.log('Rendering...');
-  return <div>{/* 복잡한 UI */}</div>;
+  return <div>{/* Complex UI */}</div>;
 });
 ```
 
 **useMemo & useCallback**:
 ```tsx
 function ProductList({ products, category }: { products: Product[]; category: string }) {
-  // ✅ 필터링 결과 메모이제이션
+  // ✅ Memoize filtered results
   const filteredProducts = useMemo(() => {
     return products.filter(p => p.category === category);
   }, [products, category]);
 
-  // ✅ 콜백 메모이제이션
+  // ✅ Memoize callback
   const handleAddToCart = useCallback((productId: string) => {
-    // 장바구니에 추가
+    // Add to cart
     console.log('Adding:', productId);
   }, []);
 
@@ -323,15 +325,15 @@ const ProductCard = React.memo(({ product, onAddToCart }) => {
 
 ## Output format
 
-### 컴포넌트 파일 구조
+### Component File Structure
 
 ```
 components/
 ├── Button/
-│   ├── Button.tsx           # 메인 컴포넌트
-│   ├── Button.test.tsx      # 테스트
+│   ├── Button.tsx           # Main component
+│   ├── Button.test.tsx      # Tests
 │   ├── Button.stories.tsx   # Storybook
-│   ├── Button.module.css    # 스타일
+│   ├── Button.module.css    # Styles
 │   └── index.ts             # Export
 ├── Card/
 │   ├── Card.tsx
@@ -345,13 +347,13 @@ components/
     └── index.ts
 ```
 
-### 컴포넌트 템플릿
+### Component Template
 
 ```tsx
 import React from 'react';
 
 export interface ComponentProps {
-  // Props 정의
+  // Props definition
   children: React.ReactNode;
   className?: string;
 }
@@ -381,31 +383,31 @@ export default Component;
 
 ## Constraints
 
-### 필수 규칙 (MUST)
+### Required Rules (MUST)
 
-1. **단일 책임 원칙**: 한 컴포넌트는 하나의 역할만
-   - Button은 버튼만, Form은 폼만
+1. **Single Responsibility Principle**: One component has one role only
+   - Button handles buttons only, Form handles forms only
 
-2. **Props 타입 정의**: TypeScript interface 필수
-   - 자동완성 지원
-   - 타입 안정성
+2. **Props Type Definition**: TypeScript interface required
+   - Enables auto-completion
+   - Type safety
 
-3. **접근성 고려**: aria-*, role, tabindex 등
+3. **Accessibility**: aria-*, role, tabindex, etc.
 
-### 금지 사항 (MUST NOT)
+### Prohibited Rules (MUST NOT)
 
-1. **과도한 props drilling**: 5단계 이상 금지
-   - Context 또는 Composition 사용
+1. **Excessive props drilling**: Prohibited when 5+ levels deep
+   - Use Context or Composition
 
-2. **비즈니스 로직 포함**: UI 컴포넌트에 API 호출, 복잡한 계산 금지
-   - Custom hooks로 분리
+2. **No Business Logic**: Prohibit API calls and complex calculations in UI components
+   - Separate into custom hooks
 
-3. **inline 객체/함수**: 성능 저하
+3. **Inline objects/functions**: Performance degradation
    ```tsx
-   // ❌ 나쁜 예
+   // ❌ Bad example
    <Component style={{ color: 'red' }} onClick={() => handleClick()} />
 
-   // ✅ 좋은 예
+   // ✅ Good example
    const style = { color: 'red' };
    const handleClick = useCallback(() => {...}, []);
    <Component style={style} onClick={handleClick} />
@@ -413,12 +415,12 @@ export default Component;
 
 ## Examples
 
-### 예시 1: Accordion (Compound Component)
+### Example 1: Accordion (Compound Component)
 
 ```tsx
 import React, { createContext, useContext, useState } from 'react';
 
-// Context로 상태 공유
+// Share state with Context
 const AccordionContext = createContext<{
   activeIndex: number | null;
   setActiveIndex: (index: number | null) => void;
@@ -462,7 +464,7 @@ function AccordionItem({ index, title, children }: {
 Accordion.Item = AccordionItem;
 export default Accordion;
 
-// 사용
+// Usage
 <Accordion>
   <Accordion.Item index={0} title="Section 1">
     Content for section 1
@@ -473,7 +475,7 @@ export default Accordion;
 </Accordion>
 ```
 
-### 예시 2: Polymorphic Component (as prop)
+### Example 2: Polymorphic Component (as prop)
 
 ```tsx
 type PolymorphicComponentProps<C extends React.ElementType> = {
@@ -490,7 +492,7 @@ function Text<C extends React.ElementType = 'span'>({
   return <Component {...rest}>{children}</Component>;
 }
 
-// 사용
+// Usage
 <Text>Default span</Text>
 <Text as="h1">Heading 1</Text>
 <Text as="p" style={{ color: 'blue' }}>Paragraph</Text>
@@ -499,10 +501,10 @@ function Text<C extends React.ElementType = 'span'>({
 
 ## Best practices
 
-1. **Composition over Props**: 많은 props 대신 children 활용
-2. **Controlled vs Uncontrolled**: 상황에 맞게 선택
-3. **Default Props**: 합리적인 기본값 제공
-4. **Storybook**: 컴포넌트 문서화 및 개발
+1. **Composition over Props**: Leverage children instead of many props
+2. **Controlled vs Uncontrolled**: Choose based on situation
+3. **Default Props**: Provide reasonable defaults
+4. **Storybook**: Component documentation and development
 
 ## References
 
@@ -514,14 +516,14 @@ function Text<C extends React.ElementType = 'span'>({
 
 ## Metadata
 
-### 버전
-- **현재 버전**: 1.0.0
-- **최종 업데이트**: 2025-01-01
-- **호환 플랫폼**: Claude, ChatGPT, Gemini
+### Version
+- **Current Version**: 1.0.0
+- **Last Updated**: 2025-01-01
+- **Compatible Platforms**: Claude, ChatGPT, Gemini
 
-### 관련 스킬
-- [web-accessibility](../web-accessibility/SKILL.md): 접근 가능한 컴포넌트
-- [state-management](../state-management/SKILL.md): 컴포넌트 상태 관리
+### Related Skills
+- [web-accessibility](../web-accessibility/SKILL.md): Accessible components
+- [state-management](../state-management/SKILL.md): Component state management
 
-### 태그
+### Tags
 `#UI-components` `#React` `#design-patterns` `#composition` `#TypeScript` `#frontend`

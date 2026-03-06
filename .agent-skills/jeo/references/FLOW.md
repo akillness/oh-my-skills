@@ -29,20 +29,136 @@
 │          │          Solutioning→Implementation│                 │
 │          └───────────────┬──────────────────┘                  │
 │                          │                                      │
-│          ┌───────────────▼──────────────────┐                  │
 │          │         PHASE 3: VERIFY           │                  │
 │          │   agent-browser snapshot <url>    │                  │
 │          │   UI/기능 동작 확인               │                  │
+│          │                                   │                  │
+│          │   [annotate keyword? (agentui alias)]│                │
+│          │   └─ YES: VERIFY_UI (agentation)  │                  │
+│          │       watch_annotations loop      │                  │
+│          │       ack → fix → resolve         │                  │
 │          └───────────────┬──────────────────┘                  │
 │                          │                                      │
 │          ┌───────────────▼──────────────────┐                  │
 │          │         PHASE 4: CLEANUP          │                  │
 │          │   bash scripts/worktree-cleanup.sh│                  │
+│          │   clean worktrees only by default │                  │
 │          │   git worktree prune              │                  │
 │          └───────────────┬──────────────────┘                  │
 │                          │                                      │
 │                       [DONE]                                    │
 └─────────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## annotate — agentation Watch Loop (VERIFY_UI Sub-Phase)
+
+```
+annotate keyword detected (or agentui alias — or user requests UI annotation review)
+    │
+    ▼
+[PREFLIGHT]  3-step check before entering watch loop:
+    │  1. GET /health         → server running?
+    │  2. GET /sessions       → <Agentation> component mounted?
+    │  3. GET /pending        → baseline annotation count
+    │
+    ├─ FAIL (server down) → retry 3x, 5s interval → ERROR (exit with message)
+    │
+    ▼  OK → update jeo-state.json: phase="verify_ui", agentation.active=true
+[WATCH]  agentation_watch_annotations({batchWindowSeconds:10, timeoutSeconds:120})
+         blocking — waits for annotations or timeout
+    │
+    ├─ Annotations received (sorted by severity: blocking → important → suggestion):
+    │   │
+    │   ▼
+    │  [ACK]   agentation_acknowledge_annotation({id})
+    │          → status: 'acknowledged' → spinner shown in toolbar
+    │   │
+    │   ▼
+    │  [FIND]  grep/AST search using annotation.elementPath (CSS selector)
+    │          annotation.comment → understand desired change
+    │   │
+    │   ▼
+    │  [FIX]   apply code change to matched component/file
+    │   │
+    │   ▼
+    │  [RESOLVE] agentation_resolve_annotation({id, summary})
+    │            → status: 'resolved' → green checkmark in toolbar
+    │   │
+    │   ▼
+    │  [RE-SNAPSHOT] agent-browser snapshot <url>  ← verify fix visually
+    │            → compare before/after
+    │   │
+    │   └─ Next annotation → repeat ACK→FIND→FIX→RESOLVE→RE-SNAPSHOT
+    │
+    ├─ count=0 (all resolved)
+    │   └─ update jeo-state.json: agentation.exit_reason="all_resolved"
+    │   └─ VERIFY_UI complete → proceed to CLEANUP
+    │
+    └─ timeout (120s)
+        └─ update jeo-state.json: agentation.exit_reason="timeout"
+        └─ summarize what was/wasn't addressed → proceed to CLEANUP
+```
+
+**HTTP REST API (Codex / Gemini / OpenCode fallback — no MCP):**
+```
+LOOP:
+  GET  http://localhost:4747/pending         → {count, annotations[]}
+  if count == 0 → break (done)
+  for each annotation:
+    PATCH .../annotations/:id {status:"acknowledged"}
+    [search & fix code via elementPath]
+    PATCH .../annotations/:id {status:"resolved", resolution:"<summary>"}
+  sleep 5 → repeat
+```
+
+### VERIFY_UI Internal State Machine
+
+```
+  IDLE ──(annotate keyword)──► PREFLIGHT
+                                  │
+                     ┌────────────┤
+                     │            │
+                   FAIL        OK
+                     │            │
+                     ▼            ▼
+                  RECOVER     WATCHING
+                  (3x retry)      │
+                     │      ┌─────┼──────┐
+                     │      │     │      │
+                   ERROR  count>0  0   timeout
+                     │      │     │      │
+                     ▼      ▼     ▼      ▼
+                   FAIL  PROCESS DONE  TIMEOUT
+                          │              │
+                   ACK→FIX→RESOLVE    report
+                          │
+                      RE-SNAPSHOT
+                          │
+                    issues? ─Y─► WATCHING
+                          │
+                          N
+                          ▼
+                        DONE
+```
+
+### plannotator-agentation Phase Separation
+
+```
+Phase Guard: hooks check jeo-state.json phase before executing
+
+  PLAN phase:
+    plannotator ✅ (allowed)
+    agentation  ❌ (blocked by phase guard)
+
+  EXECUTE phase:
+    plannotator ❌ (blocked by phase guard)
+    agentation  ❌ (blocked by phase guard)
+
+  VERIFY / VERIFY_UI phase:
+    plannotator ❌ (blocked by phase guard)
+    agentation  ✅ (allowed)
 ```
 
 ---
@@ -113,14 +229,16 @@ gemini --approval-mode plan
 ## State Machine
 
 ```
-States: plan → execute → verify → cleanup → done
+States: plan → execute → verify → verify_ui? → cleanup → done
 
 Transitions:
   plan     → execute  (plan approved)
   plan     → plan     (feedback received, re-plan)
   execute  → verify   (tasks complete, browser UI present)
-  execute  → cleanup  (task complete, no browser UI)
-  verify   → cleanup  (verification passed)
+  verify   → verify_ui (annotate keyword detected — or agentui alias — agentation running)
+  verify   → cleanup  (no annotate/agentui, verification passed)
+  verify_ui → cleanup (annotations all resolved or timeout)
+
   cleanup  → done     (worktrees removed, prune complete)
 ```
 
@@ -131,15 +249,44 @@ State persisted in: `.omc/state/jeo-state.json`
   "phase": "plan",
   "task": "Implement user authentication",
   "plan_approved": false,
-  "plan_path": ".omc/plans/jeo-plan.md",
   "team_available": true,
-  "worktrees": [],
-  "bmad_phase": null,
+  "retry_count": 0,
+  "last_error": null,
+  "checkpoint": null,
   "created_at": "2026-02-24T00:00:00Z",
   "updated_at": "2026-02-24T00:00:00Z",
-  "cleanup_completed": false
+  "agentation": {
+    "active": false,
+    "session_id": null,
+    "keyword_used": null,
+    "started_at": null,
+    "timeout_seconds": 120,
+    "annotations": {
+      "total": 0,
+      "acknowledged": 0,
+      "resolved": 0,
+      "dismissed": 0,
+      "pending": 0
+    },
+    "completed_at": null,
+    "exit_reason": null
+  }
 }
 ```
+
+**Error recovery fields:**
+- `retry_count`: incremented on each Pre-flight failure; ≥ 3 triggers user confirmation
+- `last_error`: most recent error message; cleared on successful step entry
+- `checkpoint`: last successfully entered phase (`"plan"` | `"execute"` | `"verify"` | `"cleanup"`); used to resume after interruption
+
+**agentation fields:**
+- `active`: whether VERIFY_UI watch loop is currently running (used as guard by hooks)
+- `session_id`: agentation session ID for resume via `agentation_get_session`
+- `keyword_used`: `"annotate"` or `"agentui"` (tracks which keyword triggered entry)
+- `started_at`: ISO-8601 timestamp when VERIFY_UI watch loop started
+- `timeout_seconds`: poll timeout in seconds (default: 120)
+- `annotations.*`: cumulative counts by lifecycle status (`total`, `acknowledged`, `resolved`, `dismissed`, `pending`)
+- `exit_reason`: `"all_resolved"` | `"timeout"` | `"user_cancelled"` | `"error"`
 
 ---
 
@@ -197,6 +344,8 @@ git worktree prune
 | `PLANNOTATOR_PORT` | Fixed plannotator port | auto |
 | `JEO_MAX_ITERATIONS` | Max ralph loop iterations | `20` |
 
+| `AGENTATION_PORT` | agentation MCP server port | `4747` |
+| `AGENTATION_TIMEOUT` | annotate watch loop timeout (seconds) | `120` |
 ---
 
 ## Troubleshooting
@@ -236,4 +385,17 @@ git worktree prune --verbose
 # Manual directory removal
 rm -rf /path/to/worktree
 git worktree prune
+```
+
+### annotate (agentation) watch loop not triggering
+```bash
+# Verify agentation-mcp server is running
+curl -sf http://localhost:4747/pending
+# Should return: {"count": N, "annotations": [...]}
+
+# Check MCP registration (Claude Code)
+cat ~/.claude/settings.json | python3 -c "import sys,json; s=json.load(sys.stdin); print(s.get('mcpServers', {}))"
+
+# Restart agentation-mcp server
+npx agentation-mcp server
 ```

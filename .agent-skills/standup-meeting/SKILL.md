@@ -1,82 +1,84 @@
 ---
 name: standup-meeting
 description: Conduct effective daily standup meetings for agile teams. Use when facilitating standups, tracking blockers, or improving team synchronization. Handles standup format, time management, and blocker resolution.
-tags: [standup, daily-scrum, agile, team-sync, blockers]
-platforms: [Claude, ChatGPT, Gemini]
+metadata:
+  tags: standup, daily-scrum, agile, team-sync, blockers
+  platforms: Claude, ChatGPT, Gemini
 ---
+
 
 # Standup Meeting
 
 
 ## When to use this skill
 
-- **매일**: 같은 시간, 같은 장소
-- **스프린트 중**: 팀 동기화 필요 시
-- **원격 팀**: 비동기 스탠드업
+- **Daily**: same time, same place
+- **During a sprint**: when team sync is needed
+- **Remote teams**: async standup
 
 ## Instructions
 
-### Step 1: 3 Questions 포맷
+### Step 1: 3 Questions Format
 
 ```markdown
 ## Daily Standup Template
 
 **Date**: 2025-01-15
 **Time**: 9:30 AM
-**Duration**: 15분
+**Duration**: 15 minutes
 
-### 팀원 A
-- **어제 한 일**:
-  - 사용자 인증 API 완료 (#123)
-  - Code review 2건
-- **오늘 할 일**:
-  - JWT refresh token 구현 (#124)
-  - 단위 테스트 작성
-- **블로커**:
-  - Redis 설정 문서 필요 (팀원 B에게 도움 요청)
+### Team Member A
+- **Yesterday**:
+  - Completed user authentication API (#123)
+  - 2 code reviews
+- **Today**:
+  - Implement JWT refresh token (#124)
+  - Write unit tests
+- **Blockers**:
+  - Need Redis setup docs (ask Team Member B for help)
 
-### 팀원 B
-- **어제 한 일**:
-  - 프론트엔드 폼 validation (#125)
-- **오늘 할 일**:
-  - 프로필 페이지 UI 구현 (#126)
-- **블로커**: 없음
+### Team Member B
+- **Yesterday**:
+  - Frontend form validation (#125)
+- **Today**:
+  - Implement profile page UI (#126)
+- **Blockers**: None
 
-### 팀원 C
-- **어제 한 일**:
-  - 데이터베이스 마이그레이션 (#127)
-  - 성능 테스트
-- **오늘 할 일**:
-  - 인덱스 최적화 (#128)
-- **블로커**:
-  - 프로덕션 DB 접근 권한 필요 (긴급)
+### Team Member C
+- **Yesterday**:
+  - Database migration (#127)
+  - Performance testing
+- **Today**:
+  - Index optimization (#128)
+- **Blockers**:
+  - Need production DB access (urgent)
 
 ### Action Items
-1. [ ] 팀원 B가 팀원 A에게 Redis 문서 공유 (오늘 10:00)
-2. [ ] 팀장이 팀원 C의 DB 권한 요청 (오늘 중)
+1. [ ] Team Member B shares Redis docs with Team Member A (Today 10:00)
+2. [ ] Team lead requests DB access for Team Member C (Today)
 ```
 
-### Step 2: Walking the Board (보드 기반)
+### Step 2: Walking the Board (Board-Based)
 
 ```markdown
 ## Standup: Walking the Board
 
-**Sprint Goal**: 사용자 인증 시스템 완성
+**Sprint Goal**: Complete user authentication system
 
 ### In Progress
-- #123: User Login API (팀원 A, 80% 완료)
-- #124: Refresh Token (팀원 A, 시작 예정)
-- #125: Form Validation (팀원 B, 90% 완료)
+- #123: User Login API (Team Member A, 80% done)
+- #124: Refresh Token (Team Member A, planned)
+- #125: Form Validation (Team Member B, 90% done)
 
 ### Blocked
-- #127: DB Migration (팀원 C)
-  - **블로커**: 권한 필요
-  - **Owner**: 팀장
-  - **ETA**: 오늘 오후
+- #127: DB Migration (Team Member C)
+  - **Blocker**: Access needed
+  - **Owner**: Team Lead
+  - **ETA**: This afternoon
 
 ### Ready for Review
-- #122: Password Reset (팀원 D)
-  - 리뷰어 필요
+- #122: Password Reset (Team Member D)
+  - Need reviewer
 
 ### Done
 - #120: Email Service Integration
@@ -88,9 +90,9 @@ platforms: [Claude, ChatGPT, Gemini]
 - **On Track**: Yes ✅
 ```
 
-### Step 3: 비동기 Standup (원격 팀)
+### Step 3: Async Standup (Remote Teams)
 
-**Slack 템플릿**:
+**Slack template**:
 ```markdown
 [Daily Update - 2025-01-15]
 
@@ -111,7 +113,7 @@ platforms: [Claude, ChatGPT, Gemini]
 
 ## Output format
 
-### Standup 회의록
+### Standup Minutes
 
 ```markdown
 # Daily Standup - 2025-01-15
@@ -123,15 +125,15 @@ platforms: [Claude, ChatGPT, Gemini]
 ## Summary
 - Stories Completed: 2 (5 points)
 - Stories In Progress: 3 (8 points)
-- Blockers: 1 (DB access권한)
+- Blockers: 1 (DB access permission)
 
 ## Individual Updates
-[위의 3 Questions 포맷 참조]
+[Refer to the 3 Questions format above]
 
 ## Action Items
-1. 팀장: DB 권한 요청 (High priority)
-2. 팀원 B: Redis 문서 공유
-3. 팀원 D: PR #122 리뷰어 할당
+1. Team lead: Request DB access (High priority)
+2. Team Member B: Share Redis docs
+3. Team Member D: Assign reviewer for PR #122
 
 ## Notes
 - Sprint goal on track
@@ -140,23 +142,23 @@ platforms: [Claude, ChatGPT, Gemini]
 
 ## Constraints
 
-### 필수 규칙 (MUST)
+### Required Rules (MUST)
 
-1. **Time-boxed**: 15분 이내
-2. **같은 시간**: 매일 일정한 시간
-3. **전원 참여**: 모든 팀원 업데이트
+1. **Time-boxed**: within 15 minutes
+2. **Same time**: consistent time every day
+3. **Everyone participates**: every team member gives an update
 
-### 금지 사항 (MUST NOT)
+### Prohibited (MUST NOT)
 
-1. **Problem Solving**: 스탠드업에서 문제 해결하지 않음
-2. **Status Report**: 관리자에게 보고하는 자리 아님
-3. **Late Start**: 시간 엄수
+1. **Problem Solving**: Do not solve problems in the standup
+2. **Status Report**: Not a status report to management
+3. **Late Start**: Start on time
 
 ## Best practices
 
-1. **Stand Up**: 실제로 서서 진행 (짧게 유지)
-2. **Parking Lot**: 깊은 논의는 별도 시간
-3. **Visualize**: 보드를 보며 진행
+1. **Stand Up**: Actually stand up (keep it short)
+2. **Parking Lot**: Deep discussion goes to a separate time
+3. **Visualize**: Run it while looking at the board
 
 ## References
 
@@ -165,12 +167,12 @@ platforms: [Claude, ChatGPT, Gemini]
 
 ## Metadata
 
-### 버전
-- **현재 버전**: 1.0.0
-- **최종 업데이트**: 2025-01-01
-- **호환 플랫폼**: Claude, ChatGPT, Gemini
+### Version
+- **Current version**: 1.0.0
+- **Last updated**: 2025-01-01
+- **Supported platforms**: Claude, ChatGPT, Gemini
 
-### 태그
+### Tags
 `#standup` `#daily-scrum` `#agile` `#team-sync` `#project-management`
 
 ## Examples

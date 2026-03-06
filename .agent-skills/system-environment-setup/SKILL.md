@@ -1,23 +1,25 @@
 ---
 name: system-environment-setup
 description: Configure development and production environments for consistent and reproducible setups. Use when setting up new projects, Docker environments, or development tooling. Handles Docker Compose, .env configuration, dev containers, and infrastructure as code.
-tags: [environment-setup, Docker-Compose, dev-environment, IaC, configuration]
-platforms: [Claude, ChatGPT, Gemini]
+metadata:
+  tags: environment-setup, Docker-Compose, dev-environment, IaC, configuration
+  platforms: Claude, ChatGPT, Gemini
 ---
+
 
 # System & Environment Setup
 
 
 ## When to use this skill
 
-- **신규 프로젝트**: 초기 환경 설정
-- **팀 온보딩**: 새 개발자 환경 통일
-- **다중 서비스**: 마이크로서비스 로컬 실행
-- **프로덕션 재현**: 로컬에서 프로덕션 환경 테스트
+- **New project**: Initial environment setup
+- **Team onboarding**: Standardizing new developer environments
+- **Multiple services**: Local execution of microservices
+- **Production replication**: Testing production environment locally
 
 ## Instructions
 
-### Step 1: Docker Compose 설정
+### Step 1: Docker Compose Configuration
 
 **docker-compose.yml**:
 ```yaml
@@ -79,25 +81,25 @@ volumes:
   redis_data:
 ```
 
-**사용**:
+**Usage**:
 ```bash
-# 모든 서비스 시작
+# Start all services
 docker-compose up -d
 
-# 로그 확인
+# View logs
 docker-compose logs -f web
 
-# 특정 서비스만 재시작
+# Restart specific service only
 docker-compose restart web
 
-# 중지 및 제거
+# Stop and remove
 docker-compose down
 
-# 볼륨까지 제거
+# Remove including volumes
 docker-compose down -v
 ```
 
-### Step 2: 환경변수 관리
+### Step 2: Environment Variable Management
 
 **.env.example**:
 ```bash
@@ -132,7 +134,7 @@ AWS_SECRET_ACCESS_KEY=xxxxxxxx
 AWS_REGION=us-east-1
 ```
 
-**.env** (로컬에서만, gitignore에 추가):
+**.env** (local only, add to gitignore):
 ```bash
 # .gitignore
 .env
@@ -140,7 +142,7 @@ AWS_REGION=us-east-1
 .env.*.local
 ```
 
-**환경변수 로드** (Node.js):
+**Loading environment variables** (Node.js):
 ```typescript
 import dotenv from 'dotenv';
 import path from 'path';
@@ -212,7 +214,7 @@ export const env = loadEnv();
 }
 ```
 
-### Step 4: Makefile (편의 명령어)
+### Step 4: Makefile (Convenience Commands)
 
 **Makefile**:
 ```makefile
@@ -267,17 +269,17 @@ clean: ## Clean build artifacts
 reset: clean install ## Reset project (clean + install)
 ```
 
-**사용**:
+**Usage**:
 ```bash
-make help         # 명령어 목록
-make install      # 의존성 설치
-make dev          # 개발 서버 시작
-make docker-up    # Docker 서비스 시작
+make help         # List of commands
+make install      # Install dependencies
+make dev          # Start dev server
+make docker-up    # Start Docker services
 ```
 
 ### Step 5: Infrastructure as Code (Terraform)
 
-**main.tf** (AWS 예시):
+**main.tf** (AWS example):
 ```hcl
 terraform {
   required_providers {
@@ -388,7 +390,7 @@ variable "db_password" {
 
 ## Output format
 
-### 프로젝트 구조
+### Project Structure
 
 ```
 project/
@@ -408,22 +410,22 @@ project/
 
 ## Constraints
 
-### 필수 규칙 (MUST)
+### Mandatory Rules (MUST)
 
-1. **.env.example 제공**: 필요한 환경변수 목록
-2. **.gitignore**: .env 파일 절대 커밋하지 않음
-3. **README.md**: 설치 및 실행 방법 문서화
+1. **Provide .env.example**: List of required environment variables
+2. **.gitignore**: Never commit .env files
+3. **README.md**: Document installation and running instructions
 
-### 금지 사항 (MUST NOT)
+### Prohibited (MUST NOT)
 
-1. **Secrets 커밋 금지**: .env, credentials 파일 절대 커밋하지 않음
-2. **하드코딩 금지**: 모든 설정은 환경변수로
+1. **No committing secrets**: Never commit .env, credentials files
+2. **No hardcoding**: All configuration via environment variables
 
 ## Best practices
 
-1. **Docker Compose**: 로컬 개발은 Docker Compose
-2. **Volume Mount**: 코드 변경 즉시 반영
-3. **Health Checks**: 서비스 준비 상태 확인
+1. **Docker Compose**: Use Docker Compose for local development
+2. **Volume Mount**: Instantly reflects code changes
+3. **Health Checks**: Verify service readiness
 
 ## References
 
@@ -433,16 +435,16 @@ project/
 
 ## Metadata
 
-### 버전
-- **현재 버전**: 1.0.0
-- **최종 업데이트**: 2025-01-01
-- **호환 플랫폼**: Claude, ChatGPT, Gemini
+### Version
+- **Current Version**: 1.0.0
+- **Last Updated**: 2025-01-01
+- **Compatible Platforms**: Claude, ChatGPT, Gemini
 
-### 관련 스킬
+### Related Skills
 - [deployment](../deployment/SKILL.md)
 - [environment-setup](../../utilities/environment-setup/SKILL.md)
 
-### 태그
+### Tags
 `#environment-setup` `#Docker-Compose` `#dev-environment` `#IaC` `#Terraform` `#infrastructure`
 
 ## Examples

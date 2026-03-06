@@ -2,15 +2,15 @@ N:monitoring-observability
 D:Set up monitoring, logging, and observability for applications and infrastructure. Use when imple...
 G:monitoring observability logging metrics Prometheus
 U[4]:
-  **프로덕션 배포 전**: 모니터링 시스템 필수 구축
-  **성능 문제 발생**: 병목 지점 식별
-  **장애 대응**: 빠른 원인 파악
-  **SLA 준수**: 가용성/응답시간 추적
+  **Before Production Deployment**: Essential monitoring system setup
+  **Performance Issues**: Identify bottlenecks
+  **Incident Response**: Quick root cause identification
+  **SLA Compliance**: Track availability/response times
 S[5]{n,action}:
-  1,메트릭 수집 (Prometheus)
-  2,알림 규칙
-  3,로그 집계 (Structured Logging)
-  4,Grafana 대시보드
+  1,Metrics Collection (Prometheus)
+  2,Alert Rules
+  3,Log Aggregation (Structured Logging)
+  4,Grafana Dashboard
   5,Health Checks
 R[6]:
   job_name

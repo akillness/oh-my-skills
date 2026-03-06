@@ -1,18 +1,20 @@
 ---
 name: sprint-retrospective
 description: Facilitate effective sprint retrospectives for continuous team improvement. Use when conducting team retrospectives, identifying improvements, or fostering team collaboration. Handles retrospective formats, action items, and facilitation techniques.
-tags: [retrospective, agile, scrum, team-improvement, facilitation]
-platforms: [Claude, ChatGPT, Gemini]
+metadata:
+  tags: retrospective, agile, scrum, team-improvement, facilitation
+  platforms: Claude, ChatGPT, Gemini
 ---
+
 
 # Sprint Retrospective
 
 
 ## When to use this skill
 
-- **스프린트 종료**: 매 스프린트 마지막
-- **프로젝트 마일스톤**: 주요 릴리스 후
-- **팀 문제 발생**: 즉시 회고 필요 시
+- **End of sprint**: at the end of each sprint
+- **Project milestone**: after major releases
+- **Team issues**: when an immediate retrospective is needed
 
 ## Instructions
 
@@ -21,25 +23,25 @@ platforms: [Claude, ChatGPT, Gemini]
 ```markdown
 ## Retrospective Template: Start-Stop-Continue
 
-### START (시작할 것)
-- Daily standup을 더 짧게 (5분 이내)
-- Code review 체크리스트 사용
-- 페어 프로그래밍 도입
+### START (Start doing)
+- Make daily standups shorter (within 5 minutes)
+- Use a code review checklist
+- Introduce pair programming
 
-### STOP (중단할 것)
-- 금요일 오후 배포 (롤백 위험)
-- 긴급 회의 남발
-- 문서화 없는 기능 추가
+### STOP (Stop doing)
+- Deploying on Friday afternoons (rollback risk)
+- Overusing emergency meetings
+- Adding features without documentation
 
-### CONTINUE (계속할 것)
-- 주간 기술 공유 세션
-- 자동화된 테스트
-- 투명한 커뮤니케이션
+### CONTINUE (Keep doing)
+- Weekly tech sharing session
+- Automated tests
+- Transparent communication
 
 ### Action Items
-1. [ ] Standup 시간을 9:00 → 9:30으로 변경 (팀장)
-2. [ ] Code review checklist 문서 작성 (개발자 A)
-3. [ ] 금요일 배포 금지 규칙 공지 (팀장)
+1. [ ] Change standup time from 9:00 → 9:30 (Team Lead)
+2. [ ] Write a code review checklist document (Developer A)
+3. [ ] Announce the "no Friday deployments" rule (Team Lead)
 ```
 
 ### Step 2: Mad-Sad-Glad
@@ -47,25 +49,25 @@ platforms: [Claude, ChatGPT, Gemini]
 ```markdown
 ## Retrospective: Mad-Sad-Glad
 
-### MAD (화가 났던 것)
-- 배포 후 긴급 버그 발생 (2번)
-- 요구사항이 자주 변경됨
-- 테스트 환경 불안정
+### MAD (What made us mad)
+- Urgent bugs after deployment (twice)
+- Requirements changed frequently
+- Unstable test environment
 
-### SAD (아쉬웠던 것)
-- 코드 리뷰 시간 부족
-- 문서화가 뒤처짐
-- 기술 부채 누적
+### SAD (What we wished went better)
+- Not enough time for code reviews
+- Documentation lagged behind
+- Accumulating tech debt
 
-### GLAD (좋았던 것)
-- 새 팀원 빠른 적응
-- CI/CD 파이프라인 안정화
-- 고객 피드백 긍정적
+### GLAD (What made us glad)
+- New team members onboarded quickly
+- CI/CD pipeline stabilized
+- Positive customer feedback
 
 ### Action Items
-- 배포 체크리스트 강화
-- 요구사항 변경 프로세스 개선
-- 매주 금요일 문서화 시간 확보
+- Strengthen the deployment checklist
+- Improve the requirements change process
+- Reserve documentation time every Friday
 ```
 
 ### Step 3: 4Ls (Liked-Learned-Lacked-Longed For)
@@ -73,50 +75,50 @@ platforms: [Claude, ChatGPT, Gemini]
 ```markdown
 ## Retrospective: 4Ls
 
-### LIKED (좋았던 것)
-- 팀워크가 좋았음
-- 새로운 기술 스택 도입 성공
+### LIKED (What we liked)
+- Great teamwork
+- Successfully adopted a new tech stack
 
-### LEARNED (배운 것)
-- Docker Compose로 로컬 환경 통일
-- React Query로 서버 상태 관리 개선
+### LEARNED (What we learned)
+- Standardize the local environment with Docker Compose
+- Improve server state management with React Query
 
-### LACKED (부족했던 것)
-- 성능 테스트
-- 모바일 대응
+### LACKED (What we lacked)
+- Performance testing
+- Mobile support
 
-### LONGED FOR (바라는 것)
-- 더 나은 개발 도구
-- 외부 교육 기회
+### LONGED FOR (What we longed for)
+- Better developer tools
+- External training opportunities
 
 ### Action Items
-- Lighthouse CI 도입으로 성능 자동 측정
-- 반응형 디자인 가이드라인 작성
+- Automatically measure performance by introducing Lighthouse CI
+- Write responsive design guidelines
 ```
 
 ## Output format
 
-### Retrospective 문서
+### Retrospective document
 
 ```markdown
 # Sprint [N] Retrospective
 **Date**: 2025-01-15
-**Participants**: 팀원 A, B, C, D
+**Participants**: Team Member A, B, C, D
 **Format**: Start-Stop-Continue
 
 ## What Went Well
-- 모든 스토리 완료 (Velocity: 25 points)
-- 버그 발생 0건
-- 팀 분위기 좋음
+- Completed all stories (Velocity: 25 points)
+- 0 bugs
+- Great team morale
 
 ## What Didn't Go Well
-- 기술 스파이크에 예상보다 시간 소요
-- 디자인 변경으로 재작업
+- Tech spike took longer than expected
+- Rework due to design changes
 
 ## Action Items
-1. [ ] 기술 스파이크는 별도 스프린트 할당 (팀장, ~01/20)
-2. [ ] 디자인 사전 리뷰 프로세스 도입 (디자이너, ~01/18)
-3. [ ] Velocity 차트 공유 (스크럼 마스터, 매주)
+1. [ ] Assign tech spikes to a dedicated sprint (Team Lead, ~01/20)
+2. [ ] Introduce a pre-review process for designs (Designer, ~01/18)
+3. [ ] Share the velocity chart (Scrum Master, weekly)
 
 ## Key Metrics
 - Velocity: 25 points
@@ -126,22 +128,22 @@ platforms: [Claude, ChatGPT, Gemini]
 
 ## Constraints
 
-### 필수 규칙 (MUST)
+### Required Rules (MUST)
 
-1. **Safe Space**: 비난 없는 환경
-2. **Action Items**: 구체적이고 실행 가능해야 함
-3. **Follow-up**: 다음 회고에서 진행 상황 확인
+1. **Safe Space**: a blame-free environment
+2. **Action Items**: must be specific and actionable
+3. **Follow-up**: check progress in the next retrospective
 
-### 금지 사항 (MUST NOT)
+### Prohibited (MUST NOT)
 
-1. **개인 공격**: 사람이 아닌 프로세스 개선
-2. **너무 많은 Action**: 2-3개로 제한
+1. **Personal attacks**: improve the process, not the person
+2. **Too many actions**: limit to 2-3
 
 ## Best practices
 
-1. **Time-box**: 1시간 이내
-2. **Rotate Facilitator**: 팀원이 돌아가며 진행
-3. **Celebrate Wins**: 성공도 함께 축하
+1. **Time-box**: within 1 hour
+2. **Rotate Facilitator**: team members take turns facilitating
+3. **Celebrate Wins**: celebrate successes too
 
 ## References
 
@@ -150,12 +152,12 @@ platforms: [Claude, ChatGPT, Gemini]
 
 ## Metadata
 
-### 버전
-- **현재 버전**: 1.0.0
-- **최종 업데이트**: 2025-01-01
-- **호환 플랫폼**: Claude, ChatGPT, Gemini
+### Version
+- **Current version**: 1.0.0
+- **Last updated**: 2025-01-01
+- **Supported platforms**: Claude, ChatGPT, Gemini
 
-### 태그
+### Tags
 `#retrospective` `#agile` `#scrum` `#team-improvement` `#project-management`
 
 ## Examples

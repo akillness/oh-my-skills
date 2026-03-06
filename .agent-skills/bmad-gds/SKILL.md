@@ -1,13 +1,15 @@
 ---
 name: bmad-gds
-keyword: bmad-gds
 description: AI-driven Game Development Studio using BMAD methodology. Routes game projects through Pre-production, Design, Architecture, Production, and Game Testing phases with 6 specialized agents. Supports Unity, Unreal Engine, Godot, and custom engines.
-allowed-tools: [Read, Write, Bash, Grep, Glob]
-tags: [bmad, gds, game-development, game-design, gdd, unity, unreal, godot, multi-agent, workflow]
-platforms: [Claude, Gemini, Codex, OpenCode]
-version: 0.1.4
-source: user-installed skill
+allowed-tools: Read Write Bash Grep Glob
+metadata:
+  tags: bmad, gds, game-development, game-design, gdd, unity, unreal, godot, multi-agent, workflow
+  platforms: Claude, Gemini, Codex, OpenCode
+  keyword: bmad-gds
+  version: 0.1.4
+  source: user-installed skill
 ---
+
 
 # bmad-gds - BMAD Game Development Studio
 

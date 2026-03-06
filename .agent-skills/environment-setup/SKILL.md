@@ -1,25 +1,27 @@
 ---
 name: environment-setup
 description: Configure and manage development, staging, and production environments. Use when setting up environment variables, managing configurations, or separating environments. Handles .env files, config management, and environment-specific settings.
-allowed-tools: [Read, Write, Edit, Bash]
-tags: [environment, configuration, env-variables, dotenv, config-management]
-platforms: [Claude, ChatGPT, Gemini]
+allowed-tools: Read Write Edit Bash
+metadata:
+  tags: environment, configuration, env-variables, dotenv, config-management
+  platforms: Claude, ChatGPT, Gemini
 ---
+
 
 # Environment Configuration
 
 
 ## When to use this skill
 
-- **신규 프로젝트**: 초기 환경 설정
-- **다중 환경**: dev, staging, production 분리
-- **팀 협업**: 일관된 환경 공유
+- **New Projects**: Initial environment setup
+- **Multiple Environments**: Separate dev, staging, production
+- **Team Collaboration**: Share consistent environments
 
 ## Instructions
 
-### Step 1: .env 파일 구조
+### Step 1: .env File Structure
 
-**.env.example** (템플릿):
+**.env.example** (template):
 ```bash
 # Application
 NODE_ENV=development
@@ -64,9 +66,9 @@ ENABLE_2FA=false
 ENABLE_ANALYTICS=true
 ```
 
-**.env.local** (개발자별):
+**.env.local** (per developer):
 ```bash
-# 개발자 개인 설정 (.gitignore에 추가)
+# Developer personal settings (add to .gitignore)
 DATABASE_URL=postgresql://localhost:5432/myapp_dev
 LOG_LEVEL=debug
 ```
@@ -77,7 +79,7 @@ NODE_ENV=production
 PORT=8080
 APP_URL=https://myapp.com
 
-DATABASE_URL=${DATABASE_URL}  # 환경변수에서 주입
+DATABASE_URL=${DATABASE_URL}  # Injected from environment variables
 REDIS_URL=${REDIS_URL}
 
 JWT_ACCESS_SECRET=${JWT_ACCESS_SECRET}
@@ -87,7 +89,7 @@ LOG_LEVEL=warn
 ENABLE_2FA=true
 ```
 
-### Step 2: Type-Safe 환경변수 (TypeScript)
+### Step 2: Type-Safe Environment Variables (TypeScript)
 
 **config/env.ts**:
 ```typescript
@@ -125,7 +127,7 @@ export const env = envSchema.parse(process.env);
 // console.log(env.DATABASE_URL); // Type-safe!
 ```
 
-**에러 처리**:
+**Error Handling**:
 ```typescript
 try {
   const env = envSchema.parse(process.env);
@@ -140,7 +142,7 @@ try {
 }
 ```
 
-### Step 3: 환경별 Config 파일
+### Step 3: Per-Environment Config Files
 
 **config/index.ts**:
 ```typescript
@@ -204,7 +206,7 @@ for (const envVar of requiredEnvVars) {
 export default config;
 ```
 
-### Step 4: 환경별 설정 파일
+### Step 4: Environment-Specific Configuration Files
 
 **config/environments/development.ts**:
 ```typescript
@@ -242,7 +244,7 @@ export default {
 };
 ```
 
-**config/index.ts** (통합):
+**config/index.ts** (unified):
 ```typescript
 import development from './environments/development';
 import production from './environments/production';
@@ -258,7 +260,7 @@ const configs = {
 export const environmentConfig = configs[env];
 ```
 
-### Step 5: Docker 환경변수
+### Step 5: Docker Environment Variables
 
 **docker-compose.yml**:
 ```yaml
@@ -292,13 +294,13 @@ services:
 
 ```
 project/
-├── .env.example           # 템플릿 (커밋)
-├── .env                   # 로컬 (gitignore)
-├── .env.local             # 개발자별 (gitignore)
-├── .env.production        # 프로덕션 (gitignore or vault)
+├── .env.example           # Template (commit)
+├── .env                   # Local (gitignore)
+├── .env.local             # Per developer (gitignore)
+├── .env.production        # Production (gitignore or vault)
 ├── config/
-│   ├── index.ts           # 메인 설정
-│   ├── env.ts             # 환경변수 검증
+│   ├── index.ts           # Main configuration
+│   ├── env.ts             # Environment variable validation
 │   └── environments/
 │       ├── development.ts
 │       ├── production.ts
@@ -316,22 +318,22 @@ project/
 
 ## Constraints
 
-### 필수 규칙 (MUST)
+### Required Rules (MUST)
 
-1. **.env.example 제공**: 필요한 환경변수 목록
-2. **검증**: 필수 환경변수 누락 시 에러
-3. **.gitignore**: .env 파일 절대 커밋하지 않음
+1. **Provide .env.example**: List of required environment variables
+2. **Validation**: Error when required environment variables are missing
+3. **.gitignore**: Never commit .env files
 
-### 금지 사항 (MUST NOT)
+### Prohibited (MUST NOT)
 
-1. **Secrets 커밋**: .env 파일 절대 커밋하지 않음
-2. **하드코딩**: 코드에 환경별 설정 하드코딩 금지
+1. **Commit Secrets**: Never commit .env files
+2. **Hardcoding**: Do not hardcode environment-specific settings in code
 
 ## Best practices
 
-1. **12 Factor App**: 환경변수로 설정 관리
-2. **Type Safety**: Zod로 런타임 검증
-3. **Secrets Management**: AWS Secrets Manager, Vault 사용
+1. **12 Factor App**: Manage configuration via environment variables
+2. **Type Safety**: Runtime validation with Zod
+3. **Secrets Management**: Use AWS Secrets Manager, Vault
 
 ## References
 
@@ -341,12 +343,12 @@ project/
 
 ## Metadata
 
-### 버전
-- **현재 버전**: 1.0.0
-- **최종 업데이트**: 2025-01-01
-- **호환 플랫폼**: Claude, ChatGPT, Gemini
+### Version
+- **Current Version**: 1.0.0
+- **Last Updated**: 2025-01-01
+- **Compatible Platforms**: Claude, ChatGPT, Gemini
 
-### 태그
+### Tags
 `#environment` `#configuration` `#env-variables` `#dotenv` `#config-management` `#utilities`
 
 ## Examples

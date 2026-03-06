@@ -1,27 +1,29 @@
 ---
 name: deployment-automation
 description: Automate application deployment to cloud platforms and servers. Use when setting up CI/CD pipelines, deploying to Docker/Kubernetes, or configuring cloud infrastructure. Handles GitHub Actions, Docker, Kubernetes, AWS, Vercel, and deployment best practices.
-tags: [deployment, CI/CD, Docker, Kubernetes, AWS, GitHub-Actions, automation]
-platforms: [Claude, ChatGPT, Gemini]
+metadata:
+  tags: deployment, CI/CD, Docker, Kubernetes, AWS, GitHub-Actions, automation
+  platforms: Claude, ChatGPT, Gemini
 ---
+
 
 # Deployment Automation
 
 
 ## When to use this skill
 
-- **신규 프로젝트**: 처음부터 자동 배포 설정
-- **수동 배포 개선**: 반복적인 수동 작업 자동화
-- **멀티 환경**: dev, staging, production 환경 분리
-- **스케일링**: 트래픽 증가 대비 Kubernetes 도입
+- **New Projects**: Set up automated deployment from scratch
+- **Manual Deployment Improvement**: Automate repetitive manual tasks
+- **Multi-Environment**: Separate dev, staging, and production environments
+- **Scaling**: Introduce Kubernetes to handle traffic growth
 
 ## Instructions
 
-### Step 1: Docker 컨테이너화
+### Step 1: Docker Containerization
 
-애플리케이션을 Docker 이미지로 패키징합니다.
+Package the application as a Docker image.
 
-**Dockerfile** (Node.js 앱):
+**Dockerfile** (Node.js app):
 ```dockerfile
 # Multi-stage build for smaller image size
 FROM node:18-alpine AS builder
@@ -77,7 +79,7 @@ coverage
 .DS_Store
 ```
 
-**빌드 및 실행**:
+**Build and Run**:
 ```bash
 # Build image
 docker build -t myapp:latest .
@@ -95,7 +97,7 @@ docker rm myapp-container
 
 ### Step 2: GitHub Actions CI/CD
 
-코드 푸시 시 자동으로 테스트 및 배포합니다.
+Automatically runs tests and deploys on code push.
 
 **.github/workflows/deploy.yml**:
 ```yaml
@@ -196,9 +198,9 @@ jobs:
             docker image prune -f
 ```
 
-### Step 3: Kubernetes 배포
+### Step 3: Kubernetes Deployment
 
-확장 가능한 컨테이너 오케스트레이션을 구현합니다.
+Implement scalable container orchestration.
 
 **k8s/deployment.yaml**:
 ```yaml
@@ -301,7 +303,7 @@ spec:
         averageUtilization: 80
 ```
 
-**배포 스크립트** (deploy.sh):
+**Deployment Script** (deploy.sh):
 ```bash
 #!/bin/bash
 set -e
@@ -330,9 +332,9 @@ kubectl get pods -n ${NAMESPACE} -l app=myapp
 echo "Deployment completed successfully!"
 ```
 
-### Step 4: Vercel/Netlify (프론트엔드)
+### Step 4: Vercel/Netlify (Frontend)
 
-정적 사이트 및 Next.js 앱을 간단히 배포합니다.
+Simply deploy static sites and Next.js apps.
 
 **vercel.json**:
 ```json
@@ -374,7 +376,7 @@ echo "Deployment completed successfully!"
 }
 ```
 
-**CLI 배포**:
+**CLI Deployment**:
 ```bash
 # Install Vercel CLI
 npm i -g vercel
@@ -392,11 +394,11 @@ vercel --prod
 vercel env add DATABASE_URL
 ```
 
-### Step 5: 무중단 배포 전략
+### Step 5: Zero-Downtime Deployment Strategy
 
-서비스 중단 없이 새 버전을 배포합니다.
+Deploy new versions without service interruption.
 
-**Blue-Green 배포** (docker-compose):
+**Blue-Green Deployment** (docker-compose):
 ```yaml
 version: '3.8'
 
@@ -424,7 +426,7 @@ services:
       - COLOR=green
 ```
 
-**switch.sh** (Blue/Green 전환):
+**switch.sh** (Blue/Green Switch):
 ```bash
 #!/bin/bash
 
@@ -460,7 +462,7 @@ fi
 
 ## Output format
 
-### 배포 체크리스트
+### Deployment Checklist
 
 ```markdown
 ## Deployment Checklist
@@ -489,16 +491,16 @@ fi
 
 ## Constraints
 
-### 필수 규칙 (MUST)
+### Required Rules (MUST)
 
-1. **Health Checks**: 모든 서비스에 health check 엔드포인트
+1. **Health Checks**: Health check endpoint for all services
    ```typescript
    app.get('/health', (req, res) => {
      res.status(200).json({ status: 'ok' });
    });
    ```
 
-2. **Graceful Shutdown**: SIGTERM 신호 처리
+2. **Graceful Shutdown**: Handle SIGTERM signal
    ```javascript
    process.on('SIGTERM', async () => {
      console.log('SIGTERM received, shutting down gracefully');
@@ -508,20 +510,20 @@ fi
    });
    ```
 
-3. **환경변수 분리**: 하드코딩 금지, .env 사용
+3. **Environment Variable Separation**: No hardcoding; use .env files
 
-### 금지 사항 (MUST NOT)
+### Prohibited Rules (MUST NOT)
 
-1. **Secrets 커밋 금지**: API 키, 비밀번호를 Git에 절대 커밋하지 않음
-2. **프로덕션에서 디버그 모드**: `NODE_ENV=production` 필수
-3. **latest 태그만 사용**: 버전 태그 사용 (v1.0.0, sha-abc123)
+1. **No Committing Secrets**: Never commit API keys or passwords to Git
+2. **No Debug Mode in Production**: `NODE_ENV=production` is required
+3. **Avoid latest tag only**: Use version tags (v1.0.0, sha-abc123)
 
 ## Best practices
 
-1. **Multi-stage Docker builds**: 이미지 크기 최소화
-2. **Immutable infrastructure**: 서버 수정 대신 새로 배포
-3. **Blue-Green deployment**: 무중단 배포 및 쉬운 롤백
-4. **Monitoring 필수**: Prometheus, Grafana, Datadog
+1. **Multi-stage Docker builds**: Minimize image size
+2. **Immutable infrastructure**: Redeploy instead of modifying servers
+3. **Blue-Green deployment**: Zero-downtime deployment and easy rollback
+4. **Monitoring required**: Prometheus, Grafana, Datadog
 
 ## References
 
@@ -533,16 +535,16 @@ fi
 
 ## Metadata
 
-### 버전
-- **현재 버전**: 1.0.0
-- **최종 업데이트**: 2025-01-01
-- **호환 플랫폼**: Claude, ChatGPT, Gemini
+### Version
+- **Current Version**: 1.0.0
+- **Last Updated**: 2025-01-01
+- **Compatible Platforms**: Claude, ChatGPT, Gemini
 
-### 관련 스킬
-- [monitoring](../monitoring/SKILL.md): 배포 후 모니터링
-- [security](../security/SKILL.md): 배포 보안
+### Related Skills
+- [monitoring](../monitoring/SKILL.md): Post-deployment monitoring
+- [security](../security/SKILL.md): Deployment security
 
-### 태그
+### Tags
 `#deployment` `#CI/CD` `#Docker` `#Kubernetes` `#automation` `#infrastructure`
 
 ## Examples

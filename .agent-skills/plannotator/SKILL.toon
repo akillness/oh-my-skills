@@ -1,29 +1,29 @@
 N:plannotator
-D:[plan/계획] AI 코딩 에이전트 계획/diff를 시각적으로 리뷰. 브라우저 UI에서 어노테이션(delete/insert/replace/comment)→Approve 또는 Send Feedback. Export→Notes탭에서 Approve 없이도 Obsidian/Bear에 즉시 저장 가능. Code Review(/plannotator-review), 이미지 어노테이션, Obsidian/Bear 자동저장 지원. Claude Code + OpenCode + Gemini CLI + Codex CLI 통합. 수동 Plan 제출은 echo/heredoc 대신 python3 JSON(stdin tool_input 포맷) 사용 권장.
+D:[plan] Visually review AI coding agent plans and diffs. Annotate in browser UI (delete/insert/replace/comment) → Approve or Send Feedback. Save instantly to Obsidian/Bear from Export→Notes tab without Approving. Supports Code Review (/plannotator-review), image annotation, and auto-save to Obsidian/Bear. Integrates with Claude Code + OpenCode + Gemini CLI + Codex CLI. For manual Plan submission, use python3 JSON (stdin tool_input format) instead of echo/heredoc.
 G:plan 계획 planno plannotator plan-review diff-review code-review annotate visual-review claude-code opencode gemini codex image-annotation obsidian export notes bear save scripts 계획검토 설계검토
 
 U[7]:
-  scripts/install.sh — plannotator CLI 설치 (OS 자동감지, --with-plugin 옵션)
-  scripts/setup-hook.sh — ~/.claude/settings.json에 ExitPlanMode 훅 자동 추가
-  scripts/check-status.sh — CLI/훅/환경변수/git 전체 상태 점검
-  scripts/configure-remote.sh — SSH/devcontainer/WSL 원격 환경변수 설정
-  scripts/review.sh — git diff 기반 코드 리뷰 UI 실행 (커밋/브랜치 지정 가능)
-  Plan Review — Shift+Tab×2(Claude) 또는 ExitPlanMode(Gemini)로 UI 오픈→어노테이션→Approve/Send Feedback
-  Export Notes tab — Export버튼→Notes탭에서 Obsidian/Bear Save 버튼으로 즉시 저장 (Approve 불필요, hook 모드 필요)
+  scripts/install.sh — Install plannotator CLI (auto-detects OS, --with-plugin option)
+  scripts/setup-hook.sh — Automatically adds ExitPlanMode hook to ~/.claude/settings.json
+  scripts/check-status.sh — Check overall status of CLI/hooks/env vars/git
+  scripts/configure-remote.sh — Configure remote environment variables for SSH/devcontainer/WSL
+  scripts/review.sh — Launch code review UI based on git diff (supports commit/branch targeting)
+  Plan Review — Open UI via Shift+Tab×2 (Claude) or ExitPlanMode (Gemini) → annotate → Approve/Send Feedback
+  Export Notes tab — Click Export button → Notes tab → Save to Obsidian/Bear instantly (no Approve required, hook mode required)
 S[6]{n,action,details}:
-  1,Install,bash scripts/install.sh (또는 --with-plugin 옵션으로 Claude Code 플러그인 안내 포함)
-  2,Hook Setup,bash scripts/setup-hook.sh (또는 Claude Code: /plugin install plannotator@plannotator)
-  3,Status Check,bash scripts/check-status.sh (CLI/훅/환경변수 전체 검증)
-  4,Remote Config,bash scripts/configure-remote.sh (또는 --show로 현재 설정 확인)
-  5,Code Review,bash scripts/review.sh (또는 HEAD~1/main...HEAD 인자로 범위 지정)
-  6,Manual Notes Save,Export버튼→Notes탭→Obsidian Save / Bear Save / Save All 클릭 (설정된 경우 초록 점 표시→Saved로 변경)
-  7,Manual Plan Submit,cat > /tmp/plan.md 후 python3 json.dumps(tool_input) | plannotator (echo/heredoc 지양)
+  1,Install,bash scripts/install.sh (or --with-plugin to include Claude Code plugin setup instructions)
+  2,Hook Setup,bash scripts/setup-hook.sh (or via Claude Code: /plugin install plannotator@plannotator)
+  3,Status Check,bash scripts/check-status.sh (validates CLI/hooks/env vars)
+  4,Remote Config,bash scripts/configure-remote.sh (or --show to view current config)
+  5,Code Review,bash scripts/review.sh (or specify range with HEAD~1/main...HEAD)
+  6,Manual Notes Save,Click Export button → Notes tab → Obsidian Save / Bear Save / Save All (green dot shown when configured → changes to Saved)
+  7,Manual Plan Submit,Write to /tmp/plan.md then python3 json.dumps(tool_input) | plannotator (avoid echo/heredoc)
 R[4]:
-  코딩 시작 전 planno로 계획 먼저 검토 (잘못된 접근 조기 차단)
-  어노테이션 하나당 하나의 구체적 액션 (모호함 방지)
-  Request Changes에는 반드시 acceptance criteria 포함
-  원격 환경에서는 configure-remote.sh 먼저 실행 후 check-status.sh로 확인
+  Review plan with planno before coding starts (catch wrong approaches early)
+  One concrete action per annotation (avoids ambiguity)
+  Always include acceptance criteria in Request Changes
+  In remote environments, run configure-remote.sh first, then verify with check-status.sh
 E[3]{desc,in,out}:
-  "설치+훅 설정","bash scripts/install.sh && bash scripts/setup-hook.sh","plannotator 설치 완료, Claude Code 재시작 후 plan review 자동 동작"
-  "계획 검토","에이전트 계획 완료(Shift+Tab×2 또는 ExitPlanMode) → plannotator UI 자동 오픈","어노테이션 후 Approve → 구현 시작 / Send Feedback → 재계획"
-  "코드 리뷰","bash scripts/review.sh (또는 HEAD~1)","git diff 인라인 어노테이션 UI → 피드백 에이전트 전송"
+  "Install + Hook Setup","bash scripts/install.sh && bash scripts/setup-hook.sh","Installation complete; plan review runs automatically after restarting Claude Code"
+  "Plan Review","Agent finishes planning (Shift+Tab×2 or ExitPlanMode) → plannotator UI opens automatically","After annotation: Approve → start implementation / Send Feedback → replanning"
+  "Code Review","bash scripts/review.sh (or HEAD~1)","Git diff inline annotation UI → send feedback to agent"

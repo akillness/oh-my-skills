@@ -1,29 +1,31 @@
-# react-best-practices
+N:react-best-practices
+D:React/Next.js performance optimization guidelines from Vercel Engineering. 45 rules across 8 categories — eliminating waterfalls (CRITICAL), bundle optimization (CRITICAL), SSR, RSC, and re-render optimization.
+G:React Next.js performance optimization vercel waterfalls bundle-size RSC frontend
 
-React/Next.js 성능 최적화 45규칙
-
-## CRITICAL
-1. Promise.all → 병렬 fetch
-2. barrel imports 금지 → 직접 import
-3. dynamic imports → 무거운 컴포넌트
-4. Suspense boundaries → 스트리밍
-5. RSC 직렬화 최소화
-
-## HIGH
-6. React.cache() → 요청 내 중복 제거
-7. LRU cache → 요청 간 캐시
-8. 컴포넌트 구성 → 병렬 fetch
-
-## MEDIUM
-9. functional setState → 안정적 콜백
-10. lazy state init → 초기화 한번만
-11. content-visibility → 긴 리스트
-12. toSorted() → 불변성
-
-## 예시
-```tsx
-// ❌ const a = await f1(); const b = await f2()
-// ✅ const [a,b] = await Promise.all([f1(),f2()])
-```
-
-Full: AGENTS.md (2500줄)
+U[5]:
+  Writing React components — avoid performance anti-patterns
+  Next.js data fetching — remove waterfalls, parallelize
+  Bundle size optimization — remove barrel imports, use dynamic imports
+  Code review — detect performance issues using the 45-rule set
+  Refactoring — optimize existing React/Next.js code
+S[8]{n,action,details}:
+  1,Waterfalls(CRITICAL),Parallelize independent fetches with Promise.all(); stream with Suspense; defer await to where it's actually used
+  2,Bundle(CRITICAL),Prohibit barrel imports (use direct lucide-react paths); lazy-load heavy components with next/dynamic
+  3,Server Perf(HIGH),Deduplicate per-request with React.cache(); cache across requests with an LRU cache; run non-blocking work with after()
+  4,Client Fetch(MEDIUM-HIGH),Automatic request deduplication with SWR; deduplicate global event listeners
+  5,Re-render(MEDIUM),Stable callbacks via useCallback + functional setState; split expensive work into memoized components
+  6,Rendering(MEDIUM),Hoist static JSX outside components; optimize long lists with content-visibility
+  7,JS Perf(LOW-MEDIUM),O(1) lookups with Map/Set; cache object properties in loops; early return (early exit)
+  8,Advanced(LOW),Store event handlers in refs; useLatest for stable callback refs
+R[6]:
+  Always parallelize independent fetches with Promise.all()
+  No barrel file imports — import from direct paths
+  Lazy-load heavy components with next/dynamic
+  Do not reference state directly in useCallback dependencies — use functional setState
+  Use toSorted() instead of sort() (preserves immutability)
+  No inline objects inside React.cache() (prevents cache misses)
+E[4]{desc,in,out}:
+  "Eliminate waterfalls","const user = await fetchUser(); const posts = await fetchPosts();","const [user, posts] = await Promise.all([fetchUser(), fetchPosts()])"
+  "Barrel import optimization","import { Check, X, Menu } from 'lucide-react'","import Check from 'lucide-react/dist/esm/icons/check'"
+  "dynamic import","import { MonacoEditor } from './monaco-editor'","const MonacoEditor = dynamic(() => import('./monaco-editor').then(m => m.MonacoEditor), { ssr: false })"
+  "functional setState","setItems([...items, ...newItems]) — items dependency","setItems(curr => [...curr, ...newItems]) — empty dependency array"

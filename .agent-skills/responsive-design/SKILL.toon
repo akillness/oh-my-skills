@@ -2,13 +2,13 @@ N:responsive-design
 D:Create responsive web designs that work across all devices and screen sizes. Use when building mo...
 G:responsive mobile-first CSS Flexbox Grid
 U[4]:
-  **새 웹사이트/앱**: 모바일-데스크톱 겸용 레이아웃 설계
-  **레거시 개선**: 고정 레이아웃을 반응형으로 전환
-  **성능 최적화**: 디바이스별 이미지 최적화
-  **다양한 화면**: 태블릿, 데스크톱, 대형 화면 지원
+  **New website/app**: Layout design for combined mobile-desktop use
+  **Legacy improvement**: Converting fixed layouts to responsive
+  **Performance optimization**: Image optimization per device
+  **Multiple screens**: Tablet, desktop, and large screen support
 S[5]{n,action}:
-  1,Mobile-First 접근
-  2,Flexbox/Grid 레이아웃
-  3,반응형 이미지
-  4,반응형 타이포그래피
-  5,Container Queries (신기능)
+  1,Mobile-First Approach
+  2,Flexbox/Grid Layout
+  3,Responsive Images
+  4,Responsive Typography
+  5,Container Queries (New Feature)

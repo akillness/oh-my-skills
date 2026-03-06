@@ -2,16 +2,16 @@ N:deployment-automation
 D:Automate application deployment to cloud platforms and servers. Use when setting up CI/CD pipelin...
 G:deployment CI/CD Docker Kubernetes AWS
 U[4]:
-  **신규 프로젝트**: 처음부터 자동 배포 설정
-  **수동 배포 개선**: 반복적인 수동 작업 자동화
-  **멀티 환경**: dev, staging, production 환경 분리
-  **스케일링**: 트래픽 증가 대비 Kubernetes 도입
+  **New Projects**: Set up automated deployment from scratch
+  **Manual Deployment Improvement**: Automate repetitive manual tasks
+  **Multi-Environment**: Separate dev, staging, and production environments
+  **Scaling**: Introduce Kubernetes to handle traffic growth
 S[5]{n,action}:
-  1,Docker 컨테이너화
+  1,Docker Containerization
   2,GitHub Actions CI/CD
-  3,Kubernetes 배포
-  4,Vercel/Netlify (프론트엔드)
-  5,무중단 배포 전략
+  3,Kubernetes Deployment
+  4,Vercel/Netlify (Frontend)
+  5,Zero-Downtime Deployment Strategy
 R[6]:
   uses
   name

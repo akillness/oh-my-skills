@@ -2,8 +2,8 @@ N:npm-git-install
 D:Install npm packages directly from GitHub repositories using git URLs. Use when installing packag...
 G:npm git github install package-management
 U[6]:
-  **npm에 없는 패키지**: 아직 퍼블리시되지 않은 패키지 설치
-  **특정 브랜치/태그**: main, develop, 특정 릴리스 태그 설치
-  **프라이빗 리포지토리**: 조직 내부 패키지 설치
-  **포크된 패키지**: 수정된 포크 버전 사용
-  **최신 커밋 테스트**: 릴리스 전 최신 코드 테스트
+  **Packages Not on npm**: Install packages not yet published
+  **Specific Branch/Tag**: Install main, develop, specific release tags
+  **Private Repositories**: Install packages within an organization
+  **Forked Packages**: Use a modified fork version
+  **Test Latest Commits**: Test the latest code before a release

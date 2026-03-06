@@ -1,33 +1,33 @@
 N:vibe-kanban
 V:1.2.0
-D:AI 에이전트 시각적 Kanban 보드. To Do→In Progress→Review→Done 흐름. git worktree 자동 격리, MCP 통합, GitHub PR 자동 생성. 원격 배포 지원.
+D:Visual Kanban board for AI agents. To Do->In Progress->Review->Done flow. Automatic git worktree isolation, MCP integration, and GitHub PR auto-generation. Supports remote deployment.
 G:vibe-kanban kanban multi-agent git-worktree github-pr mcp task-management claude-code codex gemini docker remote
 U[6]:
-  에픽을 독립 태스크로 분해해 병렬 에이전트 할당
-  AI 에이전트 작업 상태 시각적 추적 (To Do→Done)
-  Review 칼럼에서 브라우저 UI로 diff/로그 확인 후 재시도
-  GitHub PR 기반 팀 협업 + AI 에이전트 작업 결합
-  동일 태스크 두 에이전트 비교 (구현 비교 전략)
-  MCP 통합으로 에이전트가 직접 보드 API 호출 가능
+  Break epics into independent tasks and assign agents in parallel
+  Visually track AI agent task status (To Do->Done)
+  In the Review column, inspect diffs/logs via browser UI and retry if needed
+  Combine GitHub PR-based team collaboration with AI agent execution
+  Compare two agents on the same task (implementation comparison strategy)
+  MCP integration allows agents to call board APIs directly
 S[5]{n,action,details}:
-  1,Start,npx vibe-kanban (또는 bash scripts/vibe-kanban-start.sh)
-  2,CreateTask,보드에서 카드 생성: 제목+설명+에이전트 선택
-  3,Run,카드를 In Progress로 드래그 → worktree+에이전트 자동 시작
-  4,Review,Review 칼럼에서 diff 확인 → 승인 or Retry → PR 생성
-  5,MCP,--mcp 플래그로 MCP 서버 활성화 → 에이전트가 API로 카드 조작
+  1,Start,npx vibe-kanban (or bash scripts/vibe-kanban-start.sh)
+  2,CreateTask,Create a card on the board: title + description + agent selection
+  3,Run,Drag a card to In Progress -> auto-start worktree + agent
+  4,Review,Check diffs in the Review column -> approve or retry -> create PR
+  5,MCP,Enable MCP server with --mcp flag -> agents can manipulate cards via API
 R[5]:
-  카드 범위를 좁게 유지 (1카드=1커밋 단위)
-  2개 파일 이상 변경 태스크는 planno로 계획 먼저 검토
-  VIBE_KANBAN_REMOTE=true는 신뢰 네트워크에서만
-  에이전트 스탈 시 재할당 또는 카드 분할
-  MCP 모드에서 MCP_HOST/MCP_PORT 환경 변수로 바인딩 제어
+  Keep card scope narrow (1 card = 1 commit)
+  For tasks changing 2+ files, review the plan first with planno
+  Use VIBE_KANBAN_REMOTE=true only on trusted networks
+  If an agent stalls, reassign or split the card
+  In MCP mode, control binding with MCP_HOST/MCP_PORT environment variables
 E[4]{desc,in,out}:
-  "서버 시작","npx vibe-kanban","http://localhost:3000 보드 UI 오픈"
-  "에이전트 실행","카드 In Progress로 드래그","git worktree 생성 + 에이전트 CLI 실행 + 로그 스트리밍"
-  "PR 생성","Review 칼럼에서 승인","GitHub Draft PR 자동 생성 + 카드 Done 이동"
-  "MCP 서버","npx vibe-kanban --mcp","MCP 프로토콜로 카드 CRUD API 노출"
-  "OpenCode ulw결합","ulw 키워드+vibe-kanban 로드 후 task(category=\"visual-engineering\", run_in_background=True, ...) 병렬 호출","3개 워크스페이스 Kanban 보드에 동시 Running 표시"
+  "Start server","npx vibe-kanban","Open board UI at http://localhost:3000"
+  "Run agent","Drag card to In Progress","Create git worktree + run agent CLI + stream logs"
+  "Create PR","Approve in Review column","Auto-create GitHub Draft PR + move card to Done"
+  "MCP server","npx vibe-kanban --mcp","Expose card CRUD API via MCP protocol"
+  "OpenCode ulw integration","Load ulw keyword + vibe-kanban then invoke task(category=\"visual-engineering\", run_in_background=True, ...) in parallel","Show concurrent Running status across 3 workspace Kanban boards"
 T[3]{problem,solution}:
-  "Worktree 충돌","git worktree prune && git worktree list"
-  "403 CORS 오류","VK_ALLOWED_ORIGINS=https://your-domain.com 설정"
-  "포트 충돌","PORT=3001 npx vibe-kanban 또는 lsof -i :3000"
+  "Worktree conflict","git worktree prune && git worktree list"
+  "403 CORS error","Set VK_ALLOWED_ORIGINS=https://your-domain.com"
+  "Port conflict","PORT=3001 npx vibe-kanban or lsof -i :3000"

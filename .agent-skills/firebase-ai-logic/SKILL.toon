@@ -2,13 +2,13 @@ N:firebase-ai-logic
 D:Integrate Firebase AI Logic (Gemini in Firebase) for intelligent app features. Use when adding AI...
 G:firebase ai gemini generative-ai sdk
 U[4]:
-  **AI 기능 추가**: 앱에 생성형 AI 기능 통합
-  **Firebase 프로젝트**: Firebase 기반 앱에 AI 추가
-  **텍스트 생성**: 콘텐츠 생성, 요약, 번역
-  **이미지 분석**: 이미지 기반 AI 처리
+  **Add AI features**: integrate generative AI features into your app
+  **Firebase projects**: add AI to Firebase-based apps
+  **Text generation**: content generation, summarization, translation
+  **Image analysis**: image-based AI processing
 S[5]{n,action}:
-  1,Firebase 프로젝트 설정
-  2,AI Logic 활성화
-  3,SDK 설치
-  4,AI 기능 구현
-  5,보안 규칙 설정
+  1,Firebase Project Setup
+  2,Enable AI Logic
+  3,Install SDK
+  4,Implement AI Features
+  5,Configure Security Rules

@@ -2,12 +2,12 @@ N:file-organization
 D:Organize project files and folders for maintainability and scalability. Use when structuring new ...
 G:file-organization project-structure folder-structure naming-conventions
 U[3]:
-  **신규 프로젝트**: 초기 폴더 구조 설계
-  **프로젝트 성장**: 복잡도 증가 시 리팩토링
-  **팀 표준화**: 일관된 구조 확립
+  **New Projects**: Initial folder structure design
+  **Project Growth**: Refactoring when complexity increases
+  **Team Standardization**: Establish consistent structure
 S[5]{n,action}:
-  1,React/Next.js 프로젝트 구조
-  2,Node.js/Express 백엔드 구조
-  3,Feature-Based 구조 (대규모 앱)
-  4,명명 규칙 (Naming Conventions)
-  5,index.ts 배럴 파일
+  1,React/Next.js Project Structure
+  2,Node.js/Express Backend Structure
+  3,Feature-Based Structure (Large-Scale Apps)
+  4,Naming Conventions
+  5,index.ts Barrel Files

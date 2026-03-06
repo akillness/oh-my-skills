@@ -1,0 +1,24 @@
+N:image-generation
+D:AI image generation via MCP. Use Gemini models or compatible services to generate high-quality images for marketing, UI, and presentations using structured prompts and validation.
+G:image-generation gemini mcp design creative ai-art
+
+U[4]:
+  Marketing assets — hero images, banners, social media content
+  UI/UX design — placeholder images, icons, illustrations
+  Presentations — slide backgrounds, product visualizations
+  Brand consistency — image sets based on a style guide
+S[5]{n,action,details}:
+  1,MCP Setup,verify Gemini CLI availability with claude mcp list; set model name·API key env var·output directory
+  2,Prompt Design,structure Subject·Style·Lighting·Mood·Composition·Aspect Ratio·Brand Colors
+  3,Model Select,gemini-3-pro-image(high quality) / gemini-2.5-flash-image(fast iteration) / gemini-2.5-pro-image(balanced)
+  4,Generate & Review,generate 2-4 variants with ask-gemini; check brand fit·composition·ratio·text readability
+  5,Deliver,save final image files + prompt metadata JSON(model/ratio/timestamp)
+R[4]:
+  Specify ratio early in the prompt — prevent unintended crops
+  Iterate by changing only one variable at a time
+  Always record prompt metadata (reproducibility)
+  Batch similar requests to ensure style consistency
+E[3]{desc,in,out}:
+  "Hero image","Create a serene mountain landscape at sunset, wide 16:9, minimal style, brand blue #2563EB","16:9 hero image + parameters saved + 2-3 variants"
+  "Product thumbnail","Generate a 1:1 thumbnail of a futuristic dashboard UI, dark theme, subtle glow effects","1:1 square image, app-store ready"
+  "Social banner","Create a LinkedIn banner (1584x396) with gradient #6366F1 to #8B5CF6, space for text on left","LinkedIn-optimized dimensions, text safe zone ensured"

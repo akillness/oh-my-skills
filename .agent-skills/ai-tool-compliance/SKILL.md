@@ -1,27 +1,29 @@
 ---
 name: ai-tool-compliance
-keyword: compliance
-description: 내부 AI 툴 필수 구현 가이드(P0/P1) 기반으로 권한, 비용, 로그, 보안 컴플라이언스를 설계-검증-개선하는 자동화 스킬. RBAC 설계, Gateway 원칙, Firestore 정책, 행동 로그, 비용 투명성, 기준검증 시스템의 전체 라이프사이클을 지원한다.
-allowed-tools: [Read, Bash, Grep, Glob]
+description: Automation skill for designing, verifying, and improving auth, cost, logging, and security compliance based on the internal AI tool mandatory implementation guide (P0/P1). Supports the full lifecycle of RBAC design, Gateway principles, Firestore policy, behavior logs, cost transparency, and the criteria verification system.
 compatibility: "Requires python3 (stdlib only), jq, bash, bc, curl, git. PyYAML required only for install.sh (pip install pyyaml). Optional: Notion MCP tool for Notion workspace integration."
-tags: [compliance, RBAC, security, cost-tracking, audit-log, gateway, firestore, deploy-gate, P0]
-platforms: [Claude, Gemini, Codex, OpenCode]
-version: 1.0.0
-source: user-installed skill
+allowed-tools: Read Bash Grep Glob
+metadata:
+  tags: compliance, RBAC, security, cost-tracking, audit-log, gateway, firestore, deploy-gate, P0, quick, full, improve, slash-command
+  platforms: Claude, Gemini, Codex, OpenCode
+  keyword: compliance
+  version: 1.0.0
+  source: user-installed skill
 ---
 
-# ai-tool-compliance - 내부 AI 툴 컴플라이언스 자동화
+
+# ai-tool-compliance - Internal AI Tool Compliance Automation
 
 ## When to use this skill
 
-- **신규 AI 프로젝트 시작**: 컴플라이언스 기반 구조(RBAC, Gateway, 로그, 비용 추적)를 처음부터 스캐폴딩할 때
-- **배포 전 P0 전수 검증**: 13개 P0 필수 요건을 자동으로 pass/fail 판정하고 준수 점수를 산출할 때
-- **RBAC 설계 및 권한 매트릭스 생성**: Super Admin/Admin/Manager/Viewer/Guest 5역할 + 게임/메뉴/기능 단위 세부 접근 제어를 정의할 때
-- **기존 코드 컴플라이언스 감사**: 이미 존재하는 코드베이스를 가이드에 맞게 점검하고 위반 항목을 식별할 때
-- **비용 투명성 구현**: 액션별 모델/토큰/BQ 스캔량/비용 추적 체계를 구축할 때
-- **행동 로그 스키마 설계**: 전수 행동 로그 기록 체계(Firestore/BigQuery)를 설계할 때
-- **역할별 검증 워크플로우**: Section 14 기반 릴리스 승인 프로세스(서비스안정화/Engineer/PM/CEO)를 구성할 때
-- **기준검증 시스템 구축**: Rule Registry + Evidence Collector + Verifier Engine + Risk Scorer + Gatekeeper 아키텍처를 설정할 때
+- **Starting a new AI project**: When scaffolding the compliance foundation (RBAC, Gateway, logs, cost tracking) from scratch
+- **Pre-deploy P0 full verification**: When automatically evaluating all 13 P0 mandatory requirements as pass/fail and computing a compliance score
+- **RBAC design and permission matrix generation**: When defining the 5 roles (Super Admin/Admin/Manager/Viewer/Guest) + granular access control per game/menu/feature unit
+- **Auditing existing code for compliance**: When inspecting an existing codebase against the guide and identifying violations
+- **Implementing cost transparency**: When building a tracking system for model/token/BQ scan volume/cost per action
+- **Designing a behavior log schema**: When designing a comprehensive behavior log recording system (Firestore/BigQuery)
+- **Role-based verification workflow**: When configuring the release approval process based on Section 14 (ServiceStability/Engineer/PM/CEO)
+- **Building a criteria verification system**: When setting up the Rule Registry + Evidence Collector + Verifier Engine + Risk Scorer + Gatekeeper architecture
 
 ---
 
@@ -37,48 +39,56 @@ npx skills add https://github.com/supercent-io/skills-template --skill ai-tool-c
 
 | Action | Command | Description |
 |--------|---------|-------------|
-| 프로젝트 초기화 | `/compliance-init` | RBAC 매트릭스, Gateway boilerplate, 로그 스키마, 비용 추적 인터페이스 생성 |
-| 빠른 스캔 | `/compliance-scan` | P0 핵심 항목 빠른 점검 (코드 패턴 기반) |
-| 전수 검증 | `/compliance-verify` | 11개 P0 룰 전수 검증 + 준수 점수 산출 |
-| 점수 확인 | `/compliance-score` | 현재 준수 점수(보안/권한/비용/로그) 표시 |
-| 배포 게이트 | `/compliance-gate` | Green/Yellow/Red 판정 + 배포 승인/차단 결정 |
-| 개선 가이드 | `/compliance-improve` | 위반 항목별 구체적 수정 제안 + 재검증 루프 |
+| Project initialization | `/compliance-init` | Generate RBAC matrix, Gateway boilerplate, log schema, cost tracking interface |
+| Quick scan | `/compliance-scan`, `/compliance-quick`, `/quick` | Quick inspection of P0 key items (code pattern-based) |
+| Full verification | `/compliance-verify`, `/compliance-full`, `/full` | Full verification of 11 P0 rules + compliance score computation |
+| Score check | `/compliance-score` | Display current compliance score (security/auth/cost/logging) |
+| Deploy gate | `/compliance-gate` | Green/Yellow/Red verdict + deploy approve/block decision |
+| Improvement guide | `/compliance-improve`, `/improve` | Specific fix suggestions per violation + re-verification loop |
+
+### Slash Mode Router
+
+Mode slash commands are mapped as follows.
+
+- `/quick`, `/compliance-quick` -> Quick Scan (`/compliance-scan`)
+- `/full`, `/compliance-full` -> Full Verify (`/compliance-verify`)
+- `/improve` -> Improve (`/compliance-improve`)
 
 ---
 
-## 3가지 실행 모드
+## 3 Execution Modes
 
 ### 1. Quick Scan (`quick-scan`)
 
-코드베이스를 정적 분석하여 P0 위반 가능성을 빠르게 식별한다.
+Statically analyzes the codebase to quickly identify potential P0 violations.
 
-**실행 방법**: `/compliance-scan` 또는 트리거 키워드 `컴플라이언스 스캔`, `quick scan`
+**How to run**: `/compliance-scan`, `/compliance-quick`, `/quick` or trigger keywords `compliance scan`, `quick scan`
 
-**수행 내용**:
-- Grep/Glob 기반 코드 패턴 검색
-- 외부 API 직접 호출 탐지 (Gateway 우회 여부)
-- Firestore 클라이언트 직접 접근 탐지
-- 하드코딩된 민감 정보 탐지
-- Guest 역할 누락 여부 확인
+**What it does**:
+- Grep/Glob-based code pattern search
+- Detect direct external API calls (whether Gateway is bypassed)
+- Detect direct Firestore client access
+- Detect hardcoded sensitive data
+- Check for missing Guest role
 
-**산출물**: 위반 의심 항목 목록 (파일 경로 + 라인 번호 + 룰 ID)
+**Output**: List of suspected violations (file path + line number + rule ID)
 
-**소요 시간**: 1~3분
+**Duration**: 1–3 minutes
 
 ### 2. Full Verify (`full-verify`)
 
-11개 P0 룰을 전수 검증하고 정량적 준수 점수를 산출한다.
+Fully verifies all 11 P0 rules and computes a quantitative compliance score.
 
-**실행 방법**: `/compliance-verify` 또는 트리거 키워드 `P0 검증`, `full verify`, `배포 검증`
+**How to run**: `/compliance-verify`, `/compliance-full`, `/full` or trigger keywords `P0 verification`, `full verify`, `deploy verification`
 
-**수행 내용**:
-- 11개 P0 룰 각각에 대해 Evidence 수집 + pass/fail 판정
-- 4개 영역별 점수 산출 (보안 40점 / 권한 25점 / 비용 20점 / 로그 15점)
-- 총 준수 점수 계산 (100점 만점)
-- 배포 게이트 등급 판정 (Green/Yellow/Red)
-- 역할별 승인 체크리스트 생성
+**What it does**:
+- Collect Evidence and evaluate pass/fail for each of the 11 P0 rules
+- Compute scores per 4 domains (Security 40pts / Auth 25pts / Cost 20pts / Logging 15pts)
+- Calculate total compliance score (out of 100)
+- Determine deploy gate grade (Green/Yellow/Red)
+- Generate role-based approval checklist
 
-**산출물**: 컴플라이언스 리포트 (`compliance-report.md`)
+**Output**: Compliance report (`compliance-report.md`)
 
 ```
 ## Compliance Report
@@ -89,147 +99,147 @@ npx skills add https://github.com/supercent-io/skills-template --skill ai-tool-c
 ### Rule Results
 | Rule ID | Rule Name | Result | Evidence |
 |---------|-----------|--------|----------|
-| AUTH-P0-001 | 신규 가입자 Guest 강제 | PASS | signup.ts:45 role='guest' |
-| AUTH-P0-002 | Guest 메뉴/API 접근 차단 | PASS | middleware.ts:12 guestBlock |
+| AUTH-P0-001 | Force Guest for New Signups | PASS | signup.ts:45 role='guest' |
+| AUTH-P0-002 | Block Guest Menu/API Access | PASS | middleware.ts:12 guestBlock |
 | ... | ... | ... | ... |
 
 ### Score Breakdown
-- 보안: 33/40
-- 권한: 25/25
-- 비용: 17/20
-- 로그: 12/15
+- Security: 33/40
+- Auth: 25/25
+- Cost: 17/20
+- Logging: 12/15
 - Total: 92/100
 
-### Gate Decision: GREEN - 배포 승인
+### Gate Decision: GREEN - Deploy Approved
 ```
 
-**소요 시간**: 5~15분 (프로젝트 규모에 따라 다름)
+**Duration**: 5–15 minutes (varies by project size)
 
 ### 3. Improve (`improve`)
 
-위반 항목에 대한 구체적 수정 가이드를 제공하고 재검증 루프를 실행한다.
+Provides specific fix guides for violations and runs a re-verification loop.
 
-**실행 방법**: `/compliance-improve` 또는 트리거 키워드 `컴플라이언스 개선`, `위반 수정`
+**How to run**: `/compliance-improve`, `/improve` or trigger keywords `compliance improvement`, `fix violations`
 
-**수행 내용**:
-- 각 FAIL 항목에 대한 코드 레벨 수정 제안 (파일 경로 + 변경 전/후 코드)
-- 수정 적용 후 해당 룰 재검증
-- 점수 변화 추적 (Before -> After)
-- P0 통과 후 P1 권장 요건 점진 도입 가이드
+**What it does**:
+- Code-level fix suggestions for each FAIL item (file path + before/after code)
+- Re-verify the rule after applying the fix
+- Track score changes (Before -> After)
+- Guide for gradually introducing P1 recommended requirements after passing P0
 
-**산출물**: 수정 제안서 + 재검증 결과
+**Output**: Fix proposal + re-verification results
 
-### Improve 모드 자동 수정 로직
+### Improve Mode Auto-Fix Logic
 
 ```
-/compliance-improve 실행
+/compliance-improve runs
        |
-  1. 최근 verification-run.json 로드
+  1. Load latest verification-run.json
        |
-  2. FAIL 항목 추출 (rule_id + evidence)
+  2. Extract FAIL items (rule_id + evidence)
        |
-  3. 각 FAIL에 대해:
+  3. For each FAIL:
        |
-     a. evidence 파일:줄번호에서 위반 코드 Read
-     b. rule.remediation + rule.check_pattern.must_contain에서 수정 방향 도출
-     c. 변경 전/후 코드 diff 생성
-     d. Write로 수정 적용 (사용자 확인 후)
-     e. 해당 룰만 재검증 (Grep 패턴 재실행)
-     f. PASS 전환 확인
+     a. Read violation code from evidence file:line
+     b. Derive fix direction from rule.remediation + rule.check_pattern.must_contain
+     c. Generate before/after code diff
+     d. Apply fix via Write (after user confirmation)
+     e. Re-verify only that rule (re-run Grep pattern)
+     f. Confirm transition to PASS
        |
-  4. 전체 재검증 (/compliance-verify)
+  4. Full re-verification (/compliance-verify)
        |
-  5. Before/After 점수 비교 출력
+  5. Output Before/After score comparison
        |
-  6. 잔여 FAIL 없으면 → P1 권장 요건 도입 가이드 제시
+  6. If no remaining FAILs → present guide for introducing P1 recommended requirements
 ```
 
-**수정 적용 우선순위**:
-1. `must_not_contain` 위반 (즉시 제거 필요) → 해당 코드 삭제 또는 서버 API 호출로 교체
-2. `must_contain` 미충족 (패턴 추가 필요) → remediation 가이드에 따라 코드 삽입
-3. Warning (부분 충족) → 미충족 파일에만 보완 적용
+**Fix application priority**:
+1. `must_not_contain` violations (requires immediate removal) → delete the code or replace with server API call
+2. `must_contain` unmet (pattern needs to be added) → insert code per the remediation guide
+3. Warning (partially met) → apply supplement only to unmet files
 
 ---
 
-## P0 룰 카탈로그
+## P0 Rule Catalog
 
-내부 AI 툴 필수 구현 가이드 v1.1 기반 11개 P0 룰:
+11 P0 rules based on the internal AI tool mandatory implementation guide v1.1:
 
-| Rule ID | Category | Rule Name | Description | 배점 |
-|---------|----------|-----------|-------------|------|
-| AUTH-P0-001 | 권한 | 신규 가입자 Guest 강제 | 신규 가입 시 role=Guest 자동 할당, 초대 기반으로만 상위 역할 부여 | 권한 8 |
-| AUTH-P0-002 | 권한 | Guest 메뉴/API 접근 차단 | Guest에게 툴명, 모델명, 내부 인프라, 비용, 구조 비노출. 허용된 메뉴/API만 접근 | 권한 7 |
-| AUTH-P0-003 | 권한 | 서버 최종 권한 검증 | 모든 API 요청에 서버 사이드 권한 검증 미들웨어 필수. 클라이언트 권한 체크만으로 불충분 | 권한 10 |
-| SEC-P0-004 | 보안 | Firestore 직접 접근 금지 | 클라이언트에서 Firestore 직접 read/write 금지. Cloud Functions 경유만 허용 | 보안 12 |
-| SEC-P0-005 | 보안 | 외부 API Gateway 강제 | 외부 AI API(Gemini, OpenAI 등) 직접 호출 금지. 반드시 내부 Gateway(Cloud Functions) 경유 | 보안 18 |
-| SEC-P0-009 | 보안 | 민감 텍스트 서버 처리 | 민감 원문(프롬프트, 응답 전문)은 서버에서만 처리. 클라이언트에는 참조값(ID)만 전달 | 보안 10 |
-| COST-P0-006 | 비용 | 모델 호출 비용 로그 | 모든 AI 모델 호출 시 model, inputTokens, outputTokens, estimatedCost 기록 필수 | 비용 10 |
-| COST-P0-007 | 비용 | BQ 스캔 비용 로그 | BigQuery 쿼리 실행 시 bytesProcessed, estimatedCost 기록 필수 | 비용 5 |
-| COST-P0-011 | 비용 | 캐시 우선 조회 | 고비용 API 호출 전 캐시 조회 필수. 캐시 미스 시에만 실제 호출 | 비용 5 |
-| LOG-P0-008 | 로그 | 실패 요청 로그 필수 | 모든 실패 요청(4xx, 5xx, timeout)에 대한 로그 기록 필수. 누락 금지 | 로그 10 |
-| LOG-P0-010 | 로그 | 권한 변경 감사 로그 | Role 변경, 권한 부여/회수, 초대 발송 등 권한 관련 이벤트 전수 기록 | 로그 5 |
+| Rule ID | Category | Rule Name | Description | Score |
+|---------|----------|-----------|-------------|-------|
+| AUTH-P0-001 | Auth | Force Guest for New Signups | Automatically assign role=Guest on signup; elevated roles granted only via invitation | Auth 8 |
+| AUTH-P0-002 | Auth | Block Guest Menu/API Access | Do not expose tool name, model name, internal infrastructure, cost, or structure to Guest. Only allow access to permitted menus/APIs | Auth 7 |
+| AUTH-P0-003 | Auth | Server-side Final Auth Check | Server-side auth verification middleware required for all API requests. Client-side checks alone are insufficient | Auth 10 |
+| SEC-P0-004 | Security | Prohibit Direct Firestore Access | Direct read/write to Firestore from client is forbidden. Only via Cloud Functions is allowed | Security 12 |
+| SEC-P0-005 | Security | Enforce External API Gateway | Direct calls to external AI APIs (Gemini, OpenAI, etc.) are forbidden. Must route through internal Gateway (Cloud Functions) | Security 18 |
+| SEC-P0-009 | Security | Server-side Sensitive Text Processing | Sensitive raw content (prompts, full responses) is processed server-side only. Only reference values (IDs) are sent to clients | Security 10 |
+| COST-P0-006 | Cost | Model Call Cost Log | Must record model, inputTokens, outputTokens, estimatedCost for every AI model call | Cost 10 |
+| COST-P0-007 | Cost | BQ Scan Cost Log | Must record bytesProcessed, estimatedCost when executing BigQuery queries | Cost 5 |
+| COST-P0-011 | Cost | Cache-first Lookup | Cache lookup required before high-cost API calls. Actual call only on cache miss | Cost 5 |
+| LOG-P0-008 | Logging | Mandatory Failed Request Logging | Must log all failed requests (4xx, 5xx, timeout). No omissions allowed | Logging 10 |
+| LOG-P0-010 | Logging | Auth Change Audit Log | Record all auth-related events: role changes, permission grants/revocations, invitation sends | Logging 5 |
 
-### 점수 체계
+### Scoring System
 
-| 영역 | 만점 | 포함 룰 |
-|------|------|---------|
-| 보안 | 40 | SEC-P0-004, SEC-P0-005, SEC-P0-009 |
-| 권한 | 25 | AUTH-P0-001, AUTH-P0-002, AUTH-P0-003 |
-| 비용 | 20 | COST-P0-006, COST-P0-007, COST-P0-011 |
-| 로그 | 15 | LOG-P0-008, LOG-P0-010 |
-| **합계** | **100** | **11개 P0 룰** |
+| Domain | Max Score | Included Rules |
+|--------|-----------|----------------|
+| Security | 40 | SEC-P0-004, SEC-P0-005, SEC-P0-009 |
+| Auth | 25 | AUTH-P0-001, AUTH-P0-002, AUTH-P0-003 |
+| Cost | 20 | COST-P0-006, COST-P0-007, COST-P0-011 |
+| Logging | 15 | LOG-P0-008, LOG-P0-010 |
+| **Total** | **100** | **11 P0 rules** |
 
-### 룰별 자동 검증 로직
+### Per-rule Automatic Verification Logic
 
-각 룰의 검증은 `rules/p0-catalog.yaml`에 정의된 `check_pattern`을 기반으로 수행된다. 핵심 메커니즘은 Grep/Glob 정적 분석이다.
+Verification for each rule is performed based on the `check_pattern` defined in `rules/p0-catalog.yaml`. The core mechanism is Grep/Glob static analysis.
 
-**판정 알고리즘 (룰당)**:
+**Verdict Algorithm (per rule)**:
 
 ```
-1. Glob(check_targets) → 대상 파일 수집
-2. grep_patterns 매칭 → 해당 기능 사용 파일 식별
-   - 매칭 0건 → N/A (해당 기능 미사용, 패널티 없음)
-3. must_not_contain 검사 (exclude_paths 제외)
-   - 매칭 발견 → 즉시 FAIL + evidence 기록
-4. must_contain 검사
-   - 전체 충족 → PASS
-   - 부분 충족 → WARNING
-   - 미충족 → FAIL
+1. Glob(check_targets) → collect target files
+2. grep_patterns matching → identify files using that feature
+   - 0 matches → N/A (feature not used, no penalty)
+3. must_not_contain check (excluding exclude_paths)
+   - Match found → immediate FAIL + record evidence
+4. must_contain check
+   - All satisfied → PASS
+   - Partially satisfied → WARNING
+   - Not satisfied → FAIL
 ```
 
-**룰별 핵심 Grep 패턴**:
+**Key Grep Patterns per Rule**:
 
-| Rule ID | 기능 탐지 (grep_patterns) | 준수 확인 (must_contain) | 위반 탐지 (must_not_contain) |
-|---------|--------------------------|-------------------------|----------------------------|
-| AUTH-P0-001 | `signup\|register\|createUser` | `role.*['"]guest['"]` | `role.*['"]admin['"]` (가입 시) |
+| Rule ID | Feature Detection (grep_patterns) | Compliance Check (must_contain) | Violation Detection (must_not_contain) |
+|---------|----------------------------------|--------------------------------|---------------------------------------|
+| AUTH-P0-001 | `signup\|register\|createUser` | `role.*['"]guest['"]` | `role.*['"]admin['"]` (on signup) |
 | AUTH-P0-002 | `guard\|middleware\|authorize` | `guest.*block\|guest.*deny` | -- |
 | AUTH-P0-003 | `router\.(get\|post\|put\|delete)` | `auth\|verify\|authenticate` | -- |
-| SEC-P0-004 | -- (전체 대상) | -- | `firebase/firestore\|getDocs\|setDoc` (클라이언트 경로) |
-| SEC-P0-005 | -- (전체 대상) | -- | `fetch\(['"]https?://(?!localhost)` (클라이언트 경로) |
-| SEC-P0-009 | -- (전체 대상) | -- | `res\.json\(.*password\|console\.log\(.*token` |
+| SEC-P0-004 | -- (all targets) | -- | `firebase/firestore\|getDocs\|setDoc` (client paths) |
+| SEC-P0-005 | -- (all targets) | -- | `fetch\(['"]https?://(?!localhost)` (client paths) |
+| SEC-P0-009 | -- (all targets) | -- | `res\.json\(.*password\|console\.log\(.*token` |
 | COST-P0-006 | `openai\|vertexai\|gemini\|anthropic` | `cost\|token\|usage\|billing` | -- |
 | COST-P0-007 | `bigquery\|BigQuery\|createQueryJob` | `totalBytesProcessed\|bytesProcessed\|cost` | -- |
 | COST-P0-011 | `openai\|vertexai\|gemini\|anthropic` | `cache\|Cache\|redis\|memo` | -- |
 | LOG-P0-008 | `catch\|errorHandler\|onError` | `logger\|log\.error\|winston\|pino` | -- |
 | LOG-P0-010 | `updateRole\|changeRole\|setRole` | `audit\|auditLog\|eventLog` | -- |
 
-**상세 스키마**: `rules/p0-catalog.yaml` 및 `REFERENCE.md`의 "Judgment Algorithm" 섹션 참조
+**Detailed schema**: see `rules/p0-catalog.yaml` and the "Judgment Algorithm" section in `REFERENCE.md`
 
 ---
 
-## 검증 시나리오 (QA)
+## Verification Scenarios (QA)
 
-Full Verify 모드(`/compliance-verify`)에서 실행되는 5개 핵심 검증 시나리오. 각 시나리오는 관련 P0 룰을 묶어 end-to-end로 검증한다.
+5 key verification scenarios run in Full Verify mode (`/compliance-verify`). Each scenario groups related P0 rules for end-to-end verification.
 
-| ID | 시나리오 | 관련 룰 | 검증 방법 | Pass 기준 |
-|----|---------|---------|----------|----------|
-| SC-001 | **신규 가입 -> Guest 격리** | AUTH-P0-001, AUTH-P0-002 | 회원가입 코드에서 role=guest 할당 확인 + Guest로 보호된 API 호출 시 403 반환 패턴 확인 | role이 guest이고, 보호 API에 접근 불가 패턴 존재 시 PASS |
-| SC-002 | **AI 호출 -> Gateway 경유 + 비용 기록** | SEC-P0-005, COST-P0-006, COST-P0-011 | (1) 외부 API 직접 호출 코드 부재 확인 (2) Gateway 함수 경유 확인 (3) 비용 로그 필드(model, tokens, cost) 기록 확인 (4) 캐시 조회 로직 존재 확인 | Gateway 경유 + 비용 로그 4필드 기록 + 캐시 레이어 존재 시 PASS |
-| SC-003 | **Firestore 접근 -> Functions 경유 전용** | SEC-P0-004, AUTH-P0-003 | (1) 클라이언트 코드에서 Firestore SDK 직접 import 탐지 (2) 서버 사이드 권한 검증 미들웨어 존재 확인 | 클라이언트 직접 접근 코드 0건 + 서버 미들웨어 존재 시 PASS |
-| SC-004 | **실패 요청 -> 로그 누락 없음** | LOG-P0-008, LOG-P0-010 | (1) error handler에서 로그 기록 호출 확인 (2) catch 블록에서 로그 누락 없음 확인 (3) 권한 변경 이벤트에 감사 로그 존재 확인 | 모든 error handler에 로그 호출 존재 + 권한 변경 감사 로그 존재 시 PASS |
-| SC-005 | **민감 데이터 -> 클라이언트 비노출** | SEC-P0-009, AUTH-P0-002 | (1) API 응답에 프롬프트/응답 전문이 포함되지 않고 참조 ID만 반환 확인 (2) Guest 응답에 모델명/비용/인프라 정보 미포함 확인 | 응답에 원문 미포함 + Guest 노출 통제 확인 시 PASS |
+| ID | Scenario | Related Rules | Verification Method | Pass Criteria |
+|----|---------|---------------|---------------------|---------------|
+| SC-001 | **New Signup -> Guest Isolation** | AUTH-P0-001, AUTH-P0-002 | Verify role=guest assignment in signup code + confirm 403 return pattern when Guest calls protected API | PASS when role is guest and access-denied pattern exists for protected API |
+| SC-002 | **AI Call -> Via Gateway + Cost Logged** | SEC-P0-005, COST-P0-006, COST-P0-011 | (1) Confirm absence of direct external API calls (2) Confirm routing via Gateway function (3) Confirm cost log fields (model, tokens, cost) recorded (4) Confirm cache lookup logic exists | PASS when Gateway routing + 4 cost log fields recorded + cache layer exists |
+| SC-003 | **Firestore Access -> Functions-Only** | SEC-P0-004, AUTH-P0-003 | (1) Detect direct Firestore SDK import in client code (2) Confirm server-side auth verification middleware exists | PASS when 0 direct client access instances + server middleware exists |
+| SC-004 | **Failed Requests -> No Log Gaps** | LOG-P0-008, LOG-P0-010 | (1) Confirm log call in error handler (2) Confirm no log gaps in catch blocks (3) Confirm audit log exists for auth change events | PASS when all error handlers call log + auth change audit log exists |
+| SC-005 | **Sensitive Data -> Not Exposed to Client** | SEC-P0-009, AUTH-P0-002 | (1) Confirm API responses do not include raw prompts/responses, only reference IDs (2) Confirm Guest responses do not include model name/cost/infrastructure info | PASS when raw content not in response + Guest exposure control confirmed |
 
-### 시나리오별 검증 흐름
+### Verification Flow by Scenario
 
 ```
 SC-001: grep signup/register -> assert role='guest' -> grep guestBlock/guestDeny -> assert exists
@@ -241,227 +251,227 @@ SC-005: grep res.json for raw text -> assert 0 hits -> grep guest response -> as
 
 ---
 
-## 역할별 Go/No-Go 체크포인트
+## Role-based Go/No-Go Checkpoints
 
-배포 게이트 판정 후, 등급에 따라 해당 역할의 Go/No-Go 체크포인트를 통과해야 한다. **4개 역할 x 5개 항목 = 총 20개 체크포인트**.
+After the deploy gate verdict, the role's Go/No-Go checkpoints must be cleared based on the grade. **4 roles × 5 items = 20 checkpoints total**.
 
-### 서비스안정화 (5개)
+### Service Stability (5 items)
 
-| # | 체크포인트 | Go 조건 | No-Go 조건 |
-|---|-----------|---------|-----------|
-| 1 | SLA 영향 분석 | 기존 서비스 가용성/응답시간 SLA에 영향 없음 확인 | SLA 영향 미분석 또는 저하 예상 |
-| 2 | 롤백 절차 | 롤백 절차 문서화 + 테스트 완료 | 롤백 절차 미수립 |
-| 3 | 성능 테스트 | 부하/스트레스 테스트 완료 + 기준치 이내 | 성능 테스트 미실행 |
-| 4 | 장애 알림 | 장애 감지 알림 채널(Slack/PagerDuty 등) 설정 완료 | 알림 채널 미설정 |
-| 5 | 모니터링 대시보드 | 핵심 메트릭(에러율, 응답시간, AI 비용) 대시보드 존재 | 모니터링 부재 |
+| # | Checkpoint | Go Condition | No-Go Condition |
+|---|-----------|-------------|-----------------|
+| 1 | SLA Impact Analysis | Confirmed no impact on existing service availability/response-time SLA | SLA impact unanalyzed or degradation expected |
+| 2 | Rollback Procedure | Rollback procedure documented + tested | Rollback procedure not established |
+| 3 | Performance Test | Load/stress test completed + within threshold | Performance test not run |
+| 4 | Incident Alerts | Incident detection alert channels (Slack/PagerDuty, etc.) configured | Alert channels not configured |
+| 5 | Monitoring Dashboard | Dashboard for key metrics (error rate, response time, AI cost) exists | Monitoring absent |
 
-### Engineer (5개)
+### Engineer (5 items)
 
-| # | 체크포인트 | Go 조건 | No-Go 조건 |
-|---|-----------|---------|-----------|
-| 1 | FAIL 룰 원인 분석 | 모든 FAIL 룰의 근본 원인 식별 + 문서화 | 원인 미식별 항목 존재 |
-| 2 | 수정 코드 검증 | 수정 코드가 해당 룰의 의도를 정확히 반영 | 수정이 룰 의도와 불일치 |
-| 3 | 재검증 통과 | 수정 후 재검증에서 해당 룰 PASS 전환 | 재검증 미실행 또는 여전히 FAIL |
-| 4 | 회귀 영향 없음 | 수정이 다른 P0 룰에 부정적 영향 없음 확인 | 다른 룰이 새로 FAIL |
-| 5 | 코드 리뷰 완료 | 수정 코드에 대한 코드 리뷰 승인 완료 | 코드 리뷰 미완료 |
+| # | Checkpoint | Go Condition | No-Go Condition |
+|---|-----------|-------------|-----------------|
+| 1 | FAIL Rule Root Cause Analysis | Root cause identified + documented for all FAIL rules | Unidentified items exist |
+| 2 | Fix Code Verification | Fixed code accurately reflects the intent of the rule | Fix does not match rule intent |
+| 3 | Re-verification Pass | Rule transitions to PASS in re-verification after fix | Re-verification not run or still FAIL |
+| 4 | No Regression Impact | Fix confirmed to have no negative impact on other P0 rules | Another rule newly FAILs |
+| 5 | Code Review Done | Code review approval completed for fixed code | Code review not completed |
 
-### PM (5개)
+### PM (5 items)
 
-| # | 체크포인트 | Go 조건 | No-Go 조건 |
-|---|-----------|---------|-----------|
-| 1 | 사용자 영향 평가 | 미달 항목의 사용자 영향이 수용 가능 | 사용자 영향 미평가 |
-| 2 | 일정 리스크 | 수정 소요 시간이 릴리스 일정 내 | 일정 초과 예상 |
-| 3 | 범위 합의 | 범위 변경 시 이해관계자 합의 완료 | 합의 미완료 |
-| 4 | 비용 영향 | AI 사용 비용이 승인된 예산 범위 내 | 예산 초과 예상 |
-| 5 | 커뮤니케이션 | 변경 사항이 관련 팀에 공유됨 | 미공유 |
+| # | Checkpoint | Go Condition | No-Go Condition |
+|---|-----------|-------------|-----------------|
+| 1 | User Impact Assessment | User impact of non-compliant items is acceptable | User impact not assessed |
+| 2 | Schedule Risk | Fix timeline is within release schedule | Schedule overrun expected |
+| 3 | Scope Agreement | Stakeholder agreement completed for scope changes | Agreement not reached |
+| 4 | Cost Impact | AI usage cost within approved budget | Budget overrun expected |
+| 5 | Communication | Changes shared with relevant teams | Not shared |
 
-### CEO (5개)
+### CEO (5 items)
 
-| # | 체크포인트 | Go 조건 | No-Go 조건 |
-|---|-----------|---------|-----------|
-| 1 | 비용 상한 | 월간 AI 비용이 사전 승인 예산 이내 | 예산 상한 초과 |
-| 2 | 보안 리스크 | 보안 P0 전수 통과 또는 예외 사유 합리적 | P0 보안 FAIL + 예외 사유 불충분 |
-| 3 | 법적/규제 리스크 | 데이터 처리가 관련 법규(개인정보보호법 등) 준수 | 법적 리스크 미검토 |
-| 4 | 사업 연속성 | 배포 실패 시 사업 영향이 제한적 | 사업 중단 리스크 존재 |
-| 5 | 최종 승인 | 위 4개 항목 모두 Go이면 최종 승인 | 1개라도 No-Go이면 보류 |
+| # | Checkpoint | Go Condition | No-Go Condition |
+|---|-----------|-------------|-----------------|
+| 1 | Cost Cap | Monthly AI cost within pre-approved budget | Budget cap exceeded |
+| 2 | Security Risk | All security P0 passed or exception reason is reasonable | P0 security FAIL + insufficient exception justification |
+| 3 | Legal/Regulatory Risk | Data processing complies with applicable laws (privacy laws, etc.) | Legal risks not reviewed |
+| 4 | Business Continuity | Business impact is limited if deployment fails | Business disruption risk exists |
+| 5 | Final Approval | Final approval when all 4 above are Go | Deferred if even 1 is No-Go |
 
 ---
 
-## 리포트 형식
+## Report Format
 
-`/compliance-verify` 실행 시 생성되는 `compliance-report.md`는 6개 섹션으로 구성된다.
+`compliance-report.md`, generated when `/compliance-verify` runs, consists of 6 sections.
 
-### 리포트 섹션 구조 (6개)
+### Report Section Structure (6 sections)
 
 ```markdown
 # Compliance Report
 
-## 1. Summary (요약)
-- 프로젝트명, 검증 일시, 검증 모드 (quick-scan / full-verify)
-- 총 준수 점수 / 100
-- 배포 게이트 등급 (Green / Yellow / Red)
-- P0 FAIL 건수
-- 검증 소요 시간
+## 1. Summary
+- Project name, verification date/time, verification mode (quick-scan / full-verify)
+- Total compliance score / 100
+- Deploy gate grade (Green / Yellow / Red)
+- P0 FAIL count
+- Verification duration
 
-## 2. Rule Results (룰별 결과)
+## 2. Rule Results
 | Rule ID | Category | Rule Name | Result | Score | Evidence |
 |---------|----------|-----------|--------|-------|----------|
-| AUTH-P0-001 | 권한 | 신규 가입자 Guest 강제 | PASS | 10/10 | signup.ts:45 |
-| SEC-P0-005 | 보안 | 외부 API Gateway 강제 | FAIL | 0/15 | client/api.ts:23 직접 fetch |
+| AUTH-P0-001 | Auth | Force Guest for New Signups | PASS | 10/10 | signup.ts:45 |
+| SEC-P0-005 | Security | Enforce External API Gateway | FAIL | 0/15 | client/api.ts:23 direct fetch |
 | ...
 
-## 3. Score Breakdown (영역별 점수)
-| 영역 | 획득 | 만점 | 비율 |
-|------|------|------|------|
-| 보안 | 20 | 40 | 50% |
-| 권한 | 25 | 25 | 100% |
-| 비용 | 17 | 20 | 85% |
-| 로그 | 12 | 15 | 80% |
-| **합계** | **79** | **100** | **79%** |
+## 3. Score Breakdown
+| Domain | Score | Max | % |
+|--------|-------|-----|---|
+| Security | 20 | 40 | 50% |
+| Auth | 25 | 25 | 100% |
+| Cost | 17 | 20 | 85% |
+| Logging | 12 | 15 | 80% |
+| **Total** | **79** | **100** | **79%** |
 
-## 4. Failures Detail (실패 상세)
-각 FAIL 항목에 대해:
-- 위반 코드 위치 (파일:라인)
-- 위반 내용 설명
-- 권장 수정 방법 (remediation)
-- 관련 검증 시나리오 ID (SC-001~SC-005)
+## 4. Failures Detail
+For each FAIL item:
+- Violation code location (file:line)
+- Description of the violation
+- Recommended fix (remediation)
+- Related verification scenario ID (SC-001–SC-005)
 
-## 5. Gate Decision (배포 판정)
-- 판정 등급 + 판정 근거
-- 필요한 승인 역할 목록
-- 역할별 Go/No-Go 체크포인트 현황 (20개 중 미충족 항목 표시)
+## 5. Gate Decision
+- Verdict grade + basis for verdict
+- List of required approval roles
+- Role-based Go/No-Go checkpoint status (unmet items out of 20 shown)
 
-## 6. Recommendations (권고 사항)
-- 즉시 조치: P0 FAIL 수정 (파일 경로 + 수정 가이드)
-- 단기 개선: Yellow -> Green 달성 방안
-- 중기 도입: P1 권장 요건 도입 순서
+## 6. Recommendations
+- Immediate action: Fix P0 FAILs (file path + fix guide)
+- Short-term improvement: Path from Yellow to Green
+- Mid-term adoption: Order for introducing P1 recommended requirements
 ```
 
-### 리포트 생성 규칙
+### Report Generation Rules
 
-1. **Summary는 항상 첫 페이지**: 의사결정자가 점수와 등급을 즉시 확인할 수 있어야 한다
-2. **Evidence 필수**: Rule Results의 모든 PASS/FAIL 항목에 코드 증거(파일:라인) 첨부
-3. **Failures Detail은 FAIL 항목만**: PASS 항목은 Rule Results 테이블에만 표시
-4. **Gate Decision에 역할 매핑**: 등급에 따라 필요한 승인 역할을 자동 표시
-5. **Recommendations 우선순위**: 즉시 > 단기 > 중기 순서로 정렬
+1. **Summary is always first**: Decision-makers must be able to immediately see the score and grade
+2. **Evidence required**: Attach code evidence (file:line) to all PASS/FAIL items in Rule Results
+3. **Failures Detail contains only FAILs**: PASS items appear only in the Rule Results table
+4. **Role mapping in Gate Decision**: Auto-display required approval roles based on grade
+5. **Recommendations priority**: Sorted as Immediate > Short-term > Mid-term
 
 ---
 
-## 배포 게이트 정책
+## Deploy Gate Policy
 
-### 등급 판정 기준
+### Grade Verdict Criteria
 
-| 등급 | 점수 | 조건 | 결정 |
-|------|------|------|------|
-| **Green** | 90~100 | 모든 P0 PASS + 총점 90 이상 | 자동 배포 승인 |
-| **Yellow** | 75~89 | 모든 P0 PASS + 총점 75~89 | 조건부 승인 (PM 확인 필요) |
-| **Red** | 0~74 | 총점 74 이하 **또는** P0 FAIL 1건 이상 | 배포 차단 |
+| Grade | Score | Condition | Decision |
+|-------|-------|-----------|----------|
+| **Green** | 90–100 | All P0 PASS + total score ≥ 90 | Auto deploy approved |
+| **Yellow** | 75–89 | All P0 PASS + total score 75–89 | Conditional approval (PM review required) |
+| **Red** | 0–74 | Total score ≤ 74 **or** any P0 FAIL | Deploy blocked |
 
-### 핵심 규칙
+### Core Rules
 
-1. **P0 절대 규칙**: P0 FAIL이 1건이라도 있으면 총점과 무관하게 **Red** 판정. 배포 자동 차단
-2. **Yellow 조건부**: 총점은 통과했으나 완벽하지 않은 경우. PM이 리스크를 검토하고 승인/반려 결정
-3. **Green 자동 승인**: 모든 P0 통과 + 90점 이상이면 추가 승인 없이 배포 가능
+1. **P0 Absolute Rule**: If even one P0 FAILs, the verdict is **Red** regardless of total score. Deploy automatically blocked
+2. **Yellow conditional**: Total score passes but not perfect. PM reviews the risk and decides approve/reject
+3. **Green auto-approve**: All P0 passed + score ≥ 90 allows deploy without additional approval
 
-### 게이트 실행 흐름
+### Gate Execution Flow
 
 ```
-/compliance-verify 실행
+/compliance-verify runs
        |
-  11개 P0 룰 전수 검증
+  Full verification of 11 P0 rules
        |
-  점수 산출 (보안+권한+비용+로그)
+  Score computed (Security+Auth+Cost+Logging)
        |
   +----+----+----+
   |         |         |
 Green     Yellow    Red
   |         |         |
-자동 승인  PM 승인   배포 차단
-  |       대기      |
-  v         |      수정 후
-배포       v      재검증
-        PM 확인     |
+Auto-Approve  PM-Approve  Deploy-Block
+  |       Pending   |
+  v         |      After Fix
+Deploy       v      Re-verify
+        PM Review     |
         |    |      v
-      승인  반려   /compliance-improve
+      Approve  Reject  /compliance-improve
         |    |
         v    v
-      배포  수정 후
-            재검증
+      Deploy  After Fix
+            Re-verify
 ```
 
 ---
 
-## 역할별 승인 프로세스
+## Role-based Approval Process
 
-내부 AI 툴 필수 구현 가이드 Section 14 기반. 배포 등급에 따라 필요한 승인 역할이 달라진다.
+Based on Section 14 of the internal AI tool mandatory implementation guide. The required approval roles vary by deploy grade.
 
-### 서비스안정화 (Service Stability)
+### Service Stability
 
-**책임**: 장애 영향, 성능 저하, 롤백 가능성 검증
+**Responsibility**: Verify incident impact, performance degradation, and rollback feasibility
 
-체크리스트:
-- [ ] 신규 배포가 기존 서비스 SLA에 영향을 주지 않는가
-- [ ] 롤백 절차가 문서화되어 있는가
-- [ ] 성능 테스트(부하/스트레스)가 완료되었는가
-- [ ] 장애 시 알림 채널이 설정되어 있는가
+Checklist:
+- [ ] Does the new deployment not impact existing service SLAs?
+- [ ] Is the rollback procedure documented?
+- [ ] Has performance testing (load/stress) been completed?
+- [ ] Are incident alert channels configured?
 
-**승인 시점**: Yellow/Red 등급에서 필수
+**Approval trigger**: Required for Yellow/Red grade
 
 ### Engineer
 
-**책임**: 실패 룰의 근본 원인 분석 + 코드 수준 조치 + 재검증
+**Responsibility**: Root cause analysis of failed rules + code-level fix + re-verification
 
-체크리스트:
-- [ ] 모든 FAIL 룰의 원인이 식별되었는가
-- [ ] 수정 코드가 해당 룰의 의도를 정확히 반영하는가
-- [ ] 재검증 결과 해당 룰이 PASS로 전환되었는가
-- [ ] 수정이 다른 룰에 부정적 영향을 주지 않는가
+Checklist:
+- [ ] Has the cause of all FAIL rules been identified?
+- [ ] Does the fixed code accurately reflect the intent of the rule?
+- [ ] Has the rule transitioned to PASS in re-verification?
+- [ ] Does the fix have no negative impact on other rules?
 
-**승인 시점**: Red 등급에서 필수 (수정 후 재검증 담당)
+**Approval trigger**: Required for Red grade (responsible for re-verification after fix)
 
 ### PM (Product Manager)
 
-**책임**: 사용자 영향, 일정 리스크, 범위 변경 승인
+**Responsibility**: User impact, schedule risk, scope change approval
 
-체크리스트:
-- [ ] 컴플라이언스 미달 항목이 사용자 경험에 미치는 영향이 수용 가능한가
-- [ ] 수정에 필요한 일정이 전체 릴리스 일정에 미치는 영향이 수용 가능한가
-- [ ] 범위 축소/연기가 필요한 경우 이해관계자와 합의되었는가
+Checklist:
+- [ ] Is the impact of non-compliant items on user experience acceptable?
+- [ ] Is the schedule impact of fixes acceptable within the overall release timeline?
+- [ ] If scope reduction/deferral is needed, has stakeholder agreement been reached?
 
-**승인 시점**: Yellow 등급에서 필수
+**Approval trigger**: Required for Yellow grade
 
 ### CEO
 
-**책임**: 비용 상한, 사업 리스크, 최종 승인
+**Responsibility**: Cost cap, business risk, final approval
 
-체크리스트:
-- [ ] AI 사용 비용이 사전 승인된 예산 범위 내인가
-- [ ] 보안 위험이 사업적으로 수용 가능한 수준인가
-- [ ] 법적/규제 리스크가 식별 및 관리되고 있는가
+Checklist:
+- [ ] Is AI usage cost within the pre-approved budget?
+- [ ] Is the security risk at an acceptable level for the business?
+- [ ] Are legal/regulatory risks identified and managed?
 
-**승인 시점**: 비용 상한 초과 또는 보안 P0 예외 승인 시
+**Approval trigger**: When cost cap is exceeded or when approving a security P0 exception
 
 ---
 
-## 프로젝트 초기화 (`/compliance-init`)
+## Project Initialization (`/compliance-init`)
 
-### 생성되는 파일 구조
+### Generated File Structure
 
 ```
 project/
 ├── compliance/
-│   ├── rbac-matrix.yaml          # 5역할 x 게임/메뉴/기능 권한 매트릭스
+│   ├── rbac-matrix.yaml          # 5-role × game/menu/feature permission matrix
 │   ├── rules/
-│   │   └── p0-rules.yaml         # 11개 P0 룰 정의
-│   ├── log-schema.yaml           # 행동 로그 스키마 (Firestore/BigQuery)
-│   └── cost-tracking.yaml        # 비용 추적 필드 정의
-├── compliance-config.yaml        # 프로젝트 메타 + 검증 설정
-└── compliance-report.md          # 검증 결과 리포트 (verify 실행 시 생성)
+│   │   └── p0-rules.yaml         # 11 P0 rule definitions
+│   ├── log-schema.yaml           # Behavior log schema (Firestore/BigQuery)
+│   └── cost-tracking.yaml        # Cost tracking field definitions
+├── compliance-config.yaml        # Project metadata + verification settings
+└── compliance-report.md          # Verification result report (generated on verify run)
 ```
 
-### 각 YAML 파일 스키마
+### Each YAML File Schema
 
-**compliance-config.yaml** (프로젝트 루트):
+**compliance-config.yaml** (project root):
 
 ```yaml
 project:
@@ -470,37 +480,37 @@ project:
   tech_stack: ["typescript", "firebase", "next.js"]
 
 verification:
-  catalog_path: "compliance/rules/p0-rules.yaml"   # 기본값
-  exclude_paths:                                     # 검증 제외 경로
+  catalog_path: "compliance/rules/p0-rules.yaml"   # default
+  exclude_paths:                                     # paths to exclude from verification
     - "node_modules/**"
     - "dist/**"
     - "**/*.test.ts"
     - "**/*.spec.ts"
 
 scoring:
-  domain_weights:            # 합계 = 100
+  domain_weights:            # total = 100
     security: 40
     auth: 25
     cost: 20
     logging: 15
 
 gate:
-  green_threshold: 90        # 90점 이상 = 자동 승인
-  yellow_threshold: 75       # 75~89점 = PM 확인 필요
-  p0_fail_override: true     # P0 FAIL 시 점수 무관 Red 판정
+  green_threshold: 90        # >= 90 = auto approve
+  yellow_threshold: 75       # 75-89 = PM review required
+  p0_fail_override: true     # Red verdict on P0 FAIL regardless of score
 ```
 
-**compliance/log-schema.yaml** (행동 로그 스키마):
+**compliance/log-schema.yaml** (behavior log schema):
 
 ```yaml
 log_schema:
   version: "1.0.0"
   storage:
-    primary: "firestore"           # 실시간 접근용
-    archive: "bigquery"            # 분석/감사용
+    primary: "firestore"           # for real-time access
+    archive: "bigquery"            # for analytics/audit
     retention:
-      hot: 90                      # 일 (Firestore)
-      cold: 365                    # 일 (BigQuery)
+      hot: 90                      # days (Firestore)
+      cold: 365                    # days (BigQuery)
 
   fields:
     - name: userId
@@ -509,14 +519,14 @@ log_schema:
     - name: action
       type: string
       required: true
-      description: "수행 동작 (ai_call, role_change, login, etc.)"
+      description: "action performed (ai_call, role_change, login, etc.)"
     - name: timestamp
       type: timestamp
       required: true
     - name: model
       type: string
       required: false
-      description: "AI 모델명 (gemini-1.5-flash 등)"
+      description: "AI model name (gemini-1.5-flash, etc.)"
     - name: inputTokens
       type: number
       required: false
@@ -526,7 +536,7 @@ log_schema:
     - name: estimatedCost
       type: number
       required: false
-      description: "USD 기준 예상 비용"
+      description: "estimated cost in USD"
     - name: status
       type: string
       required: true
@@ -537,10 +547,10 @@ log_schema:
     - name: metadata
       type: map
       required: false
-      description: "추가 컨텍스트 (bytesProcessed, cacheHit 등)"
+      description: "additional context (bytesProcessed, cacheHit, etc.)"
 ```
 
-**compliance/cost-tracking.yaml** (비용 추적 필드):
+**compliance/cost-tracking.yaml** (cost tracking fields):
 
 ```yaml
 cost_tracking:
@@ -548,22 +558,22 @@ cost_tracking:
 
   ai_models:
     required_fields:
-      - model              # 모델 식별자
-      - inputTokens        # 입력 토큰 수
-      - outputTokens       # 출력 토큰 수
-      - estimatedCost      # USD 예상 비용
+      - model              # model identifier
+      - inputTokens        # input token count
+      - outputTokens       # output token count
+      - estimatedCost      # estimated cost in USD
     optional_fields:
-      - cacheHit           # 캐시 히트 여부
-      - latencyMs          # 응답 지연 (ms)
+      - cacheHit           # whether cache was hit
+      - latencyMs          # response latency (ms)
 
   bigquery:
     required_fields:
-      - queryId            # 쿼리 식별자
-      - bytesProcessed     # 스캔 바이트
-      - estimatedCost      # USD 예상 비용
+      - queryId            # query identifier
+      - bytesProcessed     # bytes scanned
+      - estimatedCost      # estimated cost in USD
     optional_fields:
-      - slotMs             # 슬롯 사용 시간
-      - cacheHit           # BQ 캐시 히트 여부
+      - slotMs             # slot usage time
+      - cacheHit           # BQ cache hit indicator
 
   cost_formula:
     gemini_flash: "$0.075 / 1M input tokens, $0.30 / 1M output tokens"
@@ -571,26 +581,26 @@ cost_tracking:
     bigquery: "$5.00 / TB scanned"
 ```
 
-### RBAC 매트릭스 기본 구조
+### RBAC Matrix Base Structure
 
 ```yaml
 # compliance/rbac-matrix.yaml
 roles:
   - id: super_admin
     name: Super Admin
-    description: 전체 시스템 관리 + 역할 부여 권한
+    description: Full system administration + role assignment rights
   - id: admin
     name: Admin
-    description: 서비스 설정 + 사용자 관리
+    description: Service configuration + user management
   - id: manager
     name: Manager
-    description: 팀/게임 단위 관리
+    description: Team/game-level management
   - id: viewer
     name: Viewer
-    description: 읽기 전용 접근
+    description: Read-only access
   - id: guest
     name: Guest
-    description: 최소 접근 (툴명/모델명/비용/구조 비노출)
+    description: Minimum access (tool name/model name/cost/structure not exposed)
 
 permissions:
   - resource: "dashboard"
@@ -599,15 +609,15 @@ permissions:
       admin: [read, write, delete]
       manager: [read, write]
       viewer: [read]
-      guest: []  # 접근 불가
-  # ... 게임/메뉴/기능별 확장
+      guest: []  # no access
+  # ... expand per game/menu/feature
 ```
 
-### Gateway 패턴 예시
+### Gateway Pattern Example
 
 ```typescript
 // functions/src/gateway/ai-gateway.ts
-// 외부 API 직접 호출 금지 - 반드시 이 Gateway 경유
+// Direct external API calls forbidden - must route through this Gateway
 
 import { onCall, HttpsError } from "firebase-functions/v2/https";
 import { verifyRole } from "../auth/rbac";
@@ -615,15 +625,15 @@ import { logAction } from "../logging/audit";
 import { checkCache } from "../cache/cost-cache";
 
 export const callAIModel = onCall(async (request) => {
-  // 1. 서버 사이드 권한 검증 (AUTH-P0-003)
+  // 1. Server-side auth verification (AUTH-P0-003)
   const user = await verifyRole(request.auth, ["admin", "manager"]);
 
-  // 2. Guest 접근 차단 (AUTH-P0-002)
+  // 2. Block Guest access (AUTH-P0-002)
   if (user.role === "guest") {
     throw new HttpsError("permission-denied", "Access denied");
   }
 
-  // 3. 캐시 우선 조회 (COST-P0-011)
+  // 3. Cache-first lookup (COST-P0-011)
   const cached = await checkCache(request.data.prompt);
   if (cached) {
     await logAction({
@@ -635,10 +645,10 @@ export const callAIModel = onCall(async (request) => {
     return { result: cached, fromCache: true };
   }
 
-  // 4. Gateway 경유 AI 호출 (SEC-P0-005)
+  // 4. AI call via Gateway (SEC-P0-005)
   const result = await callGeminiViaGateway(request.data.prompt);
 
-  // 5. 비용 로그 기록 (COST-P0-006)
+  // 5. Record cost log (COST-P0-006)
   await logAction({
     userId: user.uid,
     action: "ai_call",
@@ -648,119 +658,119 @@ export const callAIModel = onCall(async (request) => {
     estimatedCost: result.usage.estimatedCost,
   });
 
-  // 6. 민감 원문은 서버에서만 처리, 클라이언트에는 참조 ID 반환 (SEC-P0-009)
+  // 6. Sensitive raw content processed server-side only; return reference ID to client (SEC-P0-009)
   const responseRef = await storeResponse(result.text);
   return { responseId: responseRef.id, summary: result.summary };
 });
 ```
 
-<!-- TODO: Designer 결과 보완 예정 - compliance-report.md 의 시각적 포맷 및 대시보드 UI -->
+<!-- TODO: Designer output supplement pending - visual format and dashboard UI for compliance-report.md -->
 
 ---
 
-## 타 스킬과의 관계
+## Relationship with Other Skills
 
-### bmad-orchestrator와의 연동
+### Integration with bmad-orchestrator
 
-`bmad-orchestrator`가 프로젝트 전체 개발 단계(Analysis -> Planning -> Solutioning -> Implementation)를 관리한다면, `ai-tool-compliance`는 각 단계의 산출물이 컴플라이언스를 충족하는지 검증하는 보조 도구로 작동한다.
+Where `bmad-orchestrator` manages the full project development phases (Analysis -> Planning -> Solutioning -> Implementation), `ai-tool-compliance` acts as a companion tool that verifies whether each phase's outputs meet compliance requirements.
 
-**권장 사용 순서**:
-1. `/workflow-init` (bmad) -- 프로젝트 구조 수립
-2. `/compliance-init` (compliance) -- 컴플라이언스 기반 구조 생성
-3. Phase 3 Architecture 완료 후 `/compliance-scan` -- 아키텍처 수준 컴플라이언스 점검
-4. Phase 4 Implementation 완료 후 `/compliance-verify` -- 전수 검증 + 배포 게이트 판정
+**Recommended usage order**:
+1. `/workflow-init` (bmad) -- establish project structure
+2. `/compliance-init` (compliance) -- generate compliance foundation
+3. After Phase 3 Architecture completes, `/compliance-scan` -- architecture-level compliance check
+4. After Phase 4 Implementation completes, `/compliance-verify` -- full verification + deploy gate verdict
 
-### security-best-practices와의 관계
+### Relationship with security-best-practices
 
-`security-best-practices`는 범용 웹 보안 패턴(OWASP, HTTPS, XSS, CSRF)을 제공한다. `ai-tool-compliance`는 이를 전제 조건으로 삼되, 조직 특화 요건(RBAC 5역할, Gateway 강제, 비용 투명성, 전수 행동 로그)에 집중한다.
+`security-best-practices` provides general web security patterns (OWASP, HTTPS, XSS, CSRF). `ai-tool-compliance` assumes these as prerequisites and focuses on organization-specific requirements (5-role RBAC, Gateway enforcement, cost transparency, comprehensive behavior logging).
 
-| 항목 | security-best-practices | ai-tool-compliance |
+| Item | security-best-practices | ai-tool-compliance |
 |------|------------------------|--------------------|
-| RBAC | 일반 언급 | 5역할 + 게임/메뉴/기능 단위 매트릭스 |
-| API 보안 | Rate Limiting, CORS | Gateway 강제 + 비용 로그 |
-| 데이터 보호 | XSS, CSRF, SQL Injection | 민감 원문 서버 처리 + Firestore 정책 |
-| 로그 | 보안 이벤트 로깅 | 전수 행동 로그 + 스키마/보관 정책 |
-| 배포 게이트 | 없음 | 준수 점수 기반 자동 차단 |
+| RBAC | General mention | 5-role + game/menu/feature matrix |
+| API Security | Rate Limiting, CORS | Gateway enforcement + cost log |
+| Data Protection | XSS, CSRF, SQL Injection | Sensitive content server-side + Firestore policy |
+| Logging | Security event logging | Comprehensive behavior log + schema/retention policy |
+| Deploy Gate | None | Auto-block based on compliance score |
 
-### code-review와의 관계
+### Relationship with code-review
 
-`code-review`가 코드 품질/가독성/보안을 주관적으로 리뷰한다면, `ai-tool-compliance`는 "내부 AI 툴 가이드를 통과하는가?"에 대한 정량적 판정(100점 만점, pass/fail)을 제공한다. 코드 리뷰 시 `/compliance-scan` 결과를 참고 자료로 활용할 수 있다.
+Where `code-review` subjectively reviews code quality/readability/security, `ai-tool-compliance` provides a quantitative verdict (pass/fail, out of 100) on "Does it pass the internal AI tool guide?" The `/compliance-scan` result can be used as reference material during code review.
 
-### workflow-automation과의 관계
+### Relationship with workflow-automation
 
-`workflow-automation`이 범용 CI/CD 패턴(npm scripts, Makefile, GitHub Actions)을 제공한다면, `ai-tool-compliance`는 해당 파이프라인에 삽입되는 도메인 특화 검증 단계를 제공한다.
+Where `workflow-automation` provides general CI/CD patterns (npm scripts, Makefile, GitHub Actions), `ai-tool-compliance` provides the domain-specific verification step inserted into that pipeline.
 
-### scripts/ 디렉토리 상세 구현
+### scripts/ Directory — Detailed Implementation
 
-#### install.sh -- 스킬 설치 및 초기화
+#### install.sh -- Skill installation and initialization
 
 ```bash
 bash scripts/install.sh [options]
-  --dry-run        변경 없이 미리보기
-  --skip-checks    의존성 확인 건너뛰기
+  --dry-run        preview without making changes
+  --skip-checks    skip dependency checks
 ```
 
-수행 내용:
-1. 의존성 확인 (yq, jq -- 선택적, 없으면 기본 파싱 사용)
-2. 모든 scripts/*.sh에 chmod +x 적용
-3. rules/p0-catalog.yaml YAML 구문 검증
-4. 설치 완료 요약 출력
+What it does:
+1. Dependency check (yq, jq -- optional; falls back to default parsing if absent)
+2. Apply chmod +x to all scripts/*.sh
+3. Validate YAML syntax of rules/p0-catalog.yaml
+4. Print installation summary
 
-#### verify.sh -- P0 룰 전수 검증
+#### verify.sh -- Full P0 rule verification
 
 ```bash
 bash scripts/verify.sh [--rule RULE_ID] [--output JSON_PATH]
 ```
 
-수행 내용:
-1. `rules/p0-catalog.yaml` 파싱 (yq 또는 grep 기반)
-2. 각 룰에 대해:
-   - `check_targets` Glob으로 대상 파일 수집
-   - `grep_patterns`로 기능 사용 여부 탐지 (미사용 시 N/A)
-   - `must_not_contain` 위반 탐지 (exclude_paths 제외)
-   - `must_contain` 준수 확인
-   - Pass/Fail/Warning/N/A 판정 + evidence 수집
-3. 결과를 `templates/verification-run.json` 형식으로 출력
-4. 콘솔에 요약 테이블 출력
+What it does:
+1. Parse `rules/p0-catalog.yaml` (yq or grep-based)
+2. For each rule:
+   - Collect target files via `check_targets` Glob
+   - Detect feature usage via `grep_patterns` (N/A if not used)
+   - Detect `must_not_contain` violations (excluding exclude_paths)
+   - Verify `must_contain` compliance
+   - Determine Pass/Fail/Warning/N/A + collect evidence
+3. Output results in `templates/verification-run.json` format
+4. Print summary table to console
 
-#### score.sh -- 준수 점수 산출
+#### score.sh -- Compliance score computation
 
 ```bash
 bash scripts/score.sh [--input VERIFY_JSON] [--verbose]
 ```
 
-수행 내용:
-1. verify.sh 결과 JSON 로드 (또는 직접 verify.sh 실행)
-2. 영역별 점수 계산:
-   - Pass=배점 100%, Warning=배점 50%, Fail=0%, N/A=분모 제외
-   - 보안: SEC 룰 점수 합 / 보안 만점(35)
-   - 권한: AUTH 룰 점수 합 / 권한 만점(30)
-   - 비용: COST 룰 점수 합 / 비용 만점(20)
-   - 로그: LOG 룰 점수 합 / 로그 만점(15)
-3. 총점 산출 (100점 만점)
-4. `templates/risk-score-report.md` 렌더링
-5. `templates/remediation-task.json` 생성 (각 FAIL 항목별)
+What it does:
+1. Load verify.sh result JSON (or run verify.sh directly)
+2. Calculate scores by domain:
+   - Pass = 100% of score, Warning = 50%, Fail = 0%, N/A = excluded from denominator
+   - Security: sum of SEC rule scores / Security max (35)
+   - Auth: sum of AUTH rule scores / Auth max (30)
+   - Cost: sum of COST rule scores / Cost max (20)
+   - Logging: sum of LOG rule scores / Logging max (15)
+3. Compute total score (out of 100)
+4. Render `templates/risk-score-report.md`
+5. Generate `templates/remediation-task.json` (per FAIL item)
 
-#### gate.sh -- 배포 게이트 체크
+#### gate.sh -- Deploy gate check
 
 ```bash
 bash scripts/gate.sh
-# exit 0 = Green (배포 승인)
-# exit 1 = Red (배포 차단)
-# exit 2 = Yellow (조건부 -- PM 확인 필요)
+# exit 0 = Green (deploy approved)
+# exit 1 = Red (deploy blocked)
+# exit 2 = Yellow (conditional -- PM review required)
 ```
 
-수행 내용:
-1. verify.sh + score.sh 순차 실행
-2. P0 FAIL 존재 여부 확인
-   - 1건이라도 있으면 → Red (exit 1)
-3. 총점 기반 등급 판정
+What it does:
+1. Run verify.sh + score.sh sequentially
+2. Check for P0 FAIL existence
+   - If any exist → Red (exit 1)
+3. Determine grade based on total score
    - 90+ → Green (exit 0)
-   - 75~89 → Yellow (exit 2)
-   - 74 이하 → Red (exit 1)
-4. 등급 + 점수 + 수정 필요 목록 콘솔 출력
+   - 75–89 → Yellow (exit 2)
+   - ≤ 74 → Red (exit 1)
+4. Print grade + score + list of items requiring fixes to console
 
-**CI/CD 통합 예시 (GitHub Actions)**:
+**CI/CD integration example (GitHub Actions)**:
 
 ```yaml
 # .github/workflows/compliance-gate.yml
@@ -774,113 +784,113 @@ jobs:
       - name: Run compliance gate
         run: bash .agent-skills/ai-tool-compliance/scripts/gate.sh
 ```
-<!-- TODO: System 결과 보완 예정 - GitHub Actions 워크플로우 통합 YAML -->
+<!-- TODO: System output supplement pending - GitHub Actions workflow integration YAML -->
 
 ---
 
-## P1 권장 요건 (점진 도입)
+## P1 Recommended Requirements (Gradual Adoption)
 
-P0 전수 통과 후 점진적으로 도입을 권장하는 항목:
+Items recommended for gradual adoption after passing all P0 rules:
 
-| 영역 | 요건 | 설명 |
-|------|------|------|
-| 도메인 관리 | 허용 도메인 화이트리스트 | AI Gateway가 호출할 수 있는 외부 도메인 제한 |
-| 사용량 통계 | 사용자별/팀별 사용량 집계 | 일/주/월 단위 사용량 대시보드 |
-| 비용 통제 | 예산 상한 알림 | 팀/프로젝트별 비용 임계값 초과 시 알림 |
-| 로그 보관 | 로그 보관 정책 | 90일 Hot / 365일 Cold / 이후 삭제 정책 |
+| Domain | Requirement | Description |
+|--------|-------------|-------------|
+| Domain Management | Allowed domain whitelist | Restrict external domains callable by AI Gateway |
+| Usage Statistics | Per-user/team usage aggregation | Daily/weekly/monthly usage dashboard |
+| Cost Control | Budget cap alerts | Alert when cost threshold exceeded per team/project |
+| Log Retention | Log retention policy | 90-day Hot / 365-day Cold / delete thereafter |
 
-### P1 v1.1 룰 카탈로그 (추가 확장)
+### P1 v1.1 Rule Catalog (Extended)
 
-| Rule ID | 영역 | 체크 타입 | 핵심 기준 | 배점 |
-|---------|------|-----------|-----------|------|
-| P1-DOM-001 | Domain Management | static_analysis | 도메인 CRUD 이력 + `createdAt/updatedAt/status/owner` 메타데이터 | 7 |
-| P1-STAT-002 | Statistics | api_test | 사용자/모델/기간/게임 필터 통계 + 비용 집계 최신성(<1h) | 6 |
-| P1-COST-003 | Cost Control | config_check | 예산 80% 경고 + 100% 차단(429/403) + 리셋 주기 | 6 |
-| P1-LOG-004 | Logging | config_check | 로그 스키마 검증 + 6개월+ 보관 + 검색/Export | 6 |
+| Rule ID | Domain | Check Type | Key Criteria | Score |
+|---------|--------|-----------|--------------|-------|
+| P1-DOM-001 | Domain Management | static_analysis | Domain CRUD history + `createdAt/updatedAt/status/owner` metadata | 7 |
+| P1-STAT-002 | Statistics | api_test | User/model/period/game filter statistics + cost aggregation freshness (<1h) | 6 |
+| P1-COST-003 | Cost Control | config_check | 80% budget warning + 100% block (429/403) + reset cycle | 6 |
+| P1-LOG-004 | Logging | config_check | Log schema validation + 6+ month retention + search/Export | 6 |
 
-### Notion 테이블 정렬용 표준 컬럼 (추가)
+### Standard Columns for Notion Table Sorting (Additional)
 
-| 컬럼 | 설명 | 소스 |
-|------|------|------|
-| Rule ID | 기준 식별자 | rules/p1-catalog.yaml |
-| Category/Domain | 컴플라이언스 영역 | rules/p1-catalog.yaml |
-| Check Type | 검증 방식(static/api/config/log) | rules/*-catalog.yaml |
-| Pass/Fail Condition | 판정 기준 | rules/*-catalog.yaml |
-| Score Impact | 가중치 | rules/*-catalog.yaml |
-| Evidence | 파일:라인 또는 설정 근거 | verify 결과 JSON |
-| Owner Role | 조치 담당 역할 | compliance-report / role checklist |
-| Action Queue | 1주 이내 개선 항목 | remediation-task / report |
+| Column | Description | Source |
+|--------|-------------|--------|
+| Rule ID | Rule identifier | rules/p1-catalog.yaml |
+| Category/Domain | Compliance domain | rules/p1-catalog.yaml |
+| Check Type | Verification method (static/api/config/log) | rules/*-catalog.yaml |
+| Pass/Fail Condition | Verdict criteria | rules/*-catalog.yaml |
+| Score Impact | Weight | rules/*-catalog.yaml |
+| Evidence | File:line or config reference | verify result JSON |
+| Owner Role | Role responsible for action | compliance-report / role checklist |
+| Action Queue | Improvement items within 1 week | remediation-task / report |
 
-### 기준검증 시스템 설계 (추가)
+### Criteria Verification System Design (Additional)
 
-| 컴포넌트 | 책임 | 산출물 |
-|----------|------|--------|
-| Rule Registry | P0/P1 카탈로그 버전 관리 및 로드 정책 | `rules/catalog.json`, `rules/catalog-p1.json`, `rules/catalog-all.json` |
-| Evidence Collector | 코드/설정/API 증거 수집 및 정규화 | `verify.sh` 결과의 evidence/violations |
-| Verifier Engine | 룰별 PASS/FAIL/WARNING/NA 판정 | `/tmp/compliance-verify.json` |
-| Risk Scorer | P0 Gate Score + P1 Maturity Score 계산 | `/tmp/compliance-score.json` |
-| Gatekeeper | 배포 차단(P0)과 권고(P1) 의사결정 분리 | `gate.sh` exit code + gate summary |
+| Component | Responsibility | Output |
+|-----------|---------------|--------|
+| Rule Registry | P0/P1 catalog version management and load policy | `rules/catalog.json`, `rules/catalog-p1.json`, `rules/catalog-all.json` |
+| Evidence Collector | Code/config/API evidence collection and normalization | evidence/violations from `verify.sh` output |
+| Verifier Engine | Per-rule PASS/FAIL/WARNING/NA verdict | `/tmp/compliance-verify.json` |
+| Risk Scorer | Compute P0 Gate Score + P1 Maturity Score | `/tmp/compliance-score.json` |
+| Gatekeeper | Separate deploy block (P0) and recommendation (P1) decisions | `gate.sh` exit code + gate summary |
 
-### 운영 모드 (추가, 기존 흐름 유지)
+### Operating Modes (Additional, preserving existing flow)
 
-| 모드 | 명령 | 동작 |
-|------|------|------|
-| P0 기본 | `bash scripts/verify.sh .` | 기존 P0 룰만 검증 (기본값, 역호환) |
-| P0+P1 확장 | `bash scripts/verify.sh . --include-p1` | P0 검증 + P1 권장 룰 동시 검증 |
-| 게이트 판정 | `bash scripts/gate.sh --score-file ...` | P0 기준으로 배포 판정, P1은 성숙도/개선 추적 |
+| Mode | Command | Behavior |
+|------|---------|----------|
+| P0 Default | `bash scripts/verify.sh .` | Verify P0 rules only (default, backward-compatible) |
+| P0+P1 Extended | `bash scripts/verify.sh . --include-p1` | P0 verification + P1 recommended rules simultaneously |
+| Gate Verdict | `bash scripts/gate.sh --score-file ...` | Deploy verdict based on P0; P1 tracks maturity/improvement |
 
 ---
 
 ## Constraints
 
-### 필수 규칙 (MUST)
+### Mandatory Rules (MUST)
 
-1. **P0 절대 원칙**: P0 룰 11개는 예외 없이 검증한다. 부분 검증은 허용하지 않는다
-2. **서버 최종 검증**: 모든 권한 판정은 서버에서 수행한다. 클라이언트 검증만으로는 PASS 불가
-3. **Gateway 강제**: 외부 AI API 직접 호출이 발견되면 무조건 FAIL. 우회 허용 불가
-4. **Guest 기본값**: 신규 가입 시 Guest 외 역할 할당이 발견되면 FAIL
-5. **증거 기반 판정**: 모든 pass/fail은 코드 증거(파일 경로 + 라인 번호)를 첨부한다
+1. **P0 Absolute Principle**: All 11 P0 rules are verified without exception. Partial verification is not allowed
+2. **Server final verification**: All auth decisions are made server-side. Client-side checks alone cannot result in PASS
+3. **Gateway enforcement**: Any direct external AI API call discovered results in unconditional FAIL. No bypass allowed
+4. **Guest default**: If a role other than Guest is assigned on signup, FAIL
+5. **Evidence-based verdict**: All pass/fail verdicts must include code evidence (file path + line number)
 
-### 금지 사항 (MUST NOT)
+### Prohibited Actions (MUST NOT)
 
-1. **P0 예외 승인 남용**: P0 예외는 CEO 승인 없이 절대 허용하지 않는다
-2. **점수 조작**: Evidence 없는 PASS 판정 금지
-3. **Gateway 우회**: "테스트 목적" 등의 이유로 외부 API 직접 호출을 허용하지 않는다
-4. **로그 선택적 기록**: 성공 요청만 기록하고 실패 요청을 누락하는 것을 허용하지 않는다
+1. **P0 exception abuse**: P0 exceptions are never allowed without CEO approval
+2. **Score manipulation**: PASS verdict without Evidence is forbidden
+3. **Gateway bypass**: Direct external API calls are not allowed for any reason including "testing purposes"
+4. **Selective logging**: Logging only successful requests while omitting failed requests is not allowed
 
 ---
 
 ## Best practices
 
-1. **Shift Left**: 프로젝트 시작 시 `/compliance-init`으로 기반 구조를 먼저 생성한 후 비즈니스 로직을 구현한다
-2. **점진적 도입**: P0 전수 통과 -> P1 순서로 도입한다. P1부터 시작하지 않는다
-3. **재검증 루프**: 위반 수정 후 반드시 `/compliance-verify`를 재실행하여 점수 변화를 확인한다
-4. **BMAD 연동**: bmad-orchestrator Phase 4 완료 후 compliance-verify를 실행하는 것을 표준 워크플로우로 채택한다
-5. **CI/CD 통합**: GitHub Actions에 compliance-gate 단계를 추가하여 자동화한다
+1. **Shift Left**: At project start, generate the foundation with `/compliance-init` before implementing business logic
+2. **Gradual adoption**: Adopt in order: pass all P0 first -> then P1. Do not start with P1
+3. **Re-verification loop**: After fixing violations, always re-run `/compliance-verify` to confirm score changes
+4. **BMAD integration**: Adopt running compliance-verify after bmad-orchestrator Phase 4 as the standard workflow
+5. **CI/CD integration**: Automate by adding a compliance-gate step to GitHub Actions
 
 ---
 
 ## References
 
-- 내부 AI 툴 필수 구현 가이드 v1.1 (Notion)
+- Internal AI Tool Mandatory Implementation Guide v1.1 (Notion)
 - [OWASP Top 10](https://owasp.org/www-project-top-ten/)
 - [Firebase Security Rules](https://firebase.google.com/docs/rules)
 - [Cloud Functions for Firebase](https://firebase.google.com/docs/functions)
 
 ## Metadata
 
-### 버전
-- **현재 버전**: 1.0.0
-- **최종 업데이트**: 2026-03-03
-- **호환 플랫폼**: Claude, Gemini, Codex, OpenCode
+### Version
+- **Current version**: 1.0.0
+- **Last updated**: 2026-03-03
+- **Compatible platforms**: Claude, Gemini, Codex, OpenCode
 
-### 관련 스킬
-- [bmad-orchestrator](../bmad-orchestrator/SKILL.md): 개발 단계 오케스트레이션
-- [security-best-practices](../security-best-practices/SKILL.md): 범용 웹 보안 패턴
-- [code-review](../code-review/SKILL.md): 코드 품질/보안 리뷰
-- [workflow-automation](../workflow-automation/SKILL.md): CI/CD 자동화 패턴
-- [authentication-setup](../authentication-setup/SKILL.md): 인증/인가 시스템 구축
-- [firebase-ai-logic](../firebase-ai-logic/SKILL.md): Firebase AI 통합
+### Related Skills
+- [bmad-orchestrator](../bmad-orchestrator/SKILL.md): Development phase orchestration
+- [security-best-practices](../security-best-practices/SKILL.md): General web security patterns
+- [code-review](../code-review/SKILL.md): Code quality/security review
+- [workflow-automation](../workflow-automation/SKILL.md): CI/CD automation patterns
+- [authentication-setup](../authentication-setup/SKILL.md): Authentication/authorization system setup
+- [firebase-ai-logic](../firebase-ai-logic/SKILL.md): Firebase AI integration
 
-### 태그
+### Tags
 `#compliance` `#RBAC` `#security` `#cost-tracking` `#audit-log` `#gateway` `#firestore` `#deploy-gate` `#P0` `#AI-tool`

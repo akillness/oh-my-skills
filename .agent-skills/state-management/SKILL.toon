@@ -2,16 +2,16 @@ N:state-management
 D:Implement state management patterns for frontend applications. Use when managing global state, ha...
 G:state-management React Redux Context Zustand
 U[4]:
-  **전역 상태 필요**: 여러 컴포넌트가 같은 데이터 공유
-  **Props Drilling 문제**: 5단계 이상 props 전달
-  **복잡한 상태 로직**: 인증, 장바구니, 테마 등
-  **상태 동기화**: 서버 데이터와 클라이언트 상태 동기화
+  **Global State Required**: Multiple components share the same data
+  **Props Drilling Problem**: Passing props through 5+ levels
+  **Complex State Logic**: Authentication, shopping cart, themes, etc.
+  **State Synchronization**: Sync server data with client state
 S[5]{n,action}:
-  1,상태 범위 결정
-  2,React Context API (간단한 전역 상태)
-  3,Zustand (현대적이고 간결한 상태 관리)
-  4,Redux Toolkit (대규모 앱)
-  5,서버 상태 관리 (React Query / TanStack Query)
+  1,Determine State Scope
+  2,React Context API (Simple Global State)
+  3,Zustand (Modern and Concise State Management)
+  4,Redux Toolkit (Large-Scale Apps)
+  5,Server State Management (React Query / TanStack Query)
 R[2]:
-  **로컬 상태**
-  **전역 상태**
+  **Local State**
+  **Global State**

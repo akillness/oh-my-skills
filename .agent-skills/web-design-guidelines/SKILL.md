@@ -1,13 +1,14 @@
 ---
 name: web-design-guidelines
-description: Review UI code for Web Interface Guidelines compliance. Use when asked to "review my UI", "check accessibility", "audit design", "review UX", or "check my site against best practices". Fetches latest Vercel guidelines and checks files against all rules.
-tags: [UI, review, web-interface, guidelines, vercel, design-audit, UX]
-platforms: [Claude, ChatGPT, Gemini]
+description: "Review UI code for Web Interface Guidelines compliance. Use when asked to \"review my UI\", \"check accessibility\", \"audit design\", \"review UX\", or \"check my site against best practices\". Fetches latest Vercel guidelines and checks files against all rules."
 metadata:
   author: vercel
-  version: "1.0.0"
-  argument-hint: <file-or-pattern>
+  version: 1.0.0
+  argument-hint: "<file-or-pattern>"
+  tags: UI, review, web-interface, guidelines, vercel, design-audit, UX
+  platforms: Claude, ChatGPT, Gemini
 ---
+
 
 # Web Interface Guidelines Review
 
@@ -15,11 +16,11 @@ Review files for compliance with Vercel's Web Interface Guidelines.
 
 ## When to use this skill
 
-- **UI 코드 리뷰**: 웹 인터페이스 가이드라인 준수 여부 확인
-- **접근성 체크**: "check accessibility" 요청 시
-- **디자인 감사**: "audit design" 요청 시
-- **UX 리뷰**: "review UX" 요청 시
-- **베스트 프랙티스 검토**: "check my site against best practices" 요청 시
+- **UI code review**: check compliance with Web Interface Guidelines
+- **Accessibility check**: when asked "check accessibility"
+- **Design audit**: when asked "audit design"
+- **UX review**: when asked "review UX"
+- **Best practices review**: when asked "check my site against best practices"
 
 ## How It Works
 
@@ -40,48 +41,48 @@ Use WebFetch to retrieve the latest rules. The fetched content contains all the 
 
 ## Instructions
 
-### Step 1: 가이드라인 가져오기
+### Step 1: Fetch Guidelines
 
-**WebFetch 사용**:
+**Use WebFetch**:
 ```
 WebFetch URL: https://raw.githubusercontent.com/vercel-labs/web-interface-guidelines/main/command.md
 Prompt: "Extract all UI rules and guidelines"
 ```
 
-### Step 2: 파일 분석
+### Step 2: Analyze Files
 
-사용자가 제공한 파일 또는 패턴을 읽고 분석합니다.
+Read and analyze the files or patterns provided by the user.
 
-**분석 대상**:
-- React/Vue/Svelte 컴포넌트
-- HTML 파일
-- CSS/SCSS 파일
-- TypeScript/JavaScript 파일
+**Files to analyze**:
+- React/Vue/Svelte components
+- HTML files
+- CSS/SCSS files
+- TypeScript/JavaScript files
 
-### Step 3: 규칙 적용
+### Step 3: Apply Rules
 
-가져온 가이드라인의 모든 규칙을 파일에 적용하고 위반 사항을 출력합니다.
+Apply all rules from the fetched guidelines to the files and output violations.
 
 ## Input Format
 
-### 필수 정보
-- **파일 또는 패턴**: 검토할 파일 경로 또는 glob 패턴
+### Required info
+- **File or pattern**: file path or glob pattern to review
 
-### 입력 예시
-
-```
-내 UI 코드 리뷰해줘:
-- 파일: src/components/Button.tsx
-```
+### Input examples
 
 ```
-접근성 체크해줘:
-- 패턴: src/**/*.tsx
+Review my UI code:
+- File: src/components/Button.tsx
+```
+
+```
+Check accessibility:
+- Pattern: src/**/*.tsx
 ```
 
 ## Output Format
 
-가이드라인에서 지정한 형식을 따릅니다 (일반적으로 `file:line` 형식):
+Follow the format specified in the guidelines (typically `file:line`):
 
 ```
 src/components/Button.tsx:15 - Button should have aria-label for icon-only buttons
@@ -101,22 +102,22 @@ If no files specified, ask the user which files to review.
 
 ## Constraints
 
-### 필수 규칙 (MUST)
+### Required Rules (MUST)
 
-1. **최신 가이드라인 사용**: 매 리뷰 시 source URL에서 fresh 가이드라인 fetch
-2. **전체 규칙 적용**: 가져온 가이드라인의 모든 규칙 검사
-3. **정확한 위치 표시**: file:line 형식으로 위반 위치 명시
+1. **Use latest guidelines**: fetch fresh guidelines from the source URL for every review
+2. **Apply all rules**: check every rule from the fetched guidelines
+3. **Accurate locations**: specify violation locations in `file:line` format
 
-### 금지 사항 (MUST NOT)
+### Prohibited (MUST NOT)
 
-1. **오래된 캐시 사용**: 항상 최신 가이드라인 fetch
-2. **부분 검사**: 일부 규칙만 적용하지 않음
+1. **Use stale cache**: always fetch the latest guidelines
+2. **Partial check**: do not apply only some rules
 
 ## Best practices
 
-1. **파일 범위 제한**: 한 번에 너무 많은 파일 검사 시 컨텍스트 초과 주의
-2. **우선순위 지정**: critical 이슈부터 보고
-3. **수정 제안**: 위반 사항과 함께 수정 방법 제안
+1. **Limit file scope**: be careful about context overflow when reviewing too many files at once
+2. **Prioritize**: report critical issues first
+3. **Suggest fixes**: include how to fix along with each violation
 
 ## References
 
@@ -125,15 +126,15 @@ If no files specified, ask the user which files to review.
 
 ## Metadata
 
-### 버전
-- **현재 버전**: 1.0.0
-- **최종 업데이트**: 2026-01-22
-- **호환 플랫폼**: Claude, ChatGPT, Gemini
-- **원본 출처**: vercel/agent-skills
+### Version
+- **Current version**: 1.0.0
+- **Last updated**: 2026-01-22
+- **Supported platforms**: Claude, ChatGPT, Gemini
+- **Source**: vercel/agent-skills
 
-### 관련 스킬
-- [web-accessibility](../web-accessibility/SKILL.md): WCAG 접근성 구현
-- [ui-component-patterns](../ui-component-patterns/SKILL.md): UI 컴포넌트 패턴
+### Related Skills
+- [web-accessibility](../web-accessibility/SKILL.md): WCAG accessibility implementation
+- [ui-component-patterns](../ui-component-patterns/SKILL.md): UI component patterns
 
-### 태그
+### Tags
 `#UI` `#review` `#web-interface` `#guidelines` `#vercel` `#design-audit` `#UX` `#frontend`

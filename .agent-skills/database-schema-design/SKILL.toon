@@ -2,17 +2,17 @@ N:database-schema-design
 D:Design and optimize database schemas for SQL and NoSQL databases. Use when creating new databases...
 G:database schema SQL NoSQL PostgreSQL
 U[5]:
-  **신규 프로젝트**: 새 애플리케이션의 데이터베이스 스키마 설계
-  **스키마 리팩토링**: 기존 스키마를 성능이나 확장성을 위해 재설계
-  **관계 정의**: 테이블 간 1:1, 1:N, N:M 관계 구현
-  **마이그레이션**: 스키마 변경사항을 안전하게 적용
-  **성능 문제**: 느린 쿼리를 해결하기 위한 인덱스 및 스키마 최적화
+  **New Project**: Database schema design for a new application
+  **Schema Refactoring**: Redesigning an existing schema for performance or scalability
+  **Relationship Definition**: Implementing 1:1, 1:N, N:M relationships between tables
+  **Migration**: Safely applying schema changes
+  **Performance Issues**: Index and schema optimization to resolve slow queries
 S[5]{n,action}:
-  1,엔티티 및 속성 정의
-  2,관계 설계 및 정규화
-  3,인덱스 전략 수립
-  4,제약조건 및 트리거 설정
-  5,마이그레이션 스크립트 작성
+  1,Define Entities and Attributes
+  2,Design Relationships and Normalization
+  3,Establish Indexing Strategy
+  4,Set Up Constraints and Triggers
+  5,Write Migration Scripts
 R[6]:
   id
   email

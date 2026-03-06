@@ -2,8 +2,8 @@ N:changelog-maintenance
 D:Maintain a clear and informative changelog for software releases. Use when documenting version ch...
 G:changelog release-notes versioning semantic-versioning documentation
 U[3]:
-  **릴리스 전**: 버전 출시 전 변경사항 정리
-  **지속적**: 주요 변경 발생 시마다 업데이트
-  **마이그레이션 가이드**: Breaking changes 문서화
+  **Before release**: organize changes before shipping a version
+  **Continuous**: update whenever significant changes occur
+  **Migration guide**: document breaking changes
 S[1]{n,action}:
-  1,Keep a Changelog 형식
+  1,Keep a Changelog format

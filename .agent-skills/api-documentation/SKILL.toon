@@ -2,14 +2,14 @@ N:api-documentation
 D:Create comprehensive API documentation for developers. Use when documenting REST APIs, GraphQL sc...
 G:API-documentation OpenAPI Swagger REST GraphQL
 U[3]:
-  **API 개발**: 새 엔드포인트 추가 시
-  **외부 공개**: Public API 출시
-  **팀 협업**: 프론트엔드-백엔드 인터페이스 정의
+  **API Development**: When adding new endpoints
+  **External Release**: Public API launch
+  **Team Collaboration**: Frontend-backend interface definition
 S[4]{n,action}:
-  1,OpenAPI (Swagger) 스펙
-  2,코드에서 문서 생성 (JSDoc/Decorators)
-  3,인터랙티브 문서
-  4,예제 및 가이드
+  1,OpenAPI (Swagger) Spec
+  2,Generate Documentation from Code (JSDoc/Decorators)
+  3,Interactive Documentation
+  4,Examples & Guides
 R[5]:
   url
   url

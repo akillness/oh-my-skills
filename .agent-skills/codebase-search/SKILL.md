@@ -1,10 +1,12 @@
 ---
 name: codebase-search
 description: Search and navigate large codebases efficiently. Use when finding specific code patterns, tracing function calls, understanding code structure, or locating bugs. Handles semantic search, grep patterns, AST analysis.
-allowed-tools: [Read, Grep, Glob, Bash]
-tags: [codebase-search, grep, code-navigation, pattern-matching]
-platforms: [Claude, ChatGPT, Gemini]
+allowed-tools: Read Grep Glob Bash
+metadata:
+  tags: codebase-search, grep, code-navigation, pattern-matching
+  platforms: Claude, ChatGPT, Gemini
 ---
+
 
 # Codebase Search
 

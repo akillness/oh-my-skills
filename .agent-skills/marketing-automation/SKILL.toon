@@ -1,0 +1,25 @@
+N:marketing-automation
+D:Generate marketing deliverables across CRO, copywriting, SEO, analytics, and growth using 23 sub-skills. Produces repeatable, high-quality assets tuned to a single KPI.
+G:marketing cro copywriting seo analytics growth automation
+
+U[5]:
+  CRO — page-cro, signup-flow, onboarding, form-optimization, paywall
+  Copywriting — copywriting, copy-editing, email-sequence, social-content
+  SEO — seo-audit, programmatic-seo, comparison-page, schema-markup
+  Ads & Analytics — analytics-tracking, paid-ads, ab-test
+  Strategy & Growth — launch-strategy, pricing-strategy, retention, churn-analysis, growth-experiments, referral-program, content-strategy
+S[5]{n,action,details}:
+  1,Define Brief,marketing_brief YAML — define objective(single KPI)·target_audience·channel·format·offer
+  2,Select Sub-Skill,Select appropriate sub-skill (mapping from 23 across 5 categories)
+  3,Build Prompt,Structure Product Context·Audience·Offer·Constraints·Output Format
+  4,Generate & Validate,Generate asset → Check KPI alignment·audience fit·brand voice·actionability
+  5,Handoff & Measure,Asset publishing·tracking events·success thresholds·A/B test plan
+R[4]:
+  Single KPI per deliverable — no mixing multiple objectives
+  Specify audience segment-specific needs and terminology concretely
+  Define tracking events and success thresholds before launch
+  Treat outputs as hypotheses — iterate with data
+E[3]{desc,in,out}:
+  "Landing Page CRO","Optimize the landing page for indie founders building side projects. Offer: AI co-pilot. Output: prioritized CRO changes + A/B tests","CRO checklist (prioritized by impact/effort) + 3 A/B hypotheses + 3 headline/CTA copy variants"
+  "Email Sequence","Create a 5-email welcome sequence for B2B SaaS ops managers. Goal: first workflow setup in 7 days","5 emails (Day 0/1/3/5/7) + subject/goal/CTA + Open Rate/CTR targets"
+  "Programmatic SEO","Create template for [Tool A] vs [Tool B] comparison pages with schema markup","Page template + JSON-LD schema + internal linking strategy + content guide per section"

@@ -1,18 +1,20 @@
 ---
 name: user-guide-writing
 description: Write clear and helpful user guides and tutorials for end users. Use when creating onboarding docs, how-to guides, or FAQ pages. Handles user-focused documentation, screenshots, step-by-step instructions.
-tags: [user-guides, tutorials, documentation, onboarding, how-to, FAQ]
-platforms: [Claude, ChatGPT, Gemini]
+metadata:
+  tags: user-guides, tutorials, documentation, onboarding, how-to, FAQ
+  platforms: Claude, ChatGPT, Gemini
 ---
+
 
 # User Guide Writing
 
 
 ## When to use this skill
 
-- **신규 기능**: 사용자에게 새 기능 소개
-- **온보딩**: 신규 사용자 교육
-- **FAQ**: 자주 묻는 질문 정리
+- **New Features**: Introduce new features to users
+- **Onboarding**: Train new users
+- **FAQ**: Organize frequently asked questions
 
 ## Instructions
 
@@ -64,7 +66,7 @@ Welcome to MyApp! This guide will help you get up and running in 5 minutes.
 - 📚 [Help Center](https://help.myapp.com)
 ```
 
-### Step 2: How-To Guide (작업 중심)
+### Step 2: How-To Guide (Task-Focused)
 
 ```markdown
 # How to Export Your Data
@@ -145,7 +147,7 @@ A ZIP file will be downloaded containing:
 - [Data Security](data-security.md)
 ```
 
-### Step 3: FAQ (자주 묻는 질문)
+### Step 3: FAQ (Frequently Asked Questions)
 
 ```markdown
 # Frequently Asked Questions (FAQ)
@@ -231,7 +233,7 @@ MyApp works best on:
 - 👥 [Community Forum](https://community.myapp.com)
 ```
 
-### Step 4: Tutorial (학습 중심)
+### Step 4: Tutorial (Learning-Focused)
 
 ```markdown
 # Tutorial: Build Your First Dashboard
@@ -313,22 +315,22 @@ docs/
 
 ## Constraints
 
-### 필수 규칙 (MUST)
+### Required Rules (MUST)
 
-1. **스크린샷 포함**: 시각적 가이드
-2. **단계별 지침**: 1, 2, 3 형식
-3. **사용자 언어**: 전문 용어 지양
+1. **Include Screenshots**: Visual guides
+2. **Step-by-Step Instructions**: 1, 2, 3 format
+3. **User Language**: Avoid technical jargon
 
-### 금지 사항 (MUST NOT)
+### Forbidden (MUST NOT)
 
-1. **기술 용어 남발**: API, endpoint 등
-2. **긴 문단**: 짧고 명확하게
+1. **Technical Jargon Overload**: API, endpoint, etc.
+2. **Long Paragraphs**: Keep short and clear
 
 ## Best practices
 
-1. **User-Centric**: 사용자 관점으로 작성
-2. **Show, Don't Tell**: 스크린샷, GIF, 비디오
-3. **Update Regularly**: UI 변경 시 문서도 업데이트
+1. **User-Centric**: Write from the user's perspective
+2. **Show, Don't Tell**: Screenshots, GIFs, videos
+3. **Update Regularly**: Update docs when UI changes
 
 ## References
 
@@ -337,12 +339,12 @@ docs/
 
 ## Metadata
 
-### 버전
-- **현재 버전**: 1.0.0
-- **최종 업데이트**: 2025-01-01
-- **호환 플랫폼**: Claude, ChatGPT, Gemini
+### Version
+- **Current Version**: 1.0.0
+- **Last Updated**: 2025-01-01
+- **Compatible Platforms**: Claude, ChatGPT, Gemini
 
-### 태그
+### Tags
 `#user-guides` `#tutorials` `#documentation` `#onboarding` `#how-to` `#FAQ`
 
 ## Examples

@@ -1,13 +1,15 @@
 ---
 name: bmad-idea
-keyword: bmad-idea
 description: Creative Intelligence Suite for AI-driven ideation, design thinking, innovation strategy, problem-solving, and storytelling. 5 named specialist agents with distinct methodologies — no setup required, all workflows available immediately.
-allowed-tools: [Read, Write, Bash, Grep, Glob]
-tags: [bmad, cis, creative, ideation, brainstorming, design-thinking, innovation, problem-solving, storytelling, multi-agent]
-platforms: [Claude, Gemini, Codex, OpenCode]
-version: 1.0.0
-source: user-installed skill
+allowed-tools: Read Write Bash Grep Glob
+metadata:
+  tags: bmad, cis, creative, ideation, brainstorming, design-thinking, innovation, problem-solving, storytelling, multi-agent
+  platforms: Claude, Gemini, Codex, OpenCode
+  keyword: bmad-idea
+  version: 1.0.0
+  source: user-installed skill
 ---
+
 
 # bmad-idea - BMAD Creative Intelligence Suite
 

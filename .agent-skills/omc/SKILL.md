@@ -1,13 +1,15 @@
 ---
 name: omc
 description: oh-my-claudecode — Teams-first multi-agent orchestration layer for Claude Code. 32 specialized agents, smart model routing, persistent execution loops, and real-time HUD visibility. Zero learning curve.
-allowed-tools: [Read, Write, Bash, Grep, Glob, Edit]
-tags: [omc, oh-my-claudecode, claude-code, multi-agent, orchestration, team, autopilot, ralph, ultrawork]
-platforms: [Claude Code]
-version: 4.2.15
-source: Yeachan-Heo/oh-my-claudecode
-keyword: omc
+allowed-tools: Read Write Bash Grep Glob Edit
+metadata:
+  tags: omc, oh-my-claudecode, claude-code, multi-agent, orchestration, team, autopilot, ralph, ultrawork
+  platforms: Claude Code
+  keyword: omc
+  version: 4.2.15
+  source: Yeachan-Heo/oh-my-claudecode
 ---
+
 
 # omc (oh-my-claudecode) — Claude Code Multi-Agent Orchestration
 

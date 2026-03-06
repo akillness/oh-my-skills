@@ -1,23 +1,21 @@
 ---
-name: pptx-presentation-builder
+name: presentation-builder
 description: Build professional PPTX presentations with brand-aligned layouts using structured deck briefs and validation steps for pitch, roadmap, and product decks.
-tags: [presentation, pptx, slides, storytelling, branding, pitch-deck]
-platforms: [Claude, ChatGPT, Gemini, Codex]
-allowed-tools:
-  - Write
-  - Read
-  - Task
+metadata:
+  tags: presentation, pptx, slides, storytelling, branding, pitch-deck
+  platforms: Claude, ChatGPT, Gemini, Codex
 ---
+
 
 # PPTX Presentation Builder
 
-브랜드 가이드라인에 맞춘 전문 PPTX 프레젠테이션 빌더 스킬입니다. 피치덱, 로드맵, 제품 소개 등 다양한 프레젠테이션을 구조화된 브리프와 검증 단계로 생성합니다.
+A professional PPTX presentation builder skill aligned with brand guidelines. Generates various presentations including pitch decks, roadmaps, and product introductions using structured briefs and validation steps.
 
 ## When to use this skill
 
-- **전문 슬라이드 덱 필요**: 프롬프트에서 프레젠테이션 생성
-- **브랜드 일관성 필요**: 가이드라인에 맞춘 일관된 슬라이드
-- **반복 가능한 템플릿**: 제품, 피치, 로드맵 덱 템플릿화
+- **Professional Slide Deck Needed**: Generate presentations from prompts
+- **Brand Consistency Required**: Consistent slides aligned with guidelines
+- **Reusable Templates**: Templatize product, pitch, roadmap decks
 
 ---
 
@@ -52,10 +50,10 @@ brand_kit:
 ## Deck Brief
 
 ### Meta
-- **Title**: [덱 제목]
-- **Audience**: [청중]
-- **Goal**: [목표 - 투자 유치, 제품 소개, 보고]
-- **Duration**: [발표 시간]
+- **Title**: [deck title]
+- **Audience**: [audience]
+- **Goal**: [goal - fundraising, product intro, reporting]
+- **Duration**: [presentation time]
 
 ### Slides
 | # | Type | Title | Key Message |
@@ -74,7 +72,7 @@ brand_kit:
 
 ### Step 3: Generate Slides
 
-슬라이드별 콘텐츠 생성:
+Generate content per slide:
 
 ```markdown
 ## Slide 1: Title Slide
@@ -92,7 +90,7 @@ Welcome the audience. Introduce yourself and the company.
 Set the context for why you're presenting today.
 ```
 
-**슬라이드 타입별 템플릿**:
+**Templates by Slide Type**:
 
 | Type | Layout | Elements |
 |------|--------|----------|
@@ -112,24 +110,24 @@ Set the context for why you're presenting today.
 ## Review Checklist
 
 ### Layout Balance
-- [ ] 시각적 균형 확인
-- [ ] 여백 충분히 확보
-- [ ] 정렬 일관성
+- [ ] Check visual balance
+- [ ] Ensure sufficient whitespace
+- [ ] Alignment consistency
 
 ### Typography
-- [ ] 폰트 크기 계층 (H1 > H2 > Body)
-- [ ] 가독성 확보 (최소 18pt body)
-- [ ] 일관된 폰트 사용
+- [ ] Font size hierarchy (H1 > H2 > Body)
+- [ ] Ensure readability (minimum 18pt body)
+- [ ] Consistent font usage
 
 ### Content
-- [ ] 슬라이드당 하나의 아이디어
-- [ ] 텍스트 과밀 방지
-- [ ] 데이터/주장의 출처 명시
+- [ ] One idea per slide
+- [ ] Avoid text density
+- [ ] Cite sources for data/claims
 
 ### Accessibility
-- [ ] 색상 대비 충분
-- [ ] 이미지에 alt text
-- [ ] 논리적 읽기 순서
+- [ ] Sufficient color contrast
+- [ ] Alt text for images
+- [ ] Logical reading order
 ```
 
 ### Step 5: Export and Handoff
@@ -234,35 +232,35 @@ Focus: Features, integrations, security.
 
 ## Best practices
 
-1. **One idea per slide**: 과밀 방지
+1. **One idea per slide**: Avoid overcrowding
 2. **Visual hierarchy**: Titles > Headings > Body
-3. **Use speaker notes**: 슬라이드 텍스트 최소화
-4. **Data clarity**: 차트 > 텍스트 단락
-5. **Consistent theming**: 색상, 폰트, 간격 통일
+3. **Use speaker notes**: Minimize text on slides
+4. **Data clarity**: Charts > text paragraphs
+5. **Consistent theming**: Unify colors, fonts, spacing
 
 ---
 
 ## Common pitfalls
 
-- **테마 혼합**: 하나의 덱에 여러 스타일
-- **일관성 없는 간격/타이포**: 슬라이드마다 다름
-- **내러티브 흐름 없음**: 논리적 연결 부재
+- **Mixed Themes**: Multiple styles in one deck
+- **Inconsistent Spacing/Typography**: Different across slides
+- **No Narrative Flow**: Lack of logical connection
 
 ---
 
 ## Troubleshooting
 
 ### Issue: Slides feel inconsistent
-**Cause**: 브랜드 토큰 누락
-**Solution**: 템플릿 제공, 테마 강제 적용
+**Cause**: Missing brand tokens
+**Solution**: Provide template, enforce theme
 
 ### Issue: Slides are too dense
-**Cause**: 슬라이드당 텍스트 과다
-**Solution**: 콘텐츠 분할, 비주얼 활용
+**Cause**: Too much text per slide
+**Solution**: Split content, use visuals
 
 ### Issue: Narrative unclear
-**Cause**: 슬라이드 순서 문제
-**Solution**: 스토리 아크 재구성
+**Cause**: Slide order issue
+**Solution**: Restructure story arc
 
 ---
 
@@ -308,17 +306,17 @@ Focus: Features, integrations, security.
 
 ### Validation & Retrospectives
 
-- **Round 1 (Orchestrator)**: 내러티브 아크, 슬라이드 수 정합성
-- **Round 2 (Analyst)**: 레이아웃 일관성, 브랜드 준수
-- **Round 3 (Executor)**: 내보내기 준비 상태 체크
+- **Round 1 (Orchestrator)**: Narrative arc, slide count alignment
+- **Round 2 (Analyst)**: Layout consistency, brand compliance
+- **Round 3 (Executor)**: Export readiness check
 
 ### Agent Roles
 
 | Agent | Role |
 |-------|------|
-| Claude | 내러티브 구성, 콘텐츠 생성 |
-| Gemini | 데이터 시각화 제안, 레퍼런스 리서치 |
-| Codex | 템플릿 코드 생성, 자동화 |
+| Claude | Narrative composition, content generation |
+| Gemini | Data visualization suggestions, reference research |
+| Codex | Template code generation, automation |
 
 ---
 

@@ -1,10 +1,12 @@
 ---
 name: technical-writing
 description: Write clear, comprehensive technical documentation. Use when creating specs, architecture docs, runbooks, or API documentation. Handles technical specifications, system design docs, operational guides, and developer documentation with industry best practices.
-allowed-tools: [Read, Write, Edit, Glob, Grep]
-tags: [technical-writing, documentation, specs, architecture, runbooks, API-docs]
-platforms: [Claude, ChatGPT, Gemini]
+allowed-tools: Read Write Edit Glob Grep
+metadata:
+  tags: technical-writing, documentation, specs, architecture, runbooks, API-docs
+  platforms: Claude, ChatGPT, Gemini
 ---
+
 
 # Technical Writing
 

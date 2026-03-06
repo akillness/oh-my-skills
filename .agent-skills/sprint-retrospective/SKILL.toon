@@ -2,8 +2,8 @@ N:sprint-retrospective
 D:Facilitate effective sprint retrospectives for continuous team improvement. Use when conducting t...
 G:retrospective agile scrum team-improvement facilitation
 U[3]:
-  **스프린트 종료**: 매 스프린트 마지막
-  **프로젝트 마일스톤**: 주요 릴리스 후
-  **팀 문제 발생**: 즉시 회고 필요 시
+  **End of sprint**: at the end of each sprint
+  **Project milestone**: after major releases
+  **Team issues**: when an immediate retrospective is needed
 S[1]{n,action}:
   1,Start-Stop-Continue

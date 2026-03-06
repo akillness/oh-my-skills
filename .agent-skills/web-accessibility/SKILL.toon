@@ -2,21 +2,21 @@ N:web-accessibility
 D:Implement web accessibility (a11y) standards following WCAG 2.1 guidelines. Use when building acc...
 G:accessibility a11y WCAG ARIA semantic-HTML
 U[5]:
-  **새 UI 컴포넌트 개발**: 접근 가능한 컴포넌트 설계
-  **접근성 감사**: 기존 사이트의 접근성 문제 식별 및 수정
-  **폼 구현**: 스크린 리더 친화적인 폼 작성
-  **모달/드롭다운**: 포커스 관리 및 키보드 트랩 방지
-  **WCAG 준수**: 법적 요구사항 또는 표준 준수
+  **New UI Component Development**: Designing accessible components
+  **Accessibility Audit**: Identifying and fixing accessibility issues in existing sites
+  **Form Implementation**: Writing screen reader-friendly forms
+  **Modals/Dropdowns**: Focus management and keyboard trap prevention
+  **WCAG Compliance**: Meeting legal requirements or standards
 S[5]{n,action}:
-  1,Semantic HTML 사용
-  2,키보드 네비게이션 구현
-  3,ARIA 속성 추가
-  4,색상 대비 및 시각적 접근성
-  5,접근성 테스트
+  1,Use Semantic HTML
+  2,Implement Keyboard Navigation
+  3,Add ARIA Attributes
+  4,Color Contrast and Visual Accessibility
+  5,Accessibility Testing
 R[6]:
   `aria-label`
   `aria-labelledby`
   `aria-describedby`
   `aria-live`
   `aria-hidden`
-  [x] 버튼 목적이 명확 (예
+  [x] Button purpose is clear (e.g.,

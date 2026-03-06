@@ -2,17 +2,17 @@ N:authentication-setup
 D:Design and implement authentication and authorization systems. Use when setting up user login, JW...
 G:authentication authorization security JWT OAuth
 U[5]:
-  **사용자 로그인 시스템**: 새로운 애플리케이션에 사용자 인증 기능을 추가할 때
-  **API 보안**: REST API나 GraphQL API에 인증 레이어를 추가할 때
-  **권한 관리**: 사용자 역할에 따른 접근 제어가 필요할 때
-  **인증 마이그레이션**: 기존 인증 시스템을 JWT나 OAuth로 전환할 때
-  **SSO 통합**: Google, GitHub, Microsoft 등의 소셜 로그인을 통합할 때
+  **User Login System**: When adding user authentication to a new application
+  **API Security**: When adding an authentication layer to a REST or GraphQL API
+  **Permission Management**: When role-based access control is needed
+  **Authentication Migration**: When migrating an existing auth system to JWT or OAuth
+  **SSO Integration**: When integrating social login with Google, GitHub, Microsoft, etc.
 S[5]{n,action}:
-  1,데이터 모델 설계
-  2,비밀번호 보안 구현
-  3,JWT 토큰 생성 및 검증
-  4,인증 미들웨어 구현
-  5,인증 API 엔드포인트 구현
+  1,Design the Data Model
+  2,Implement Password Security
+  3,Generate and Verify JWT Tokens
+  4,Implement Authentication Middleware
+  5,Implement Authentication API Endpoints
 R[2]:
-  Access Token (짧은 만료 시간
-  Refresh Token (긴 만료 시간
+  Access Token (short expiry
+  Refresh Token (long expiry

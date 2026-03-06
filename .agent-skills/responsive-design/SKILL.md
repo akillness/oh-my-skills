@@ -1,29 +1,31 @@
 ---
 name: responsive-design
 description: Create responsive web designs that work across all devices and screen sizes. Use when building mobile-first layouts, implementing breakpoints, or optimizing for different viewports. Handles CSS Grid, Flexbox, media queries, viewport units, and responsive images.
-tags: [responsive, mobile-first, CSS, Flexbox, Grid, media-query, viewport]
-platforms: [Claude, ChatGPT, Gemini]
+metadata:
+  tags: responsive, mobile-first, CSS, Flexbox, Grid, media-query, viewport
+  platforms: Claude, ChatGPT, Gemini
 ---
+
 
 # Responsive Design
 
 
 ## When to use this skill
 
-- **새 웹사이트/앱**: 모바일-데스크톱 겸용 레이아웃 설계
-- **레거시 개선**: 고정 레이아웃을 반응형으로 전환
-- **성능 최적화**: 디바이스별 이미지 최적화
-- **다양한 화면**: 태블릿, 데스크톱, 대형 화면 지원
+- **New website/app**: Layout design for combined mobile-desktop use
+- **Legacy improvement**: Converting fixed layouts to responsive
+- **Performance optimization**: Image optimization per device
+- **Multiple screens**: Tablet, desktop, and large screen support
 
 ## Instructions
 
-### Step 1: Mobile-First 접근
+### Step 1: Mobile-First Approach
 
-작은 화면부터 설계하고 점진적으로 확장합니다.
+Design from small screens and progressively expand.
 
-**예시**:
+**Example**:
 ```css
-/* 기본: 모바일 (320px~) */
+/* Default: Mobile (320px~) */
 .container {
   padding: 1rem;
   font-size: 14px;
@@ -35,7 +37,7 @@ platforms: [Claude, ChatGPT, Gemini]
   gap: 1rem;
 }
 
-/* 태블릿 (768px~) */
+/* Tablet (768px~) */
 @media (min-width: 768px) {
   .container {
     padding: 2rem;
@@ -48,7 +50,7 @@ platforms: [Claude, ChatGPT, Gemini]
   }
 }
 
-/* 데스크톱 (1024px~) */
+/* Desktop (1024px~) */
 @media (min-width: 1024px) {
   .container {
     max-width: 1200px;
@@ -62,7 +64,7 @@ platforms: [Claude, ChatGPT, Gemini]
   }
 }
 
-/* 대형 화면 (1440px~) */
+/* Large screen (1440px~) */
 @media (min-width: 1440px) {
   .grid {
     grid-template-columns: repeat(4, 1fr);
@@ -70,13 +72,13 @@ platforms: [Claude, ChatGPT, Gemini]
 }
 ```
 
-### Step 2: Flexbox/Grid 레이아웃
+### Step 2: Flexbox/Grid Layout
 
-현대적인 CSS 레이아웃 시스템을 활용합니다.
+Leverage modern CSS layout systems.
 
-**Flexbox** (1차원 레이아웃):
+**Flexbox** (1-dimensional layout):
 ```css
-/* 네비게이션 바 */
+/* Navigation bar */
 .navbar {
   display: flex;
   justify-content: space-between;
@@ -84,7 +86,7 @@ platforms: [Claude, ChatGPT, Gemini]
   flex-wrap: wrap;
 }
 
-/* 카드 리스트 */
+/* Card list */
 .card-list {
   display: flex;
   flex-direction: column;
@@ -109,9 +111,9 @@ platforms: [Claude, ChatGPT, Gemini]
 }
 ```
 
-**CSS Grid** (2차원 레이아웃):
+**CSS Grid** (2-dimensional layout):
 ```css
-/* 대시보드 레이아웃 */
+/* Dashboard layout */
 .dashboard {
   display: grid;
   grid-template-areas:
@@ -144,11 +146,11 @@ platforms: [Claude, ChatGPT, Gemini]
 .footer { grid-area: footer; }
 ```
 
-### Step 3: 반응형 이미지
+### Step 3: Responsive Images
 
-디바이스에 맞는 이미지를 제공합니다.
+Provide images suited to the device.
 
-**srcset 사용**:
+**Using srcset**:
 ```html
 <img
   src="image-800.jpg"
@@ -167,21 +169,21 @@ platforms: [Claude, ChatGPT, Gemini]
 />
 ```
 
-**picture 요소** (Art Direction):
+**picture element** (Art Direction):
 ```html
 <picture>
-  <!-- 모바일: 세로 이미지 -->
+  <!-- Mobile: portrait image -->
   <source media="(max-width: 767px)" srcset="portrait.jpg">
 
-  <!-- 태블릿: 정사각형 이미지 -->
+  <!-- Tablet: square image -->
   <source media="(max-width: 1023px)" srcset="square.jpg">
 
-  <!-- 데스크톱: 가로 이미지 -->
+  <!-- Desktop: landscape image -->
   <img src="landscape.jpg" alt="Art direction example">
 </picture>
 ```
 
-**CSS 배경 이미지**:
+**CSS background images**:
 ```css
 .hero {
   background-image: url('hero-mobile.jpg');
@@ -199,7 +201,7 @@ platforms: [Claude, ChatGPT, Gemini]
   }
 }
 
-/* 또는 image-set() 사용 */
+/* Or use image-set() */
 .hero {
   background-image: image-set(
     url('hero-1x.jpg') 1x,
@@ -208,11 +210,11 @@ platforms: [Claude, ChatGPT, Gemini]
 }
 ```
 
-### Step 4: 반응형 타이포그래피
+### Step 4: Responsive Typography
 
-화면 크기에 따라 텍스트 크기를 조정합니다.
+Adjust text size based on screen size.
 
-**clamp() 함수** (유동적 크기):
+**clamp() function** (fluid sizing):
 ```css
 :root {
   /* min, preferred, max */
@@ -236,7 +238,7 @@ h2 {
 }
 ```
 
-**미디어 쿼리 방식**:
+**Media query approach**:
 ```css
 body {
   font-size: 14px;
@@ -252,9 +254,9 @@ body {
 }
 ```
 
-### Step 5: Container Queries (신기능)
+### Step 5: Container Queries (New Feature)
 
-부모 컨테이너 크기에 따라 스타일 적용합니다.
+Apply styles based on parent container size.
 
 ```css
 .card-container {
@@ -270,7 +272,7 @@ body {
   font-size: 1.2rem;
 }
 
-/* 컨테이너가 400px 이상일 때 */
+/* When container is 400px or wider */
 @container card (min-width: 400px) {
   .card {
     display: grid;
@@ -283,7 +285,7 @@ body {
   }
 }
 
-/* 컨테이너가 600px 이상일 때 */
+/* When container is 600px or wider */
 @container card (min-width: 600px) {
   .card {
     grid-template-columns: 300px 1fr;
@@ -294,7 +296,7 @@ body {
 
 ## Output format
 
-### 표준 브레이크포인트
+### Standard Breakpoints
 
 ```css
 /* Mobile (default): 320px ~ 767px */
@@ -310,40 +312,40 @@ body {
   --breakpoint-2xl: 1536px;
 }
 
-/* 사용 예시 */
+/* Usage example */
 @media (min-width: 768px) { /* Tablet */ }
 @media (min-width: 1024px) { /* Desktop */ }
 ```
 
 ## Constraints
 
-### 필수 규칙 (MUST)
+### Mandatory Rules (MUST)
 
-1. **Viewport 메타태그**: HTML에 반드시 포함
+1. **Viewport meta tag**: Must be included in HTML
    ```html
    <meta name="viewport" content="width=device-width, initial-scale=1.0">
    ```
 
-2. **Mobile-First**: 모바일 기본, min-width 미디어 쿼리 사용
+2. **Mobile-First**: Mobile default, use min-width media queries
    - ✅ `@media (min-width: 768px)`
    - ❌ `@media (max-width: 767px)` (Desktop-first)
 
-3. **상대 단위**: px 대신 rem, em, %, vw/vh 사용
+3. **Relative units**: Use rem, em, %, vw/vh instead of px
    - font-size: rem
-   - padding/margin: rem 또는 em
-   - width: % 또는 vw
+   - padding/margin: rem or em
+   - width: % or vw
 
-### 금지 사항 (MUST NOT)
+### Prohibited (MUST NOT)
 
-1. **고정 너비 금지**: `width: 1200px` 지양
-   - `max-width: 1200px` 사용
+1. **Fixed width prohibited**: Avoid `width: 1200px`
+   - Use `max-width: 1200px`
 
-2. **중복 코드**: 모든 브레이크포인트에 같은 스타일 반복 금지
-   - 공통 스타일은 기본으로, 차이만 미디어 쿼리에
+2. **Duplicate code**: Avoid repeating same styles across all breakpoints
+   - Common styles as default, only differences in media queries
 
 ## Examples
 
-### 예시 1: 반응형 네비게이션
+### Example 1: Responsive Navigation
 
 ```tsx
 function ResponsiveNav() {
@@ -351,10 +353,10 @@ function ResponsiveNav() {
 
   return (
     <nav className="navbar">
-      {/* 로고 */}
+      {/* Logo */}
       <a href="/" className="logo">MyApp</a>
 
-      {/* 햄버거 버튼 (모바일) */}
+      {/* Hamburger button (mobile) */}
       <button
         className="menu-toggle"
         onClick={() => setIsOpen(!isOpen)}
@@ -366,7 +368,7 @@ function ResponsiveNav() {
         <span></span>
       </button>
 
-      {/* 네비게이션 링크 */}
+      {/* Navigation links */}
       <ul className={`nav-links ${isOpen ? 'active' : ''}`}>
         <li><a href="/about">About</a></li>
         <li><a href="/services">Services</a></li>
@@ -385,7 +387,7 @@ function ResponsiveNav() {
   padding: 1rem;
 }
 
-/* 햄버거 버튼 (모바일만) */
+/* Hamburger button (mobile only) */
 .menu-toggle {
   display: flex;
   flex-direction: column;
@@ -406,7 +408,7 @@ function ResponsiveNav() {
   display: flex;
 }
 
-/* 태블릿 이상: 햄버거 숨기고 항상 표시 */
+/* Tablet and above: hide hamburger, always show */
 @media (min-width: 768px) {
   .menu-toggle {
     display: none;
@@ -421,7 +423,7 @@ function ResponsiveNav() {
 }
 ```
 
-### 예시 2: 반응형 그리드 카드
+### Example 2: Responsive Grid Card
 
 ```tsx
 function ProductGrid({ products }) {
@@ -443,7 +445,7 @@ function ProductGrid({ products }) {
 ```css
 .product-grid {
   display: grid;
-  grid-template-columns: 1fr;  /* 모바일: 1 column */
+  grid-template-columns: 1fr;  /* Mobile: 1 column */
   gap: 1rem;
   padding: 1rem;
 }
@@ -484,10 +486,10 @@ function ProductGrid({ products }) {
 
 ## Best practices
 
-1. **컨테이너 쿼리 우선**: 가능하면 미디어 쿼리 대신 컨테이너 쿼리
-2. **Flexbox vs Grid**: 1차원은 Flexbox, 2차원은 Grid
-3. **성능**: 이미지 lazy loading, WebP 포맷 사용
-4. **테스트**: Chrome DevTools Device Mode, BrowserStack
+1. **Container queries first**: Use container queries instead of media queries when possible
+2. **Flexbox vs Grid**: Flexbox for 1-dimensional, Grid for 2-dimensional
+3. **Performance**: Image lazy loading, use WebP format
+4. **Testing**: Chrome DevTools Device Mode, BrowserStack
 
 ## References
 
@@ -498,14 +500,14 @@ function ProductGrid({ products }) {
 
 ## Metadata
 
-### 버전
-- **현재 버전**: 1.0.0
-- **최종 업데이트**: 2025-01-01
-- **호환 플랫폼**: Claude, ChatGPT, Gemini
+### Version
+- **Current Version**: 1.0.0
+- **Last Updated**: 2025-01-01
+- **Compatible Platforms**: Claude, ChatGPT, Gemini
 
-### 관련 스킬
-- [ui-component-patterns](../ui-component-patterns/SKILL.md): 반응형 컴포넌트
-- [web-accessibility](../web-accessibility/SKILL.md): 접근성과 함께 고려
+### Related Skills
+- [ui-component-patterns](../ui-component-patterns/SKILL.md): Responsive components
+- [web-accessibility](../web-accessibility/SKILL.md): Consider alongside accessibility
 
-### 태그
+### Tags
 `#responsive` `#mobile-first` `#CSS` `#Flexbox` `#Grid` `#media-query` `#frontend`

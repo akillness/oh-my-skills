@@ -4,7 +4,17 @@
     "jeo": {
       "source": "supercent-io/skills-template",
       "sourceType": "github",
-      "computedHash": "a0542ad8f9be8d20cbcab965969e90b88c1fbe68ac5c67b7637850123f14aaca"
+      "version": "1.1.0",
+      "keyword": "jeo",
+      "description": "통합 AI 에이전트 오케스트레이션. ralph+plannotator 계획→team/bmad 실행→agent-browser 검증→agentation UI 피드백→worktree 정리.",
+      "tags": ["jeo", "orchestration", "ralph", "plannotator", "team", "bmad", "agent-browser", "agentation"],
+      "installCommand": "npx skills add https://github.com/supercent-io/skills-template --skill jeo",
+      "addedAt": "2026-03-05T00:00:00Z",
+      "updatedAt": "2026-03-06T00:00:00Z",
+      "changelog": {
+        "1.1.0": "retry_count/last_error/checkpoint 에러 복구 필드 추가, 모든 STEP pre-flight 체크 추가, git 저장소 감지 개선",
+        "1.0.0": "초기 릴리스 — PLAN/EXECUTE/VERIFY/VERIFY_UI/CLEANUP 전체 플로우"
+      }
     },
     "ai-tool-compliance": {
       "source": "supercent-io/skills-template",
@@ -23,6 +33,29 @@
       "description": "PM용 관리자 대시보드에 LLM 사용 모니터링 페이지를 자동 생성. Tokuin CLI 기반 비용/토큰/레이턴시 추적 + PM 인사이트 + 사용자 랭킹",
       "tags": ["LLM", "monitoring", "dashboard", "tokuin", "pm-insights", "ranking", "cost-tracking"],
       "addedAt": "2026-03-03T00:00:00Z"
+    }
+  },
+  "dependencies": {
+    "plannotator": {
+      "version": "latest",
+      "source": "backnotprop/plannotator",
+      "installCommand": "bash scripts/install.sh --with-plannotator",
+      "required_by": ["jeo"],
+      "description": "시각적 계획/diff 리뷰 UI. jeo PLAN 단계 blocking 실행에 필수."
+    },
+    "agent-browser": {
+      "version": "latest",
+      "source": "npm:agent-browser",
+      "installCommand": "npm install -g agent-browser",
+      "optional_for": ["jeo"],
+      "description": "AI 에이전트용 헤드리스 브라우저. jeo VERIFY 단계 기본 검증 도구. 브라우저 UI 없는 백엔드/CLI 작업은 건너뜀."
+    },
+    "agentation": {
+      "version": "latest",
+      "source": "benjitaylor/agentation",
+      "installCommand": "bash scripts/install.sh --with-agentation",
+      "optional_for": ["jeo"],
+      "description": "UI 어노테이션 → 에이전트 코드 수정 연동. jeo `annotate` 키워드 감지 시에만 VERIFY_UI 단계 활성화."
     }
   }
 }

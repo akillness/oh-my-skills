@@ -189,6 +189,9 @@ workflow_status:
     phase: 1-4
     status: "optional|recommended|required|{file-path}|skipped"
     description: "Brief description"
+    # Added by phase-gate-review.sh when plannotator approves the document:
+    plannotator_review: "approved"       # set on plannotator Approve click
+    reviewed_at: "ISO-8601 timestamp"   # timestamp of approval
 ```
 
 ### Status Values
@@ -199,6 +202,15 @@ workflow_status:
 - **"conditional"** - Required based on project level (replaced during init)
 - **"{file-path}"** - Completed, shows output file location
 - **"skipped"** - User explicitly chose to skip
+
+### plannotator Review Fields
+
+Written by `scripts/phase-gate-review.sh` when a phase document is approved via plannotator:
+
+- **`plannotator_review`** - `"approved"` when the document passed plannotator gate review
+- **`reviewed_at`** - ISO-8601 timestamp of when the review was approved
+
+These fields are optional — they are only present on workflow entries that have been reviewed. Use them to audit which phase documents were human-reviewed before phase transition.
 
 ### Updating Status
 

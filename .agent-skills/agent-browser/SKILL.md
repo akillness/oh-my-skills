@@ -1,12 +1,14 @@
 ---
 name: agent-browser
-description: Browser automation CLI for AI agents. Use for website interaction, form automation, screenshots, scraping, and web app verification. Prefer snapshot refs (@e1, @e2) for deterministic actions.
-allowed-tools: [Read, Write, Bash, Grep, Glob]
-tags: [browser-automation, headless-browser, ai-agent, web-testing, web-scraping, verification]
-platforms: [Claude, Gemini, Codex, ChatGPT]
-version: 1.1.0
-source: vercel-labs/agent-browser
+description: "Browser automation CLI for AI agents. Use for website interaction, form automation, screenshots, scraping, and web app verification. Prefer snapshot refs (@e1, @e2) for deterministic actions."
+allowed-tools: Read Write Bash Grep Glob
+metadata:
+  tags: browser-automation, headless-browser, ai-agent, web-testing, web-scraping, verification
+  platforms: Claude, Gemini, Codex, ChatGPT
+  version: 1.1.0
+  source: vercel-labs/agent-browser
 ---
+
 
 # agent-browser - Browser Automation for AI Agents
 

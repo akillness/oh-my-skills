@@ -2,15 +2,15 @@ N:workflow-automation
 D:Automate repetitive development tasks and workflows. Use when creating build scripts, automating ...
 G:automation scripts workflow npm-scripts Makefile
 U[3]:
-  **반복 작업**: 매번 같은 명령어 실행
-  **복잡한 빌드**: 여러 단계 빌드 프로세스
-  **팀 온보딩**: 일관된 개발 환경
+  **Repetitive tasks**: running the same commands every time
+  **Complex builds**: multi-step build processes
+  **Team onboarding**: a consistent development environment
 S[5]{n,action}:
   1,npm scripts
   2,Makefile
   3,Husky + lint-staged (Git Hooks)
-  4,Task Runner 스크립트
-  5,GitHub Actions Workflow 자동화
+  4,Task Runner scripts
+  5,GitHub Actions workflow automation
 R[6]:
   uses
   name

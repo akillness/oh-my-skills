@@ -1,61 +1,63 @@
 ---
 name: web-accessibility
 description: Implement web accessibility (a11y) standards following WCAG 2.1 guidelines. Use when building accessible UIs, fixing accessibility issues, or ensuring compliance with disability standards. Handles ARIA attributes, keyboard navigation, screen readers, semantic HTML, and accessibility testing.
-tags: [accessibility, a11y, WCAG, ARIA, semantic-HTML, screen-reader]
-platforms: [Claude, ChatGPT, Gemini]
+metadata:
+  tags: accessibility, a11y, WCAG, ARIA, semantic-HTML, screen-reader
+  platforms: Claude, ChatGPT, Gemini
 ---
+
 
 # Web Accessibility (A11y)
 
 
 ## When to use this skill
 
-- **새 UI 컴포넌트 개발**: 접근 가능한 컴포넌트 설계
-- **접근성 감사**: 기존 사이트의 접근성 문제 식별 및 수정
-- **폼 구현**: 스크린 리더 친화적인 폼 작성
-- **모달/드롭다운**: 포커스 관리 및 키보드 트랩 방지
-- **WCAG 준수**: 법적 요구사항 또는 표준 준수
+- **New UI Component Development**: Designing accessible components
+- **Accessibility Audit**: Identifying and fixing accessibility issues in existing sites
+- **Form Implementation**: Writing screen reader-friendly forms
+- **Modals/Dropdowns**: Focus management and keyboard trap prevention
+- **WCAG Compliance**: Meeting legal requirements or standards
 
-## 입력 형식 (Input Format)
+## Input Format
 
-### 필수 정보
-- **프레임워크**: React, Vue, Svelte, Vanilla JS 등
-- **컴포넌트 유형**: Button, Form, Modal, Dropdown, Navigation 등
-- **WCAG 레벨**: A, AA, AAA (기본값: AA)
+### Required Information
+- **Framework**: React, Vue, Svelte, Vanilla JS, etc.
+- **Component Type**: Button, Form, Modal, Dropdown, Navigation, etc.
+- **WCAG Level**: A, AA, AAA (default: AA)
 
-### 선택 정보
-- **스크린 리더**: NVDA, JAWS, VoiceOver (테스트용)
-- **자동 테스트 도구**: axe-core, Pa11y, Lighthouse (기본값: axe-core)
-- **브라우저**: Chrome, Firefox, Safari (기본값: Chrome)
+### Optional Information
+- **Screen Reader**: NVDA, JAWS, VoiceOver (for testing)
+- **Automated Testing Tool**: axe-core, Pa11y, Lighthouse (default: axe-core)
+- **Browser**: Chrome, Firefox, Safari (default: Chrome)
 
-### 입력 예시
+### Input Example
 
 ```
-React 모달 컴포넌트를 접근 가능하게 만들어줘:
-- 프레임워크: React + TypeScript
-- WCAG 레벨: AA
-- 요구사항:
-  - 포커스 트랩 (모달 내부에만 포커스)
-  - ESC 키로 닫기
-  - 배경 클릭으로 닫기
-  - 스크린 리더에서 제목/설명 읽기
+Make a React modal component accessible:
+- Framework: React + TypeScript
+- WCAG Level: AA
+- Requirements:
+  - Focus trap (focus stays inside the modal)
+  - Close with ESC key
+  - Close by clicking the background
+  - Title/description read by screen readers
 ```
 
 ## Instructions
 
-### Step 1: Semantic HTML 사용
+### Step 1: Use Semantic HTML
 
-의미있는 HTML 요소를 사용하여 구조를 명확히 합니다.
+Use meaningful HTML elements to make the structure clear.
 
-**작업 내용**:
-- `<button>`, `<nav>`, `<main>`, `<header>`, `<footer>` 등 시맨틱 태그 사용
-- `<div>`, `<span>` 남용 지양
-- 제목 계층 구조 (`<h1>` ~ `<h6>`) 올바르게 사용
-- `<label>`과 `<input>` 연결
+**Tasks**:
+- Use semantic tags: `<button>`, `<nav>`, `<main>`, `<header>`, `<footer>`, etc.
+- Avoid overusing `<div>` and `<span>`
+- Use heading hierarchy (`<h1>` ~ `<h6>`) correctly
+- Connect `<label>` with `<input>`
 
-**예시** (❌ 나쁜 예 vs ✅ 좋은 예):
+**Example** (❌ Bad vs ✅ Good):
 ```html
-<!-- ❌ 나쁜 예: div와 span만 사용 -->
+<!-- ❌ Bad example: using only div and span -->
 <div class="header">
   <span class="title">My App</span>
   <div class="nav">
@@ -64,7 +66,7 @@ React 모달 컴포넌트를 접근 가능하게 만들어줘:
   </div>
 </div>
 
-<!-- ✅ 좋은 예: 시맨틱 HTML -->
+<!-- ✅ Good example: semantic HTML -->
 <header>
   <h1>My App</h1>
   <nav aria-label="Main navigation">
@@ -76,39 +78,39 @@ React 모달 컴포넌트를 접근 가능하게 만들어줘:
 </header>
 ```
 
-**폼 예시**:
+**Form Example**:
 ```html
-<!-- ❌ 나쁜 예: label 없음 -->
+<!-- ❌ Bad example: no label -->
 <input type="text" placeholder="Enter your name">
 
-<!-- ✅ 좋은 예: label 연결 -->
+<!-- ✅ Good example: label connected -->
 <label for="name">Name:</label>
 <input type="text" id="name" name="name" required>
 
-<!-- 또는 label로 감싸기 -->
+<!-- Or wrap with label -->
 <label>
   Email:
   <input type="email" name="email" required>
 </label>
 ```
 
-### Step 2: 키보드 네비게이션 구현
+### Step 2: Implement Keyboard Navigation
 
-마우스 없이도 모든 기능 사용 가능하도록 합니다.
+Ensure all features are usable without a mouse.
 
-**작업 내용**:
-- Tab, Shift+Tab으로 포커스 이동
-- Enter/Space로 버튼 활성화
-- 화살표 키로 리스트/메뉴 탐색
-- ESC로 모달/드롭다운 닫기
-- `tabindex` 적절히 사용
+**Tasks**:
+- Move focus with Tab and Shift+Tab
+- Activate buttons with Enter/Space
+- Navigate lists/menus with arrow keys
+- Close modals/dropdowns with ESC
+- Use `tabindex` appropriately
 
-**판단 기준**:
-- 인터랙티브 요소 → `tabindex="0"` (포커스 가능)
-- 포커스 제외 → `tabindex="-1"` (프로그래밍 방식 포커스만)
-- 포커스 순서 변경 금지 → `tabindex="1+"` 사용 지양
+**Decision Criteria**:
+- Interactive elements → `tabindex="0"` (focusable)
+- Exclude from focus order → `tabindex="-1"` (programmatic focus only)
+- Do not change focus order → avoid using `tabindex="1+"`
 
-**예시** (React 드롭다운):
+**Example** (React Dropdown):
 ```typescript
 import React, { useState, useRef, useEffect } from 'react';
 
@@ -124,7 +126,7 @@ function AccessibleDropdown({ label, options, onChange }: DropdownProps) {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const listRef = useRef<HTMLUListElement>(null);
 
-  // 키보드 핸들러
+  // Keyboard handler
   const handleKeyDown = (e: React.KeyboardEvent) => {
     switch (e.key) {
       case 'ArrowDown':
@@ -206,29 +208,29 @@ function AccessibleDropdown({ label, options, onChange }: DropdownProps) {
 }
 ```
 
-### Step 3: ARIA 속성 추가
+### Step 3: Add ARIA Attributes
 
-스크린 리더에게 추가 컨텍스트를 제공합니다.
+Provide additional context for screen readers.
 
-**작업 내용**:
-- `aria-label`: 요소의 이름 정의
-- `aria-labelledby`: 다른 요소를 라벨로 참조
-- `aria-describedby`: 추가 설명 제공
-- `aria-live`: 동적 콘텐츠 변경 알림
-- `aria-hidden`: 스크린 리더에서 숨기기
+**Tasks**:
+- `aria-label`: Define the element's name
+- `aria-labelledby`: Reference another element as a label
+- `aria-describedby`: Provide additional description
+- `aria-live`: Announce dynamic content changes
+- `aria-hidden`: Hide from screen readers
 
-**확인 사항**:
-- [x] 모든 인터랙티브 요소에 명확한 라벨
-- [x] 버튼 목적이 명확 (예: "Submit form" not "Click")
-- [x] 상태 변화 알림 (aria-live)
-- [x] 장식용 이미지는 alt="" 또는 aria-hidden="true"
+**Checklist**:
+- [x] All interactive elements have clear labels
+- [x] Button purpose is clear (e.g., "Submit form" not "Click")
+- [x] State change announcements (aria-live)
+- [x] Decorative images use alt="" or aria-hidden="true"
 
-**예시** (모달):
+**Example** (Modal):
 ```tsx
 function AccessibleModal({ isOpen, onClose, title, children }) {
   const modalRef = useRef<HTMLDivElement>(null);
 
-  // 모달 열릴 때 포커스 트랩
+  // Focus trap when modal opens
   useEffect(() => {
     if (isOpen) {
       modalRef.current?.focus();
@@ -268,14 +270,14 @@ function AccessibleModal({ isOpen, onClose, title, children }) {
 }
 ```
 
-**aria-live 예시** (알림):
+**aria-live Example** (Notifications):
 ```tsx
 function Notification({ message, type }: { message: string; type: 'success' | 'error' }) {
   return (
     <div
       role="alert"
-      aria-live="assertive"  // 즉시 알림 (error), "polite"는 순서대로 알림
-      aria-atomic="true"     // 전체 내용 읽기
+      aria-live="assertive"  // Immediate announcement (error), "polite" announces in turn
+      aria-atomic="true"     // Read the entire content
       className={`notification notification-${type}`}
     >
       {type === 'error' && <span aria-label="Error">⚠️</span>}
@@ -286,37 +288,37 @@ function Notification({ message, type }: { message: string; type: 'success' | 'e
 }
 ```
 
-### Step 4: 색상 대비 및 시각적 접근성
+### Step 4: Color Contrast and Visual Accessibility
 
-시각 장애인을 위한 충분한 대비율을 보장합니다.
+Ensure sufficient contrast ratios for users with visual impairments.
 
-**작업 내용**:
-- WCAG AA: 텍스트 4.5:1, 큰 텍스트 3:1
-- WCAG AAA: 텍스트 7:1, 큰 텍스트 4.5:1
-- 색상만으로 정보 전달 금지 (아이콘, 패턴 병행)
-- 포커스 표시 명확히 (outline)
+**Tasks**:
+- WCAG AA: text 4.5:1, large text 3:1
+- WCAG AAA: text 7:1, large text 4.5:1
+- Do not convey information by color alone (use icons, patterns alongside)
+- Clearly indicate focus (outline)
 
-**예시** (CSS):
+**Example** (CSS):
 ```css
-/* ✅ 충분한 대비 (텍스트 #000 on #FFF = 21:1) */
+/* ✅ Sufficient contrast (text #000 on #FFF = 21:1) */
 .button {
   background-color: #0066cc;
-  color: #ffffff;  /* 대비율 7.7:1 */
+  color: #ffffff;  /* contrast ratio 7.7:1 */
 }
 
-/* ✅ 포커스 표시 */
+/* ✅ Focus indicator */
 button:focus,
 a:focus {
   outline: 3px solid #0066cc;
   outline-offset: 2px;
 }
 
-/* ❌ outline: none 금지! */
+/* ❌ outline: none is forbidden! */
 button:focus {
-  outline: none;  /* 절대 사용 금지 */
+  outline: none;  /* Never use this */
 }
 
-/* ✅ 색상 + 아이콘으로 상태 표시 */
+/* ✅ Indicate state with color + icon */
 .error-message {
   color: #d32f2f;
   border-left: 4px solid #d32f2f;
@@ -328,17 +330,17 @@ button:focus {
 }
 ```
 
-### Step 5: 접근성 테스트
+### Step 5: Accessibility Testing
 
-자동 및 수동 테스트로 접근성을 검증합니다.
+Validate accessibility with automated and manual testing.
 
-**작업 내용**:
-- axe DevTools로 자동 스캔
-- Lighthouse Accessibility 점수 확인
-- 키보드만으로 전체 기능 테스트
-- 스크린 리더 테스트 (NVDA, VoiceOver)
+**Tasks**:
+- Automated scan with axe DevTools
+- Check Lighthouse Accessibility score
+- Test all features with keyboard only
+- Screen reader testing (NVDA, VoiceOver)
 
-**예시** (Jest + axe-core):
+**Example** (Jest + axe-core):
 ```typescript
 import { render } from '@testing-library/react';
 import { axe, toHaveNoViolations } from 'jest-axe';
@@ -368,12 +370,12 @@ describe('AccessibleButton', () => {
 
     const button = getByRole('button');
 
-    // Enter 키
+    // Enter key
     button.focus();
     fireEvent.keyDown(button, { key: 'Enter' });
     expect(handleClick).toHaveBeenCalled();
 
-    // Space 키
+    // Space key
     fireEvent.keyDown(button, { key: ' ' });
     expect(handleClick).toHaveBeenCalledTimes(2);
   });
@@ -382,74 +384,74 @@ describe('AccessibleButton', () => {
 
 ## Output format
 
-### 기본 체크리스트
+### Basic Checklist
 
 ```markdown
 ## Accessibility Checklist
 
 ### Semantic HTML
-- [x] 시맨틱 HTML 태그 사용 (`<button>`, `<nav>`, `<main>` 등)
-- [x] 제목 계층 구조 올바름 (h1 → h2 → h3)
-- [x] 폼 라벨 모두 연결됨
+- [x] Use semantic HTML tags (`<button>`, `<nav>`, `<main>`, etc.)
+- [x] Heading hierarchy is correct (h1 → h2 → h3)
+- [x] All form labels are connected
 
 ### Keyboard Navigation
-- [x] Tab으로 모든 인터랙티브 요소 접근 가능
-- [x] Enter/Space로 버튼 활성화
-- [x] ESC로 모달/드롭다운 닫기
-- [x] 포커스 표시 명확 (outline)
+- [x] All interactive elements accessible via Tab
+- [x] Buttons activated with Enter/Space
+- [x] Modals/dropdowns closed with ESC
+- [x] Focus indicator is clear (outline)
 
 ### ARIA
-- [x] `role` 적절히 사용
-- [x] `aria-label` 또는 `aria-labelledby` 제공
-- [x] 동적 콘텐츠에 `aria-live` 사용
-- [x] 장식용 요소 `aria-hidden="true"`
+- [x] `role` used appropriately
+- [x] `aria-label` or `aria-labelledby` provided
+- [x] `aria-live` used for dynamic content
+- [x] Decorative elements use `aria-hidden="true"`
 
 ### Visual
-- [x] 색상 대비 WCAG AA 준수 (4.5:1)
-- [x] 색상만으로 정보 전달 안 함
-- [x] 텍스트 크기 조절 가능
-- [x] 반응형 디자인
+- [x] Color contrast meets WCAG AA (4.5:1)
+- [x] Information not conveyed by color alone
+- [x] Text size can be adjusted
+- [x] Responsive design
 
 ### Testing
-- [x] axe DevTools 위반 사항 0
-- [x] Lighthouse Accessibility 90+ 점수
-- [x] 키보드 테스트 통과
-- [x] 스크린 리더 테스트 완료
+- [x] 0 axe DevTools violations
+- [x] Lighthouse Accessibility score 90+
+- [x] Keyboard test passed
+- [x] Screen reader test completed
 ```
 
 ## Constraints
 
-### 필수 규칙 (MUST)
+### Mandatory Rules (MUST)
 
-1. **키보드 접근성**: 모든 기능은 마우스 없이 사용 가능해야 함
-   - Tab, Enter, Space, 화살표, ESC 지원
-   - 포커스 트랩 구현 (모달)
+1. **Keyboard Accessibility**: All features must be usable without a mouse
+   - Support Tab, Enter, Space, arrow keys, and ESC
+   - Implement focus trap (for modals)
 
-2. **대체 텍스트**: 모든 이미지에 `alt` 속성
-   - 의미 있는 이미지: 설명적 alt text
-   - 장식용 이미지: `alt=""` (스크린 리더 무시)
+2. **Alternative Text**: All images must have an `alt` attribute
+   - Meaningful images: descriptive alt text
+   - Decorative images: `alt=""` (screen reader ignores)
 
-3. **명확한 라벨**: 모든 폼 입력에 연결된 라벨
-   - `<label for="...">` 또는 `aria-label`
-   - 플레이스홀더만으로 라벨 대체 금지
+3. **Clear Labels**: All form inputs must have an associated label
+   - `<label for="...">` or `aria-label`
+   - Do not use placeholder alone as a substitute for a label
 
-### 금지 사항 (MUST NOT)
+### Prohibited Actions (MUST NOT)
 
-1. **outline 제거 금지**: `outline: none` 절대 사용 금지
-   - 키보드 사용자에게 치명적
-   - 커스텀 포커스 스타일 제공 필요
+1. **Do Not Remove Outline**: Never use `outline: none`
+   - Disastrous for keyboard users
+   - Must provide a custom focus style instead
 
-2. **tabindex > 0 사용 금지**: 포커스 순서 변경 지양
-   - DOM 순서를 논리적으로 유지
-   - 예외: 특별한 이유가 있는 경우만
+2. **Do Not Use tabindex > 0**: Avoid changing focus order
+   - Keep DOM order logical
+   - Exception: only when there is a special reason
 
-3. **색상만으로 정보 전달 금지**: 아이콘, 텍스트 병행
-   - 색맹 사용자 고려
-   - 예: "빨간색 항목 클릭" → "⚠️ Error 항목 클릭"
+3. **Do Not Convey Information by Color Alone**: Accompany with icons or text
+   - Consider users with color blindness
+   - e.g., "Click red item" → "Click ⚠️ Error item"
 
 ## Examples
 
-### 예시 1: 접근 가능한 폼
+### Example 1: Accessible Form
 
 ```tsx
 function AccessibleContactForm() {
@@ -461,7 +463,7 @@ function AccessibleContactForm() {
       <h2 id="form-title">Contact Us</h2>
       <p id="form-description">Please fill out the form below to get in touch.</p>
 
-      {/* 이름 */}
+      {/* Name */}
       <div className="form-group">
         <label htmlFor="name">
           Name <span aria-label="required">*</span>
@@ -482,7 +484,7 @@ function AccessibleContactForm() {
         )}
       </div>
 
-      {/* 이메일 */}
+      {/* Email */}
       <div className="form-group">
         <label htmlFor="email">
           Email <span aria-label="required">*</span>
@@ -506,12 +508,12 @@ function AccessibleContactForm() {
         )}
       </div>
 
-      {/* 제출 버튼 */}
+      {/* Submit button */}
       <button type="submit" disabled={submitStatus === 'loading'}>
         {submitStatus === 'loading' ? 'Submitting...' : 'Submit'}
       </button>
 
-      {/* 성공/실패 메시지 */}
+      {/* Success/failure messages */}
       {submitStatus === 'success' && (
         <div role="alert" aria-live="polite" className="success">
           ✅ Form submitted successfully!
@@ -528,7 +530,7 @@ function AccessibleContactForm() {
 }
 ```
 
-### 예시 2: 접근 가능한 탭 UI
+### Example 2: Accessible Tab UI
 
 ```tsx
 function AccessibleTabs({ tabs }: { tabs: { id: string; label: string; content: React.ReactNode }[] }) {
@@ -595,15 +597,15 @@ function AccessibleTabs({ tabs }: { tabs: { id: string; label: string; content: 
 
 ## Best practices
 
-1. **시맨틱 HTML 우선**: ARIA는 마지막 수단
-   - 올바른 HTML 요소 사용하면 ARIA 불필요
-   - 예: `<button>` vs `<div role="button">`
+1. **Semantic HTML First**: ARIA is a last resort
+   - Using the correct HTML element makes ARIA unnecessary
+   - e.g., `<button>` vs `<div role="button">`
 
-2. **포커스 관리**: SPA에서 페이지 전환 시 포커스 관리
-   - 새 페이지 로드 시 메인 콘텐츠로 포커스 이동
-   - Skip links 제공 ("Skip to main content")
+2. **Focus Management**: Manage focus on page transitions in SPAs
+   - Move focus to main content on new page load
+   - Provide skip links ("Skip to main content")
 
-3. **에러 메시지**: 명확하고 도움이 되는 에러 메시지
+3. **Error Messages**: Clear and helpful error messages
    - "Invalid input" ❌ → "Email must be in format: example@domain.com" ✅
 
 ## References
@@ -616,14 +618,14 @@ function AccessibleTabs({ tabs }: { tabs: { id: string; label: string; content: 
 
 ## Metadata
 
-### 버전
-- **현재 버전**: 1.0.0
-- **최종 업데이트**: 2025-01-01
-- **호환 플랫폼**: Claude, ChatGPT, Gemini
+### Version
+- **Current Version**: 1.0.0
+- **Last Updated**: 2025-01-01
+- **Compatible Platforms**: Claude, ChatGPT, Gemini
 
-### 관련 스킬
-- [ui-component-patterns](../ui-component-patterns/SKILL.md): UI 컴포넌트 구현
-- [responsive-design](../responsive-design/SKILL.md): 반응형 디자인
+### Related Skills
+- [ui-component-patterns](../ui-component-patterns/SKILL.md): UI component implementation
+- [responsive-design](../responsive-design/SKILL.md): Responsive design
 
-### 태그
+### Tags
 `#accessibility` `#a11y` `#WCAG` `#ARIA` `#screen-reader` `#keyboard-navigation` `#frontend`
