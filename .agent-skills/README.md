@@ -68,7 +68,7 @@ repository to the current project.
 
 ---
 
-## Skills List (59 functional)
+## Skills List (60 functional)
 
 > Skills marked *(in development)* exist on disk but do not yet have a SKILL.toon file.
 
@@ -166,7 +166,7 @@ repository to the current project.
 |-------|-------------|-----------|
 | `marketing-automation` | Marketing automation *(in development)* | All platforms |
 
-### Utilities (17)
+### Utilities (18)
 | Skill | Description | Platforms |
 |-------|-------------|-----------|
 | `agent-browser` | Fast headless browser CLI for AI agents | All platforms |
@@ -183,6 +183,7 @@ repository to the current project.
 | `opencontext` | AI agent persistent memory | All platforms |
 | `plannotator`, `계획` *(alias: `plan`, `planno`)* | Visual plan and diff review with Plannotator — annotate, approve, or request changes | Claude |
 | `ralph` | Self-referential completion loop for multi-turn agents | Claude |
+| `ralphmode` | Cross-platform Ralph automation permission profiles for Claude Code, Codex CLI, and Gemini CLI | Claude · Codex · Gemini |
 | `skill-standardization` | SKILL.md standardization | All platforms |
 | `vibe-kanban` | Kanban board for AI coding agents with git worktree automation | All platforms |
 | `workflow-automation` | Workflow automation | All platforms |
@@ -302,4 +303,4 @@ npx skills add <skill-name>
 
 ---
 
-**Version**: 4.7.0 | **Updated**: 2026-03-03 | **Skills**: 59 functional | **Format**: TOON (Default) | **Structure**: Flat
+**Version**: 4.7.0 | **Updated**: 2026-03-06 | **Skills**: 60 functional | **Format**: TOON (Default) | **Structure**: Flat

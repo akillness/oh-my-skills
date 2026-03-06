@@ -142,7 +142,7 @@ gemini -s -y
 
 ```bash
 # Skill only
-npx skills add https://github.com/supercent-io/skills-template --skill ralph
+npx skills add https://github.com/akillness/skills-template --skill ralph
 
 # Gemini CLI extension (AfterAgent hook)
 gemini extensions install https://github.com/gemini-cli-extensions/ralph --auto-update

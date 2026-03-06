@@ -1,14 +1,14 @@
 # Agent Skills
 
-> 🌐 Language / 언어: **English** | **[한국어](README.ko.md)**
+> 🌐 Language / 언어: **[English](README.md)** | **한국어**
 
 > v2026-03-06 · **71 Skills** · **TOON Format** · **Flat Skill Layout**
 
 [![GitHub Releases](https://img.shields.io/badge/GitHub-Releases-blue)](https://github.com/akillness/skills-template/releases)
 [![Skills](https://img.shields.io/badge/Skills-71-brightgreen)](#skills-list-71-total)
-[![BMAD Deploy Version](https://img.shields.io/badge/BMAD-1.1.0-orange)](docs/bmad/README.md)
+[![BMAD Deploy Version](https://img.shields.io/badge/BMAD-1.0.0-orange)](docs/bmad/README.md)
 
-> Skill configuration and full list: [.agent-skills/README.md](.agent-skills/README.md)
+> 스킬 구성 및 상세 목록: [.agent-skills/README.md](.agent-skills/README.md)
 
 ---
 
@@ -16,57 +16,57 @@
 
 - [Quick Start](#quick-start)
 - [What's New](#whats-new-in-v2026-03-06)
-- [Installation](#installation)
-- [Getting Started Guide](#getting-started-guide)
+- [설치 (Install)](#설치-install)
+- [실행 가이드](#실행-가이드)
 - [Skills List (71)](#skills-list-71-total)
 - [Featured Tools](#featured-tools)
 - [TOON Format Injection](#toon-format-injection)
 - [Structure](#structure)
-- [Related Docs](#related-docs)
+- [Related docs](#related-docs)
 - [Changelog](#changelog)
 
 ---
 
 ## Quick Start (For LLM Agents)
 
-> **Prerequisite**: Install `skills` CLI before running any `npx skills add` commands.
+> **사전 준비**: `npx skills add` 명령을 실행하려면 먼저 `skills` CLI가 필요합니다.
 >
 > ```bash
 > npm install -g skills
 > ```
 
 ```bash
-# Send to your LLM agent: read this guide and proceed with installation
+# LLM에게 전달: 아래 가이드를 읽고 설치를 진행하세요
 curl -s https://raw.githubusercontent.com/akillness/skills-template/main/setup-all-skills-prompt.md
 ```
 
-> More skill installs → [Installation](#installation) | Platform-specific guides → [Getting Started](#getting-started-guide)
+> 더 많은 스킬 설치 → [설치](#설치-install) | 플랫폼별 상세 실행 → [실행 가이드](#실행-가이드)
 
 ---
 
 ## What's New in v2026-03-06
 
-| Change | Details |
-|--------|---------|
-| **TOON Format — Cross-Platform Hook Integration** | Designed and implemented by a 6-person ultrateam. **Claude Code**: `~/.claude/hooks/toon-inject.mjs` (Node.js, symlink traversal, 3-tier keyword matching, 26-37ms). **Gemini CLI**: `toon-skill-inject.sh` + `includeDirectories`. **Codex CLI**: static catalog + 2-turn sidecar pattern |
-| **bmad-orchestrator TOON Integration Docs** | TOON Format Integration section added to `SKILL.md`. Two-tier architecture: Tier 1 catalog always injected (~875-3,500 tokens) + Tier 2 SKILL.toon on-demand (max 3). Full platform-specific configuration documented |
-| **71 SKILL.toon Full Validation** | All 71 skills verified and corrected for TOON format compliance |
+| 변경 | 내용 |
+|------|------|
+| **TOON Format 전 플랫폼 훅 통합** | ultrateam 6명 설계·구현. **Claude Code**: `~/.claude/hooks/toon-inject.mjs` (Node.js, 심링크 추적, 3단계 키워드 매칭, 26-37ms). **Gemini CLI**: `toon-skill-inject.sh` + `includeDirectories`. **Codex CLI**: 정적 카탈로그 + 2-턴 사이드카 패턴 |
+| **bmad-orchestrator TOON Integration 문서화** | `SKILL.md`에 TOON Format Integration 섹션 추가. Two-tier 아키텍처: Tier 1 카탈로그 항상 주입 (~875-3,500 tokens) + Tier 2 SKILL.toon 온디맨드 (max 3개). 플랫폼별 설정 전체 문서화 |
+| **71개 SKILL.toon 전수 검증** | 모든 71개 스킬 TOON 포맷 준수 여부 검증 및 수정 완료 |
 
-> Previous changes: [Changelog](#changelog)
+> 이전 변경 내역: [Changelog](#changelog)
 
 ---
 
-## Installation
+## 설치 (Install)
 
-### Step 0: Install `skills` CLI
+### 0단계: `skills` CLI 설치
 
-All `npx skills add` commands require the `skills` CLI. Install it first:
+모든 `npx skills add` 명령은 `skills` CLI가 필요합니다. 먼저 설치하세요:
 
 ```bash
 npm install -g skills
 ```
 
-Verify installation:
+설치 확인:
 
 ```bash
 skills --version
@@ -74,115 +74,115 @@ skills --version
 
 ---
 
-### For LLM Agents
+### LLM 에이전트용 (For LLM Agents)
 
-If an LLM agent is helping with installation, follow these steps:
+LLM 에이전트가 설치를 도울 경우, 다음 단계를 따르세요.
 
 ```bash
-# Send to your LLM agent: read this guide and proceed with installation
+# LLM에게 전달: 아래 가이드를 읽고 설치를 진행하세요
 curl -s https://raw.githubusercontent.com/akillness/skills-template/main/setup-all-skills-prompt.md
 ```
 
 ---
 
-## Getting Started Guide
+## 실행 가이드
 
-### Start with jeo (Recommended)
+### jeo만으로 시작하기 (권장)
 
-`jeo` automatically connects the entire workflow below:
+`jeo`는 아래 전체 워크플로우를 자동으로 연결합니다:
 
-| Phase | Tool | Role |
-|-------|------|------|
-| Plan | ralph + plannotator | AI creates plan, you approve or give feedback |
-| Execute | omc team / bmad | Parallel agents write code |
-| Verify | agent-browser | Browser behavior verification (default) |
-| Cleanup | worktree-cleanup | Auto-cleanup after completion |
+| 단계 | 도구 | 역할 |
+|------|------|------|
+| 계획 | ralph + plannotator | AI가 계획을 세우고, 당신이 승인/피드백 |
+| 실행 | omc team / bmad | 병렬 에이전트가 코드를 작성 |
+| 검증 | agent-browser | 브라우저 동작 검증 (기본) |
+| 정리 | worktree-cleanup | 완료 후 자동 정리 |
 
 ```bash
-# Run in Claude Code
-jeo "describe your task here"
+# Claude Code에서 실행
+jeo "원하는 작업을 여기에 설명하세요"
 ```
 
 ---
 
-### Choose by What You Need
+### 원하는 기능에 따라 선택하기
 
-#### Claude Code multi-agent orchestration → `omc`
+#### Claude Code 멀티에이전트 조율 → `omc`
 
 ```bash
 npx skills add https://github.com/akillness/skills-template --skill omc
-# Usage: /omc:team "task description"
+# 사용: /omc:team "작업 내용"
 ```
 
-> Details: [docs/omc/README.md](docs/omc/README.md)
+> 상세: [docs/omc/README.md](docs/omc/README.md)
 
-#### OpenAI Codex CLI multi-agent → `oh-my-codex` (omx)
+#### OpenAI Codex CLI 멀티에이전트 → `oh-my-codex` (omx)
 
 ```bash
 npx skills add https://github.com/akillness/skills-template --skill oh-my-codex
 ```
 
-> Details: [.agent-skills/oh-my-codex/SKILL.md](.agent-skills/oh-my-codex/SKILL.md)
+> 상세: [.agent-skills/oh-my-codex/SKILL.md](.agent-skills/oh-my-codex/SKILL.md)
 
-#### Gemini / Antigravity workflows → `ohmg`
+#### Gemini / Antigravity 워크플로우 → `ohmg`
 
 ```bash
 npx skills add https://github.com/akillness/skills-template --skill ohmg
 ```
 
-> Details: [.agent-skills/ohmg/SKILL.md](.agent-skills/ohmg/SKILL.md)
+> 상세: [.agent-skills/ohmg/SKILL.md](.agent-skills/ohmg/SKILL.md)
 
-#### Structured phase-based development (Analysis→Planning→Design→Implementation) → `bmad-orchestrator`
+#### 단계별 구조화 개발 (분석→계획→설계→구현) → `bmad-orchestrator`
 
 ```bash
 npx skills add https://github.com/akillness/skills-template --skill bmad-orchestrator
-# Usage: configure and use the bmad skill. /workflow-init
+# 사용: bmad 스킬을 설정하고 사용해줘. /workflow-init
 ```
 
-> Details: [docs/bmad/README.md](docs/bmad/README.md)
+> 상세: [docs/bmad/README.md](docs/bmad/README.md)
 
-#### Loop until task is complete → `ralph`
+#### 작업이 완료될 때까지 반복 실행 → `ralph`
 
 ```bash
 npx skills add https://github.com/akillness/skills-template --skill ralph
-# Usage: /ralph "fix all TypeScript errors" --max-iterations=100
+# 사용: /ralph "모든 TypeScript 오류 수정" --max-iterations=100
 ```
 
-> Details: [docs/ralph/README.md](docs/ralph/README.md)
+> 상세: [docs/ralph/README.md](docs/ralph/README.md)
 
-#### Ralph automation permission profiles → `ralphmode`
+#### Ralph 자동화 권한 프로파일 → `ralphmode`
 
 ```bash
 npx skills add https://github.com/akillness/skills-template --skill ralphmode
-# Usage: apply permission profiles for ralph automation in Claude Code / Codex CLI / Gemini CLI
+# 사용: Claude Code / Codex CLI / Gemini CLI에서 ralph 자동화용 permission profile 적용
 ```
 
-> Details: [.agent-skills/ralphmode/SKILL.md](.agent-skills/ralphmode/SKILL.md)
+> 상세: [.agent-skills/ralphmode/SKILL.md](.agent-skills/ralphmode/SKILL.md)
 
-#### Visual plan review + feedback loop → `plannotator`
+#### 계획 시각 검토 + Feedback loop → `plannotator`
 
 ```bash
 npx skills add https://github.com/akillness/skills-template --skill plannotator
-# Usage: auto-opens browser UI when planning — Approve or send feedback
+# 사용: 계획을 세울 때 자동으로 브라우저 UI 오픈 → Approve 또는 피드백 전송
 ```
 
-> Details: [docs/plannotator/README.md](docs/plannotator/README.md)
+> 상세: [docs/plannotator/README.md](docs/plannotator/README.md)
 
-#### Headless browser automation → `agent-browser`
+#### 브라우저 자동화 (헤드리스) → `agent-browser`
 
 ```bash
 npx skills add https://github.com/akillness/skills-template --skill agent-browser
 ```
 
-> Details: [.agent-skills/agent-browser/SKILL.md](.agent-skills/agent-browser/SKILL.md)
+> 상세: [.agent-skills/agent-browser/SKILL.md](.agent-skills/agent-browser/SKILL.md)
 
-#### Playwright-based browser control → `playwriter`
+#### Playwright 기반 브라우저 제어 → `playwriter`
 
 ```bash
 npx skills add https://github.com/akillness/skills-template --skill playwriter
 ```
 
-> Details: [.agent-skills/playwriter/SKILL.md](.agent-skills/playwriter/SKILL.md)
+> 상세: [.agent-skills/playwriter/SKILL.md](.agent-skills/playwriter/SKILL.md)
 
 ---
 
@@ -238,7 +238,7 @@ npx skills add https://github.com/akillness/skills-template --skill playwriter
 
 | Skill | Description | Platforms |
 |-------|-------------|-----------|
-| `ai-tool-compliance` | Automated P0/P1 compliance validation across 4 domains (security/permissions/cost/logging), binary scoring, deployment gates, history tracking | All platforms |
+| `ai-tool-compliance` | 내부 AI 툴 P0/P1 컴플라이언스 자동 검증 — 4도메인 이진 점수(보안/권한/비용/로그), 배포 게이트, 이력 추적 | All platforms |
 | `deployment-automation` | CI/CD & deployment automation | All platforms |
 | `firebase-ai-logic` | Firebase AI Logic integration | Claude · Gemini |
 | `genkit` | Firebase Genkit AI workflows | Claude · Gemini |
@@ -247,7 +247,7 @@ npx skills add https://github.com/akillness/skills-template --skill playwriter
 | `security-best-practices` | Security best practices | All platforms |
 | `system-environment-setup` | Environment configuration | All platforms |
 | `vercel-deploy` | Vercel deployment | All platforms |
-| `llm-monitoring-dashboard` | LLM usage monitoring dashboard — cost, token, latency tracking via Tokuin CLI + PM insights + user rankings | All platforms |
+| `llm-monitoring-dashboard` | LLM 사용 모니터링 대시보드 (Tokuin CLI 기반 비용·토큰·레이턴시 추적 + PM 인사이트 + 사용자 랭킹) | All platforms |
 
 ### Documentation (4)
 
@@ -295,7 +295,7 @@ npx skills add https://github.com/akillness/skills-template --skill playwriter
 | Skill | Description | Platforms |
 |-------|-------------|-----------|
 | `agent-browser` | Fast headless browser CLI for AI agents | All platforms |
-| `agentation` | Visual UI annotation — `npx skills add benjitaylor/agentation` → `/agentation` (Claude Code Official Skill) · `npx add-mcp` (auto-detects 9+ agents) · Local-first design (offline operation · session continuity) | Claude · Gemini · Codex · Cursor · Windsurf · OpenCode |
+| `agentation` | Visual UI annotation tool — `npx skills add benjitaylor/agentation` → `/agentation` (Claude Code Official Skill) · `npx add-mcp` (9+ 에이전트 자동 감지) · Local-first 디자인(오프라인 동작·세션 연속성) | Claude · Gemini · Codex · Cursor · Windsurf · OpenCode |
 | `bmad-gds` | BMAD Game Development Studio — Pre-production through production with 6 specialized agents (Unity · Unreal · Godot) | Claude · Gemini · Codex · OpenCode |
 | `bmad-idea` | BMAD Creative Intelligence Suite — brainstorming, design thinking, innovation strategy, problem-solving, storytelling | Claude · Gemini · Codex · OpenCode |
 | `copilot-coding-agent` | GitHub Copilot Coding Agent — Issue → Draft PR automation | Claude · Codex |
@@ -303,7 +303,7 @@ npx skills add https://github.com/akillness/skills-template --skill playwriter
 | `file-organization` | File & folder organization | All platforms |
 | `git-submodule` | Git submodule management | All platforms |
 | `git-workflow` | Git workflow management | All platforms |
-| `jeo` | Integrated AI orchestration: ralph+plannotator → team/bmad → agent-browser verify → agentation(annotate) UI feedback → worktree cleanup | Claude · Codex · Gemini · OpenCode |
+| `jeo` | Integrated AI orchestration: ralph+plannotator → team/bmad → agent-browser verify → agentation(annotate) UI피드백 → worktree cleanup | Claude · Codex · Gemini · OpenCode |
 | `npm-git-install` | Install npm from GitHub | All platforms |
 | `ohmg` | Multi-agent orchestration for Antigravity workflows | Claude · Gemini |
 | `oh-my-codex` | Multi-agent orchestration for OpenAI Codex CLI *(in development)* | Codex |
@@ -323,8 +323,8 @@ npx skills add https://github.com/akillness/skills-template --skill playwriter
 These tools have full documentation in `docs/` and dedicated skills in `.agent-skills/`.
 
 ### plannotator — Interactive Plan & Diff Review
-> **Purpose**: Visual plan review and feedback loop before execution | **Platforms**: Claude · Codex · Gemini · OpenCode | **Status**: v0.9.0
-> Keyword: `plan` (alias: `planno`) | [Docs](docs/plannotator/README.md) | [GitHub](https://github.com/backnotprop/plannotator)
+> **용도**: 실행 전 계획 시각 검토 및 피드백 루프 | **플랫폼**: Claude · Codex · Gemini · OpenCode | **상태**: v0.9.0
+> Keyword: `plan`, `계획` (alias: `planno`) | [Docs](docs/plannotator/README.md) | [GitHub](https://github.com/backnotprop/plannotator)
 
 Visual browser UI for annotating AI agent plans before coding. Works with **Claude Code**, **OpenCode**, **Gemini CLI**, and **Codex CLI**. Approve plans or send structured feedback in one click.
 
@@ -335,8 +335,8 @@ bash scripts/install.sh --all   # Install + configure all AI tools at once
 ```
 
 Path resolution behavior for skill loading:
-- Absolute skill paths are used directly (e.g., `/Users/me/.agent-skills/plannotator`)
-- Relative skill paths are resolved: configured skills directory → global `~/.agent-skills`
+- Absolute skill paths are used directly (for example, `/Users/me/.agent-skills/plannotator`)
+- Relative skill paths are resolved in this order: configured skills directory -> global `~/.agent-skills`
 
 | Feature | Description |
 |---------|-------------|
@@ -369,16 +369,16 @@ open "bear://x-callback-url/create?title=Plannotator%20Check&text=Bear%20callbac
 
 #### Known Issues
 
-| Symptom | Cause | Fix |
-|---------|-------|-----|
-| Browser opens twice | Duplicate `open` call in `plannotator-launch.sh` | Remove `open` from port-detection loop in hook script — plannotator self-opens browser |
-| Feedback not received (Codex/Gemini/OpenCode) | Running with `&` background — agent doesn't wait for result | Run blocking (no `&`), then read `/tmp/plannotator_feedback.txt` |
-| Codex startup failure (`invalid type: map, expected a string`) | `developer_instructions` declared as table (`[developer_instructions]`) in `~/.codex/config.toml` | Re-run `bash .agent-skills/jeo/scripts/setup-codex.sh` and verify `developer_instructions = "..."` top-level string format |
+| 증상 | 원인 | 해결 |
+|------|------|------|
+| 브라우저가 두 번 열림 | `plannotator-launch.sh`의 중복 `open` 호출 | 훅 스크립트에서 포트 감지 루프의 `open` 제거 — plannotator가 브라우저를 자체 오픈 |
+| 피드백 미수신 (Codex/Gemini/OpenCode) | `&` 백그라운드 실행으로 에이전트가 결과를 대기하지 않음 | `&` 없이 블로킹 실행 후 `/tmp/plannotator_feedback.txt` 읽기 |
+| Codex 시작 실패 (`invalid type: map, expected a string`) | `~/.codex/config.toml`에서 `developer_instructions`를 테이블(`[developer_instructions]`)로 잘못 선언 | `bash .agent-skills/jeo/scripts/setup-codex.sh` 재실행 후 `developer_instructions = "..."` top-level 문자열 형식 확인 |
 
 ---
 
 ### vibe-kanban — AI Agent Kanban Board
-> **Purpose**: Visual progress tracking for parallel agents | **Platforms**: All | **Status**: stable
+> **용도**: 병렬 에이전트 진행 상황 시각적 추적 | **플랫폼**: All | **상태**: stable
 > Keyword: `kanbanview` | [Docs](docs/vibe-kanban/README.md) | [GitHub](https://github.com/BloopAI/vibe-kanban)
 
 Visual Kanban board (To Do → In Progress → Review → Done) with parallel AI agents (Claude, Codex, OpenCode, Gemini) isolated per card via git worktrees. Auto-creates PRs on completion.
@@ -399,44 +399,43 @@ npx vibe-kanban          # Launch board at http://localhost:3000
 ---
 
 ### ralph — Ouroboros Specification-First AI Development
-> **Purpose**: Clarify requirements before coding → persistent loop until verification passes | **Platforms**: Claude · Gemini · Codex · OpenCode | **Status**: stable v3.0.0
+> **용도**: 코드 작성 전 요구사항 명확화 → 검증 통과까지 영구 루프 실행 | **플랫폼**: Claude · Gemini · Codex · OpenCode | **상태**: stable v3.0.0
 > Keyword: `ralph`, `ooo` | [GitHub](https://github.com/Q00/ouroboros)
 
 > *Stop prompting. Start specifying. The boulder never stops.*
 
-Ouroboros-based specification-first workflow. Expose hidden assumptions via Socratic interview, crystallize into an immutable spec → Double Diamond execution → 3-stage verification → evolutionary loop until ontology converges.
+Ouroboros 기반 specification-first 워크플로우. 소크라테스식 인터뷰로 숨겨진 가정을 노출한 뒤 불변 스펙으로 결정화 → Double Diamond 실행 → 3단계 검증 → 온톨로지 수렴까지 진화 루프.
 
 ```bash
-# Clarify requirements
+# 요구사항 명확화
 ooo interview "I want to build a task management CLI"
-ooo seed                     # Generate YAML spec (Ambiguity ≤ 0.2 gate)
-ooo run                      # Execute via Double Diamond
-ooo evaluate <session_id>    # 3-stage verification
+ooo seed                     # YAML 스펙 생성 (Ambiguity ≤ 0.2 게이트)
+ooo run                      # Double Diamond 실행
+ooo evaluate <session_id>    # 3단계 검증
 
-# Persistent loop until verification passes
+# 검증 통과까지 영구 루프
 ooo ralph "fix all failing tests"
 ```
 
-| Command | Role |
-|---------|------|
-| `ooo interview` | Socratic questioning → Ambiguity ≤ 0.2 |
-| `ooo seed` | Crystallize YAML spec |
-| `ooo run` | Double Diamond execution |
-| `ooo evaluate` | Mechanical → Semantic → Consensus 3-stage verification |
-| `ooo evolve` | Evolutionary loop (Similarity ≥ 0.95 convergence) |
-| `ooo ralph` | Persistent loop until verification passes |
-| `ooo unstuck` | When blocked — 5-persona lateral thinking |
+| 커맨드 | 역할 |
+|--------|------|
+| `ooo interview` | 소크라테스식 질문 → Ambiguity ≤ 0.2 |
+| `ooo seed` | YAML 스펙 결정화 |
+| `ooo run` | Double Diamond 실행 |
+| `ooo evaluate` | Mechanical → Semantic → Consensus 3단계 검증 |
+| `ooo evolve` | 진화 루프 (Similarity ≥ 0.95 수렴) |
+| `ooo ralph` | 검증 통과까지 영구 루프 |
+| `ooo unstuck` | 막혔을 때 — 5 페르소나 lateral thinking |
 
-Codex setup:
+Codex 설정:
 
 ```bash
 bash <your-agent-skills>/ralph/scripts/setup-codex-hook.sh
 ```
-
 ---
 
 ### omc — oh-my-claudecode
-> **Purpose**: Claude Code multi-agent team orchestration | **Platforms**: Claude | **Status**: stable
+> **용도**: Claude Code 멀티에이전트 팀 오케스트레이션 | **플랫폼**: Claude | **상태**: stable
 > Keyword: `omc` / `autopilot` / `ralph` / `ulw` | [Docs](docs/omc/README.md) | [GitHub](https://github.com/Yeachan-Heo/oh-my-claudecode)
 
 Teams-first multi-agent orchestration layer for Claude Code. 32 specialized agents, smart model routing, and a staged pipeline (`team-plan → team-prd → team-exec → team-verify → team-fix`).
@@ -456,7 +455,7 @@ Teams-first multi-agent orchestration layer for Claude Code. 32 specialized agen
 ---
 
 ### bmad-orchestrator — AI-Driven Development Harness
-> **Purpose**: Phase-based AI development: Analysis → Planning → Design → Implementation | **Platforms**: Claude | **Status**: in development v1.1.0
+> **용도**: 분석→계획→설계→구현 단계별 AI 개발 | **플랫폼**: Claude | **상태**: in development
 > Keyword: `bmad` | [Docs](docs/bmad/README.md)
 
 Phase-based workflow (Analysis → Planning → Solutioning → Implementation) for disciplined AI-assisted development. Automatically adapts to project scope (Level 0–4).
@@ -466,7 +465,7 @@ Phase-based workflow (Analysis → Planning → Solutioning → Implementation) 
 ```bash
 npx skills add https://github.com/akillness/skills-template --skill bmad-orchestrator
 # Then in Claude Code:
-# configure and use the bmad skill. remember it.
+# bmad 스킬을 설정하고 사용해줘. 기억해.
 # /workflow-init
 ```
 
@@ -482,61 +481,61 @@ npx skills add https://github.com/akillness/skills-template --skill bmad-orchest
 | Phase Gate Review | plannotator review UI at each phase transition |
 | Obsidian Archive | Auto-save approved docs with YAML frontmatter |
 | Team Visibility | Share review link for stakeholder annotation |
-| **TOON Format Injection** | Auto-inject skill context across all platforms — Claude Code hooks / Gemini includeDirectories / Codex static catalog |
+| **TOON Format Injection** | 전 플랫폼 스킬 컨텍스트 자동 주입 — Claude Code 훅 / Gemini includeDirectories / Codex 정적 카탈로그 |
 
 ---
 
 ### jeo — Integrated Agent Orchestration
-> **Purpose**: Full workflow automation integration | **Platforms**: Claude · Codex · Gemini · OpenCode | **Status**: stable
+> **용도**: 전체 워크플로우 통합 자동화 | **플랫폼**: Claude · Codex · Gemini · OpenCode | **상태**: stable
 > Keyword: `jeo` · `annotate` · `UI검토` | Platforms: Claude Code · Codex CLI · Gemini CLI · OpenCode
 
-Complete automated orchestration flow: Plan (ralph+plannotator) → Execute (team/bmad) → Browser verify (agent-browser) → UI feedback (agentation/annotate) → Cleanup (worktree cleanup).
+계획(ralph+plannotator) → 실행(team/bmad) → 브라우저검증(agent-browser) → UI피드백(agentation/annotate) → 정리(worktree cleanup)의 완전 자동화 오케스트레이션 플로우.
 
 ```bash
-bash scripts/install.sh --all   # Full installation
+bash scripts/install.sh --all   # 전체 설치
 ```
 
 | Phase | Tool | Description |
 |-------|------|-------------|
-| Plan | ralph + plannotator | Visual plan review → Approve/Feedback |
-| Execute | omc team / bmad | Parallel agent execution |
-| Verify | agent-browser | Browser behavior verification (default) |
-| Verify UI | agentation (**annotate**) | UI annotation watch loop — pre-flight → ack→fix→resolve→re-snapshot |
-| Cleanup | worktree-cleanup.sh | Auto worktree cleanup after completion |
+| Plan | ralph + plannotator | 시각적 계획 검토 → Approve/Feedback |
+| Execute | omc team / bmad | 병렬 에이전트 실행 |
+| Verify | agent-browser | 브라우저 동작 검증 (기본) |
+| Verify UI | agentation (**annotate**) | UI 어노테이션 watch loop — pre-flight → ack→fix→resolve→re-snapshot |
+| Cleanup | worktree-cleanup.sh | 완료 후 worktree 자동 정리 |
 
 ---
 
 ## TOON Format Injection
 
-> **Purpose**: Auto-inject skill context into every prompt | **Platforms**: Claude Code · Codex CLI · Gemini CLI | **Status**: stable v1.0.0
+> **용도**: 모든 프롬프트에 스킬 컨텍스트 자동 주입 | **플랫폼**: Claude Code · Codex CLI · Gemini CLI | **상태**: stable v1.0.0
 
-TOON (Token-Oriented Object Notation) compresses the skill catalog and auto-injects it into every AI tool prompt. 40-50% token savings vs JSON/Markdown. Designed and implemented by a 6-person ultrateam (QA · LLM Expert · Skill Expert · ClaudeCode · Codex · Gemini-CLI).
+TOON(Token-Oriented Object Notation) 포맷으로 스킬 카탈로그를 압축하여 AI 도구의 모든 프롬프트에 자동 주입합니다. JSON/Markdown 대비 40-50% 토큰 절감. ultrateam 6명(QA·LLM전문가·Skill전문가·ClaudeCode·Codex·Gemini-CLI)이 설계·구현했습니다.
 
 ### Two-Tier Architecture
 
-- **Tier 1 (always injected)**: Skill catalog index (~875-3,500 tokens) — skill names + descriptions + tags injected every prompt
-- **Tier 2 (on-demand)**: Individual SKILL.toon full content (~292 tokens/skill, max 3) — auto-loaded on skill name/tag detection
+- **Tier 1 (항상 주입)**: 스킬 카탈로그 인덱스 (~875-3,500 tokens) — 프롬프트마다 스킬 이름+설명+태그 자동 주입
+- **Tier 2 (온디맨드)**: 개별 SKILL.toon 전체 내용 (~292 tokens/skill, max 3) — 스킬 이름/태그 감지 시 자동 로드
 
-> Injecting all 71 skills simultaneously (~20,700 tokens) is prohibited. Tier 1 + on-demand max 3 keeps context cost below 5%.
+> 전체 71개 동시 주입 (~20,700 tokens)은 금지. Tier 1 + 온디맨드 max 3개 원칙으로 5% 이하 컨텍스트 비용 유지.
 
-### Platform Implementations
+### 플랫폼별 구현
 
-| Platform | File | Mechanism | Performance |
-|----------|------|-----------|-------------|
-| **Claude Code** | `~/.claude/hooks/toon-inject.mjs` | `UserPromptSubmit` hook — Node.js, 3-tier keyword matching, symlink traversal | 26-37ms |
-| **Gemini CLI** | `~/.gemini/hooks/toon-skill-inject.sh` | `includeDirectories` session-start load + `AfterAgent` refresh hook | ~0.1s |
-| **Codex CLI** | `~/.codex/skills-toon-catalog.toon` | Static catalog + `notify-dispatch.py` + 2-turn sidecar pattern | 0ms (static) |
+| 플랫폼 | 파일 | 메커니즘 | 성능 |
+|--------|------|---------|------|
+| **Claude Code** | `~/.claude/hooks/toon-inject.mjs` | `UserPromptSubmit` 훅 — Node.js, 3단계 키워드 매칭, 심링크 투명 추적 | 26-37ms |
+| **Gemini CLI** | `~/.gemini/hooks/toon-skill-inject.sh` | `includeDirectories` 세션 시작 로드 + `AfterAgent` 갱신 훅 | ~0.1s |
+| **Codex CLI** | `~/.codex/skills-toon-catalog.toon` | 정적 카탈로그 + `notify-dispatch.py` + 2-턴 사이드카 패턴 | 0ms (정적) |
 
-> **Why Node.js**: `~/.claude/skills/` is a symlink to `~/.agents/skills/`. Python `Path.rglob()` does not follow symlinks and returns 0 results. Node.js `readdirSync` traverses transparently.
+> **왜 Node.js인가**: `~/.claude/skills/`는 `~/.agents/skills/`로의 심링크 구조. Python `Path.rglob()`은 심링크를 따르지 않아 0개를 반환. Node.js `readdirSync`는 투명하게 추적합니다.
 
-### TOON Format Basics
+### TOON 포맷 기본 구조
 
 ```
 N:skill-name  D:description  G:tag1 tag2 tag3
 U[n]: use cases · S[n]{n,action,details}: steps · R[n]: rules · E[n]{desc,in,out}: examples
 ```
 
-Full configuration: [bmad-orchestrator SKILL.md — TOON Format Integration](.agent-skills/bmad-orchestrator/SKILL.md)
+상세 설정: [bmad-orchestrator SKILL.md — TOON Format Integration](.agent-skills/bmad-orchestrator/SKILL.md)
 
 ---
 
@@ -558,57 +557,46 @@ Full configuration: [bmad-orchestrator SKILL.md — TOON Format Integration](.ag
 │   ├── ralph/          ← completion loop guide
 │   └── vibe-kanban/    ← AI Kanban board guide
 ├── install.sh / flatten_skills.py
-├── README.md           ← English (default)
-└── README.ko.md        ← 한국어
+└── README.md
 ```
 
 ---
 
-## Related Docs
+## Related docs
 
 | Tool | Keyword | Doc |
 |------|---------|-----|
-| plannotator | `plan` | [docs/plannotator/README.md](docs/plannotator/README.md) |
+| plannotator | `plan`, `계획` | [docs/plannotator/README.md](docs/plannotator/README.md) |
 | vibe-kanban | `kanbanview` | [docs/vibe-kanban/README.md](docs/vibe-kanban/README.md) |
 | ralph | `ralph` | [docs/ralph/README.md](docs/ralph/README.md) |
 | omc | `omc` | [docs/omc/README.md](docs/omc/README.md) |
 | bmad-orchestrator | `bmad` | [docs/bmad/README.md](docs/bmad/README.md) |
-| jeo | `jeo` · `annotate` | [.agent-skills/jeo/SKILL.md](.agent-skills/jeo/SKILL.md) |
+| jeo | `jeo` · `annotate` · `UI검토` | [.agent-skills/jeo/SKILL.md](.agent-skills/jeo/SKILL.md) |
 
 ---
 
 ## Changelog
 
 **v2026-03-06 (latest)**:
-- **TOON Format Cross-Platform Hook Integration**: Designed and implemented by a 6-person ultrateam (QA · LLM Expert · Skill Expert · ClaudeCode · Codex · Gemini-CLI). Claude Code: `~/.claude/hooks/toon-inject.mjs` Node.js hook (symlink traversal, 3-tier keyword matching, 26-37ms). Gemini CLI: `~/.gemini/hooks/toon-skill-inject.sh` + `includeDirectories` + `AfterAgent` hook. Codex CLI: static catalog (`skills-toon-catalog.toon`, 62 skills) + `notify-dispatch.py` + 2-turn sidecar pattern
-- **bmad-orchestrator SKILL.md TOON Integration section**: Full two-tier architecture documentation (Tier 1 catalog ~875-3,500 tokens always injected / Tier 2 SKILL.toon on-demand max 3)
-- **71 SKILL.toon full validation**: All skills verified and corrected for TOON format compliance
-
-**v2026-03-06 (bug fixes)**:
-- **jeo + bmad-orchestrator comprehensive fixes**: Schema alignment, graceful degradation, session-isolated paths
-  - Removed zombie `worktrees` field from jeo state schema; added `retry_count`, `last_error`, `checkpoint` error recovery fields
-  - Fixed `TEAM_AVAILABLE_BOOL` export for python3 subshell inheritance
-  - Session-isolated plannotator feedback path via `hashlib.md5`
-  - Replaced `exit 1` with graceful skip → CLEANUP on agentation failure
-  - bmad-orchestrator v1.0.0 → v1.1.0; removed unrelated TOON section (~232 lines)
-  - `phase-gate-review.sh`: multi-tier `find_workflow_name()` for hyphenated workflow names
-  - `check-status.sh`: fixed nested while-loop stdin consumption via python3 subprocess
+- **TOON Format 전 플랫폼 훅 통합**: ultrateam(QA·LLM전문가·Skill전문가·ClaudeCode·Codex·Gemini-CLI) 6명 설계·구현. Claude Code: `~/.claude/hooks/toon-inject.mjs` Node.js hook (심링크 추적, 3단계 키워드 매칭, 26-37ms). Gemini CLI: `~/.gemini/hooks/toon-skill-inject.sh` + `includeDirectories` + `AfterAgent` 훅. Codex CLI: 정적 카탈로그(`skills-toon-catalog.toon`, 62 skills) + `notify-dispatch.py` + 2-턴 사이드카 패턴
+- **bmad-orchestrator SKILL.md TOON Integration 섹션**: Two-tier 아키텍처 전체 문서화 (Tier 1 카탈로그 ~875-3,500 tokens 항상 주입 / Tier 2 SKILL.toon 온디맨드 max 3개)
+- **71개 SKILL.toon 전수 검증**: 모든 스킬 TOON 포맷 준수 여부 검증 및 수정 완료
 
 **v2026-03-05**:
-- **jeo: state file guard bug fix (P0)**: Fixed bug where AfterAgent hook incorrectly ran plannotator when `jeo-state.json` was missing
-- **jeo: agent execution protocol added (P1)**: Inserted `## 0. Agent Execution Protocol` section in `SKILL.md`. STEP 0–4 imperative pseudocode
-- **skills-lock.json: dependency spec added (P1)**: Registered `plannotator` + `agentation` as required_by jeo
-- **agentation v1.1.0 installation improvements**: Claude Code Official Skill + Universal `npx add-mcp` + Local-first architecture documentation
+- **jeo: state file guard 버그 수정 (P0)**: AfterAgent 훅이 `jeo-state.json` 부재 시 plannotator를 잘못 실행하던 버그 수정
+- **jeo: 에이전트 실행 프로토콜 추가 (P1)**: `SKILL.md`에 `## 0. 에이전트 실행 프로토콜` 섹션 삽입. STEP 0~4 명령형 pseudocode
+- **skills-lock.json: 의존성 명세 추가 (P1)**: `plannotator` + `agentation` required_by jeo 등록
+- **agentation v1.1.0 설치 개선**: Claude Code Official Skill + Universal `npx add-mcp` + Local-first 아키텍처 문서화
 
 **v2026-03-04**:
-- **jeo annotate integration (v2)**: VERIFY_UI keyword `agentui` → `annotate`. Phase guard resolves plannotator-agentation hook conflicts. Pre-flight 3-step check, RE-SNAPSHOT verification
-- **ralph v3.0.0**: Full rewrite based on [Q00/ouroboros](https://github.com/Q00/ouroboros). Interview→Seed→Execute→Evaluate→Evolve, 9 agents, Ambiguity ≤ 0.2 gate, Similarity ≥ 0.95 convergence
-- **setup-all-skills-prompt clean reinstall**: Auto-remove existing directories before recreating
+- **jeo annotate 통합 (v2)**: VERIFY_UI 키워드 `agentui` → `annotate`. Phase guard로 plannotator-agentation 훅 충돌 해결. Pre-flight 3단계 체크, RE-SNAPSHOT 검증
+- **ralph v3.0.0**: [Q00/ouroboros](https://github.com/Q00/ouroboros) 기반 전면 재작성. Interview→Seed→Execute→Evaluate→Evolve, 9 에이전트, Ambiguity ≤ 0.2 게이트, Similarity ≥ 0.95 수렴
+- **setup-all-skills-prompt 클린 재설치**: 설치 전 기존 디렉터리 자동 제거 후 재생성
 
 **v2026-03-03 (update)**:
-- **bmad-gds**: New skill — BMAD Game Development Studio. 5-stage pipeline, 6 specialist agents (Unity/Unreal/Godot)
-- **bmad-idea**: New skill — BMAD Creative Intelligence Suite. 5 workflows, 5 named agents
-- **ai-tool-compliance P1 expansion**: Added `--include-p1` option, `p1_maturity_score` output, CI toggle
+- **bmad-gds**: New skill — BMAD Game Development Studio. 5단계 파이프라인, 6 전문 에이전트 (Unity/Unreal/Godot)
+- **bmad-idea**: New skill — BMAD Creative Intelligence Suite. 5개 워크플로우, 5 named 에이전트
+- **ai-tool-compliance P1 확장**: `--include-p1` 옵션 추가, `p1_maturity_score` 출력, CI 토글 추가
 
 **v2026-03-03**:
-- **ai-tool-compliance**: New skill — Automated P0/P1 compliance validation. 4-domain binary scoring (security 40/permissions 25/cost 20/logging 15), GitHub Actions gate, history tracking
+- **ai-tool-compliance**: New skill — P0/P1 컴플라이언스 자동 검증. 4도메인 이진 점수(보안 40/권한 25/비용 20/로그 15), GitHub Actions 게이트, 이력 추적

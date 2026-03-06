@@ -2,8 +2,8 @@
 
 > **bmad-orchestrator** is a structured AI-driven development harness for Claude Code. It routes work across four phases — Analysis → Planning → Solutioning → Implementation — keeping your project on track from idea to shipped code.
 
-[![GitHub Releases](https://img.shields.io/badge/GitHub-Releases-blue)](https://github.com/supercent-io/skills-template/releases)
-[![Release Notes](https://img.shields.io/badge/release-notes-blue)](https://github.com/supercent-io/skills-template/releases)
+[![GitHub Releases](https://img.shields.io/badge/GitHub-Releases-blue)](https://github.com/akillness/skills-template/releases)
+[![Release Notes](https://img.shields.io/badge/release-notes-blue)](https://github.com/akillness/skills-template/releases)
 [![BMAD Deploy Version](https://img.shields.io/badge/BMAD-1.0.0-brightgreen)](../../.agent-skills/bmad-orchestrator/SKILL.md)
 
 ![Agent Skills Installer](../../AgentSkills.png)
@@ -30,7 +30,7 @@ Deploy target: use GitHub Releases for stable rollout tracking, then run the com
 **Step 1: Install the skill**
 
 ```bash
-npx skills add https://github.com/supercent-io/skills-template --skill bmad-orchestrator
+npx skills add https://github.com/akillness/skills-template --skill bmad-orchestrator
 ```
 
 **Step 2: Activate in Claude Code**
