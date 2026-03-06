@@ -1,83 +1,130 @@
-# Agent Skills — LLM 설치 위임 가이드
+# Agent Skills — LLM Installation Delegation Guide
 
-> 이 파일을 AI 에이전트에게 전달하면 설치를 자동으로 진행합니다.
+> 🌐 Language / 언어: **English** | **[한국어](setup-all-skills-prompt.ko.md)**
+
+> Pass this file to an AI agent and it will automatically proceed with installation.
 >
 > ```bash
-> curl -s https://raw.githubusercontent.com/akillness/skills-template/main/setup-all-skills-prompt.md
+> curl -s https://raw.githubusercontent.com/supercent-io/skills-template/main/setup-all-skills-prompt.md
 > ```
 
 ---
 
-## 에이전트 지침 (Agent Instructions)
+## Agent Instructions
 
-이 파일을 받은 AI 에이전트는 다음 단계를 **순서대로** 실행하세요.
+AI agents receiving this file should execute the following steps **in order**.
+
+### UltraTeam Consensus Principles (Systems Engineer · New User · Guideline Author)
+
+- **Systems Engineer perspective**: Lock defaults explicitly so execution results are always the same (Full install). Detect and synchronize installation paths to eliminate platform-specific path differences.
+- **New User perspective**: Remove ambiguous conditional language. Automatically perform full installation unless otherwise requested.
+- **Guideline Author perspective**: "Skip" conditions are explicitly limited. Only skip Step 2 if the user explicitly requests `core only`, `minimal install`, or `quick install`.
+
+### Execution Policy (Required)
+
+- **Default execution**: Run `Step 1`, then continue to `Step 2` (default is full installation)
+- **Exception**: Only skip `Step 2` if the user explicitly requests `core only` or `minimal install`
+- **Prohibited**: Stopping to ask additional confirmation questions before executing `Step 2`
 
 ---
 
-### Step 0: 사용자 환경 파악
+### Step 0: Assess User Environment
 
-설치 전 다음을 확인하세요:
+Before installation, confirm:
 
-1. **사용 중인 AI 플랫폼은 무엇인가요?**
-   - Claude Code → `omc`, `plannotator`, `ralph`, `bmad-orchestrator` 권장
-   - Gemini CLI → `ohmg`, `ralph`, `jeo` 권장
-   - OpenAI Codex CLI → `oh-my-codex`, `ralph`, `jeo` 권장
-   - OpenCode → oh-my-opencode 설치 필요 (Step 3 참조)
-   - 모두 사용 / 모르겠음 → `jeo` 단일 설치 (전 플랫폼 통합)
+1. **Which AI platform are you using?**
+   - Claude Code → recommend `omc`, `plannotator`, `ralph`, `ralphmode`, `bmad-orchestrator`
+   - Gemini CLI → recommend `ohmg`, `ralph`, `ralphmode`, `jeo`
+   - OpenAI Codex CLI → recommend `oh-my-codex`, `ralph`, `ralphmode`, `jeo`
+   - OpenCode → requires oh-my-opencode installation (see Step 3)
+   - All / Unsure → install `jeo` only (unified cross-platform integration)
 
-2. **`skills` CLI가 설치되어 있나요?**
+2. **Is the `skills` CLI installed?**
 
 ```bash
 if command -v skills &> /dev/null; then
     echo "skills CLI available"
 else
-    echo "npx를 통해 설치합니다"
+    echo "Will install via npx"
 fi
 ```
 
----
+3. **Declare installation path standardization variables**
 
-### Step 1: 핵심 스킬 설치 (플랫폼별 최소 설치)
-
-Step 0 결과에 따라 실행하세요:
-
-**모든 플랫폼 (권장 시작점):**
 ```bash
-npx skills add https://github.com/akillness/skills-template --skill jeo
-```
-
-**Claude Code 전용:**
-```bash
-npx skills add https://github.com/akillness/skills-template \
-  --skill omc --skill plannotator --skill ralph --skill vibe-kanban
-```
-
-**Gemini CLI 전용:**
-```bash
-npx skills add https://github.com/akillness/skills-template \
-  --skill ohmg --skill ralph --skill vibe-kanban
-```
-
-**Codex CLI 전용:**
-```bash
-npx skills add https://github.com/akillness/skills-template \
-  --skill oh-my-codex --skill ralph
-```
-
-**Gemini CLI (확장 설치):**
-```bash
-gemini extensions install https://github.com/akillness/skills-template
+# Canonical path (recommended default)
+export SKILLS_CANONICAL="${HOME}/.agent-skills"
+# Remove ALL existing skill directories (canonical + all platform-specific) for a clean slate
+for dir in \
+    "${HOME}/.agent-skills" \
+    "${HOME}/.claude/skills" "${PWD}/.claude/skills" \
+    "${HOME}/.codex/skills" "${PWD}/.codex/skills" \
+    "${HOME}/.gemini/skills" "${PWD}/.gemini/skills" \
+    "${HOME}/.opencode/skills" "${PWD}/.opencode/skills" \
+    "${HOME}/.config/opencode/skills" "${PWD}/.config/opencode/skills"; do
+    if [ -d "${dir}" ]; then
+        echo "Removing existing skill directory: ${dir}"
+        rm -rf "${dir}"
+    fi
+done
+mkdir -p "${SKILLS_CANONICAL}"
+echo "Fresh installation directory created: ${SKILLS_CANONICAL}"
 ```
 
 ---
 
-### Step 2: 전체 65개 스킬 설치 (사용자가 원하는 경우)
+### Step 1: Core Skill Installation (Platform-Specific Minimum)
+
+Execute based on Step 0 results:
+
+**All platforms (recommended starting point):**
+```bash
+# jeo core skill
+npx skills add https://github.com/supercent-io/skills-template --skill jeo
+
+# jeo dependency skills (recommended to install together)
+npx skills add https://github.com/supercent-io/skills-template --skill plannotator --skill agentation
+```
+
+> **jeo Agent Protocol**: When jeo runs, it automatically creates `jeo-state.json` and proceeds sequentially through PLAN → EXECUTE → VERIFY → CLEANUP phases.
+> The PLAN phase uses `plannotator`, and the VERIFY_UI phase (`annotate` keyword) uses `agentation`, so both skills are required.
+>
+> **agentation MCP install (recommended)**: `npx add-mcp "npx -y agentation-mcp server"` — auto-detects 9+ agents including Claude/Gemini/Codex/OpenCode.
+> **agentation Claude Code Official Skill**: Install with `npx skills add benjitaylor/agentation` then run `/agentation` in conversation to auto-launch browser UI.
+
+**Claude Code only:**
+```bash
+npx skills add https://github.com/supercent-io/skills-template \
+  --skill omc --skill plannotator --skill ralph --skill ralphmode --skill vibe-kanban
+```
+
+**Gemini CLI only:**
+```bash
+npx skills add https://github.com/supercent-io/skills-template \
+  --skill ohmg --skill ralph --skill ralphmode --skill vibe-kanban
+```
+
+**Codex CLI only:**
+```bash
+npx skills add https://github.com/supercent-io/skills-template \
+  --skill oh-my-codex --skill ralph --skill ralphmode
+```
+
+**Gemini CLI (extension install):**
+```bash
+gemini extensions install https://github.com/supercent-io/skills-template
+```
+
+---
+
+### Step 2: Full 71-Skill Installation (Default Execution Step)
 
 ```bash
-npx skills add https://github.com/akillness/skills-template \
+npx skills add https://github.com/supercent-io/skills-template \
   --skill agent-configuration --skill agent-evaluation \
   --skill agentic-development-principles --skill agentic-principles \
   --skill agentic-workflow --skill bmad-orchestrator \
+  --skill bmad-gds --skill bmad-idea \
   --skill prompt-repetition --skill api-design \
   --skill api-documentation --skill authentication-setup \
   --skill backend-testing --skill database-schema-design \
@@ -97,20 +144,24 @@ npx skills add https://github.com/akillness/skills-template \
   --skill task-estimation --skill task-planning \
   --skill codebase-search --skill data-analysis \
   --skill log-analysis --skill pattern-detection \
+  --skill llm-monitoring-dashboard \
   --skill image-generation --skill pollinations-ai \
   --skill video-production --skill marketing-automation \
-  --skill agent-browser --skill copilot-coding-agent \
+  --skill agent-browser --skill agentation --skill copilot-coding-agent \
+  --skill ai-tool-compliance \
   --skill environment-setup --skill file-organization \
   --skill git-submodule --skill git-workflow --skill jeo \
   --skill npm-git-install --skill ohmg --skill oh-my-codex \
   --skill omc --skill opencontext --skill plannotator \
-  --skill ralph --skill skill-standardization \
+  --skill ralph --skill ralphmode --skill skill-standardization \
   --skill vibe-kanban --skill workflow-automation
 ```
 
+> Skip condition is only allowed when the user explicitly requests (`core only`, `minimal install`, `quick install`).
+
 ---
 
-### Step 3: 플랫폼별 추가 도구 설치
+### Step 3: Platform-Specific Additional Tool Installation
 
 #### Claude Code — oh-my-claudecode
 
@@ -119,75 +170,139 @@ npx skills add https://github.com/akillness/skills-template \
 /omc:omc-setup
 ```
 
-또는 Claude Code 대화에서:
+Or in Claude Code conversation:
 ```
-jeo 스킬을 설정하고 사용해줘. 기억해.
+configure and use the jeo skill. remember it.
 ```
+
+```bash
+# jeo ExitPlanMode hook setup (plannotator auto-integration)
+bash ~/.agent-skills/jeo/scripts/setup-claude.sh
+
+# agentation Claude Code Official Skill install (recommended)
+npx skills add benjitaylor/agentation
+# After installation, run in conversation:
+# /agentation  ← auto-launches browser UI, starts annotate watch loop
+```
+
+> **TOON Format Hook**: If `~/.claude/hooks/toon-inject.mjs` is installed, the skill catalog is automatically injected into every prompt. Configuration details: [bmad-orchestrator SKILL.md — TOON Format Integration](.agent-skills/bmad-orchestrator/SKILL.md)
 
 #### OpenCode — oh-my-opencode
 
-최신 설치 가이드를 fetch해서 구독 환경에 맞게 설치하세요:
+Fetch the latest installation guide and install for your subscription environment:
 
 ```bash
-# oh-my-opencode 최신 설치 가이드 fetch — 구독 환경에 맞는 플래그 확인 후 실행
+# Fetch oh-my-opencode latest installation guide — check flags for your subscription then run
 curl -s https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/refs/heads/master/docs/guide/installation.md
 ```
 
-가이드에서 구독 상태(Claude Pro/Max, Gemini, Copilot 등)에 맞는 설치 플래그를 확인하고 설치를 진행합니다.
+Check the guide for installation flags matching your subscription (Claude Pro/Max, Gemini, Copilot, etc.) and proceed.
 
-설치 후 스킬 추가:
+After installation, add skills:
 ```bash
-npx skills add https://github.com/akillness/skills-template
+npx skills add https://github.com/supercent-io/skills-template
 ```
 
-#### Gemini CLI — 확인
+#### Gemini CLI — jeo hook setup
 
 ```bash
-# Gemini CLI 훅 설정 확인
-ls ~/.gemini/ 2>/dev/null && echo "Gemini configured" || echo "Gemini not configured"
+# jeo AfterAgent hook auto-setup (plannotator + agentation integration)
+bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 ```
 
-> [Hooks 공식 가이드](https://developers.googleblog.com/tailor-gemini-cli-to-your-workflow-with-hooks/)
+> **TOON Format Hook**: If `~/.gemini/hooks/toon-skill-inject.sh` is installed, the skill catalog is auto-loaded at session start via `includeDirectories`. Codex CLI references `~/.codex/skills-toon-catalog.toon` in `developer_instructions`.
+
+> [Official Hooks Guide](https://developers.googleblog.com/tailor-gemini-cli-to-your-workflow-with-hooks/)
 
 ---
 
-### Step 4: 설치 확인 및 활성화 안내
+### Step 4: Verify Installation and Activation
 
 ```bash
-# 설치된 스킬 목록 확인
-ls ~/.agent-skills/ 2>/dev/null || ls .agent-skills/ 2>/dev/null
+# Auto-detect installation directory
+if [ -d "${HOME}/.agent-skills" ]; then
+  SKILL_SRC="${HOME}/.agent-skills"
+elif [ -d "${PWD}/.agent-skills" ]; then
+  SKILL_SRC="${PWD}/.agent-skills"
+elif [ -d "${PWD}/.agents/skills" ]; then
+  SKILL_SRC="${PWD}/.agents/skills"
+else
+  echo "skills directory not found"; exit 1
+fi
 
-# 개별 스킬 확인
+echo "Detected skills dir: ${SKILL_SRC}"
+
+# Sync to canonical path
+mkdir -p "${HOME}/.agent-skills"
+if [ "${SKILL_SRC}" != "${HOME}/.agent-skills" ]; then
+  cp -R "${SKILL_SRC}"/. "${HOME}/.agent-skills"/
+fi
+
+# Remove existing platform-specific skill directories and recreate
+for dest in \
+    "${HOME}/.claude/skills" "${PWD}/.claude/skills" \
+    "${HOME}/.codex/skills" "${PWD}/.codex/skills" \
+    "${HOME}/.gemini/skills" "${PWD}/.gemini/skills" \
+    "${HOME}/.opencode/skills" "${PWD}/.opencode/skills" \
+    "${HOME}/.config/opencode/skills" "${PWD}/.config/opencode/skills"; do
+    rm -rf "${dest}"
+    mkdir -p "${dest}"
+done
+
+cp -R "${HOME}/.agent-skills"/. "${HOME}/.claude/skills"/
+cp -R "${HOME}/.agent-skills"/. "${PWD}/.claude/skills"/
+cp -R "${HOME}/.agent-skills"/. "${HOME}/.codex/skills"/
+cp -R "${HOME}/.agent-skills"/. "${PWD}/.codex/skills"/
+cp -R "${HOME}/.agent-skills"/. "${HOME}/.gemini/skills"/
+cp -R "${HOME}/.agent-skills"/. "${PWD}/.gemini/skills"/
+cp -R "${HOME}/.agent-skills"/. "${HOME}/.opencode/skills"/
+cp -R "${HOME}/.agent-skills"/. "${PWD}/.opencode/skills"/
+cp -R "${HOME}/.agent-skills"/. "${HOME}/.config/opencode/skills"/
+cp -R "${HOME}/.agent-skills"/. "${PWD}/.config/opencode/skills"/
+
+# Check installed skill list
+ls "${HOME}/.agent-skills" 2>/dev/null
+ls "${HOME}/.claude/skills" 2>/dev/null
+ls "${HOME}/.codex/skills" 2>/dev/null
+ls "${HOME}/.gemini/skills" 2>/dev/null
+ls "${HOME}/.opencode/skills" 2>/dev/null
+ls "${HOME}/.config/opencode/skills" 2>/dev/null
+
+# Verify individual skill
 npx skills info jeo
 ```
 
-설치 완료 후 플랫폼별 첫 실행:
+First run after installation by platform:
 
-| 플랫폼 | 실행 명령 |
-|--------|-----------|
-| Claude Code | `jeo "작업 내용"` 또는 `/omc:team "작업"` |
-| Gemini CLI | `/jeo "작업 내용"` |
-| Codex CLI | `/jeo "작업 내용"` |
-| OpenCode | `/jeo "작업 내용"` |
-
----
-
-## 핵심 스킬 키워드 참조
-
-| 스킬 | 활성화 키워드 | 설명 |
-|------|-------------|------|
-| `jeo` | `jeo` | 통합 오케스트레이션 (권장 시작점) |
-| `omc` | `omc`, `autopilot` | Claude Code 멀티에이전트 |
-| `ralph` | `ralph` | 완료 루프 |
-| `plannotator` | `plan`, `계획` | 계획 검토 + Feedback loop |
-| `vibe-kanban` | `kanbanview` | 칸반 보드 |
-| `bmad-orchestrator` | `bmad` | 구조화 개발 |
-| `bmad-gds` | `bmad-gds` | 게임 개발 스튜디오 (Unity/Unreal/Godot) |
-| `bmad-idea` | `bmad-idea` | 창의적 아이디어 · 디자인 씽킹 · 혁신 전략 |
-| `agent-browser` | `agent-browser` | 헤드리스 브라우저 자동화 |
-| `oh-my-codex` | `omx` | Codex CLI 멀티에이전트 |
-| `ohmg` | `ohmg` | Gemini / Antigravity 워크플로우 |
+| Platform | Command |
+|----------|---------|
+| Claude Code | `jeo "task description"` or `/omc:team "task"` |
+| Gemini CLI | `/jeo "task description"` |
+| Codex CLI | `/jeo "task description"` |
+| OpenCode | `/jeo "task description"` |
 
 ---
 
-> 전체 스킬 목록 및 상세 설명: [README.md](README.md)
+## Core Skill Keyword Reference
+
+| Skill | Activation Keyword | Description |
+|-------|-------------------|-------------|
+| `jeo` | `jeo` | Integrated orchestration (recommended starting point) — built-in agent execution protocol (STEP 0: state bootstrap → PLAN/plannotator → EXECUTE → VERIFY → CLEANUP). Requires: plannotator, agentation |
+| `omc` | `omc`, `autopilot` | Claude Code multi-agent orchestration |
+| `ralph` | `ralph`, `ooo`, `ooo ralph`, `ooo interview` | Ouroboros specification-first development (Interview→Seed→Execute→Evaluate→Evolve) + persistent completion loop |
+| `ralphmode` | `ralphmode` | Ralph automation permission profiles for Claude Code, Codex CLI, Gemini CLI. Repo boundary enforcement, sandbox-first, secret denylist focused |
+| `plannotator` | `plan` | Plan review + feedback loop |
+| `vibe-kanban` | `kanbanview` | Kanban board |
+| `bmad-orchestrator` | `bmad` | Structured phase-based development |
+| `bmad-gds` | `bmad-gds` | Game Development Studio (Unity/Unreal/Godot) |
+| `bmad-idea` | `bmad-idea` | Creative ideas · design thinking · innovation strategy |
+| `ai-tool-compliance` | `ai-tool-compliance` | Internal AI tool compliance automation (P0/P1) |
+| `agent-browser` | `agent-browser` | Headless browser automation |
+| `llm-monitoring-dashboard` | `llm-monitoring-dashboard` | LLM usage monitoring dashboard generation |
+| `agentation` | `annotate`, `UI검토`, `agentui` | UI annotation → agent code modification. Install: `npx add-mcp "npx -y agentation-mcp server"` (Universal) or `npx skills add benjitaylor/agentation` → `/agentation` (Claude Code Official Skill). Local-first architecture, offline operation, session continuity. |
+| `oh-my-codex` | `omx` | Codex CLI multi-agent orchestration |
+| `ohmg` | `ohmg` | Gemini / Antigravity workflows |
+
+---
+
+> Full skill list and detailed descriptions: [README.md](README.md)
