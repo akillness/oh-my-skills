@@ -5,7 +5,7 @@
 > 이 파일을 AI 에이전트에게 전달하면 설치를 자동으로 진행합니다.
 >
 > ```bash
-> curl -s https://raw.githubusercontent.com/supercent-io/skills-template/main/setup-all-skills-prompt.md
+> curl -s https://raw.githubusercontent.com/akillness/skills-template/main/setup-all-skills-prompt.md
 > ```
 
 ---
@@ -80,10 +80,10 @@ Step 0 결과에 따라 실행하세요:
 **모든 플랫폼 (권장 시작점):**
 ```bash
 # jeo 핵심 스킬
-npx skills add https://github.com/supercent-io/skills-template --skill jeo
+npx skills add https://github.com/akillness/skills-template --skill jeo
 
 # jeo 의존 스킬 (함께 설치 권장)
-npx skills add https://github.com/supercent-io/skills-template --skill plannotator --skill agentation
+npx skills add https://github.com/akillness/skills-template --skill plannotator --skill agentation
 ```
 
 > **jeo 에이전트 프로토콜**: jeo는 실행 시 `jeo-state.json`을 자동 생성하며 PLAN → EXECUTE → VERIFY → CLEANUP 단계를 순차 진행합니다.
@@ -94,25 +94,25 @@ npx skills add https://github.com/supercent-io/skills-template --skill plannotat
 
 **Claude Code 전용:**
 ```bash
-npx skills add https://github.com/supercent-io/skills-template \
+npx skills add https://github.com/akillness/skills-template \
   --skill omc --skill plannotator --skill ralph --skill ralphmode --skill vibe-kanban
 ```
 
 **Gemini CLI 전용:**
 ```bash
-npx skills add https://github.com/supercent-io/skills-template \
+npx skills add https://github.com/akillness/skills-template \
   --skill ohmg --skill ralph --skill ralphmode --skill vibe-kanban
 ```
 
 **Codex CLI 전용:**
 ```bash
-npx skills add https://github.com/supercent-io/skills-template \
+npx skills add https://github.com/akillness/skills-template \
   --skill oh-my-codex --skill ralph --skill ralphmode
 ```
 
 **Gemini CLI (확장 설치):**
 ```bash
-gemini extensions install https://github.com/supercent-io/skills-template
+gemini extensions install https://github.com/akillness/skills-template
 ```
 
 ---
@@ -120,7 +120,7 @@ gemini extensions install https://github.com/supercent-io/skills-template
 ### Step 2: 전체 71개 스킬 설치 (기본 실행 단계)
 
 ```bash
-npx skills add https://github.com/supercent-io/skills-template \
+npx skills add https://github.com/akillness/skills-template \
   --skill agent-configuration --skill agent-evaluation \
   --skill agentic-development-principles --skill agentic-principles \
   --skill agentic-workflow --skill bmad-orchestrator \
@@ -200,7 +200,7 @@ curl -s https://raw.githubusercontent.com/code-yeongyu/oh-my-opencode/refs/heads
 
 설치 후 스킬 추가:
 ```bash
-npx skills add https://github.com/supercent-io/skills-template
+npx skills add https://github.com/akillness/skills-template
 ```
 
 #### Gemini CLI — jeo 훅 설정

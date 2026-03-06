@@ -5,7 +5,7 @@
 > Pass this file to an AI agent and it will automatically proceed with installation.
 >
 > ```bash
-> curl -s https://raw.githubusercontent.com/supercent-io/skills-template/main/setup-all-skills-prompt.md
+> curl -s https://raw.githubusercontent.com/akillness/skills-template/main/setup-all-skills-prompt.md
 > ```
 
 ---
@@ -80,10 +80,10 @@ Execute based on Step 0 results:
 **All platforms (recommended starting point):**
 ```bash
 # jeo core skill
-npx skills add https://github.com/supercent-io/skills-template --skill jeo
+npx skills add https://github.com/akillness/skills-template --skill jeo
 
 # jeo dependency skills (recommended to install together)
-npx skills add https://github.com/supercent-io/skills-template --skill plannotator --skill agentation
+npx skills add https://github.com/akillness/skills-template --skill plannotator --skill agentation
 ```
 
 > **jeo Agent Protocol**: When jeo runs, it automatically creates `jeo-state.json` and proceeds sequentially through PLAN → EXECUTE → VERIFY → CLEANUP phases.
@@ -94,25 +94,25 @@ npx skills add https://github.com/supercent-io/skills-template --skill plannotat
 
 **Claude Code only:**
 ```bash
-npx skills add https://github.com/supercent-io/skills-template \
+npx skills add https://github.com/akillness/skills-template \
   --skill omc --skill plannotator --skill ralph --skill ralphmode --skill vibe-kanban
 ```
 
 **Gemini CLI only:**
 ```bash
-npx skills add https://github.com/supercent-io/skills-template \
+npx skills add https://github.com/akillness/skills-template \
   --skill ohmg --skill ralph --skill ralphmode --skill vibe-kanban
 ```
 
 **Codex CLI only:**
 ```bash
-npx skills add https://github.com/supercent-io/skills-template \
+npx skills add https://github.com/akillness/skills-template \
   --skill oh-my-codex --skill ralph --skill ralphmode
 ```
 
 **Gemini CLI (extension install):**
 ```bash
-gemini extensions install https://github.com/supercent-io/skills-template
+gemini extensions install https://github.com/akillness/skills-template
 ```
 
 ---
@@ -120,7 +120,7 @@ gemini extensions install https://github.com/supercent-io/skills-template
 ### Step 2: Full 71-Skill Installation (Default Execution Step)
 
 ```bash
-npx skills add https://github.com/supercent-io/skills-template \
+npx skills add https://github.com/akillness/skills-template \
   --skill agent-configuration --skill agent-evaluation \
   --skill agentic-development-principles --skill agentic-principles \
   --skill agentic-workflow --skill bmad-orchestrator \
@@ -200,7 +200,7 @@ Check the guide for installation flags matching your subscription (Claude Pro/Ma
 
 After installation, add skills:
 ```bash
-npx skills add https://github.com/supercent-io/skills-template
+npx skills add https://github.com/akillness/skills-template
 ```
 
 #### Gemini CLI — jeo hook setup
