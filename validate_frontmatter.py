@@ -5,7 +5,7 @@ import re
 import sys
 from pathlib import Path
 
-SKILLS_DIR = Path("/Users/supercent/Documents/Github/skills-template/.agent-skills")
+SKILLS_DIR = Path(__file__).parent / ".agent-skills"
 
 ALLOWED_TOP_KEYS = {'name', 'description', 'license', 'compatibility', 'metadata', 'allowed-tools'}
 NAME_RE = re.compile(r'^[a-z0-9][a-z0-9-]*[a-z0-9]$|^[a-z0-9]$')

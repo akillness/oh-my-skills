@@ -7,7 +7,7 @@ metadata:
   tags: jeo, orchestration, ralph, plannotator, agentation, annotate, agentui, UI검토, team, bmad, omc, omx, ohmg, agent-browser, multi-agent, workflow, worktree-cleanup, browser-verification, ui-feedback
   platforms: Claude, Codex, Gemini, OpenCode
   keyword: jeo
-  version: 1.1.0
+  version: 1.2.0
   source: supercent-io/skills-template
 ---
 
@@ -290,7 +290,12 @@ if os.path.exists(f):
    ```
    /omc:team 3:executor "<task>"
    ```
-3. **No team (BMAD fallback)**:
+3. **omc available but no team (Claude Code + omc, no AGENT_TEAMS)**:
+   ```
+   /ralph "<task>" --max-iterations=20
+   ```
+   Single-agent persistent loop with verification until complete.
+4. **No omc (BMAD fallback — Codex / Gemini / OpenCode)**:
    ```
    /workflow-init   # Initialize BMAD
    /workflow-status # Check current step
@@ -522,7 +527,13 @@ Shift+Tab×2 → enter plan mode → plannotator runs automatically when plan is
 - staged pipeline: team-plan → team-prd → team-exec → team-verify → team-fix
 - Maximize speed with parallel agent execution
 
-**When team is unavailable (BMAD fallback):**
+**When omc is available but no team (Claude Code + omc, no AGENT_TEAMS):**
+```bash
+/ralph "<task based on approved plan>" --max-iterations=20
+```
+- Single-agent persistent loop with verification until complete
+
+**When team is unavailable (BMAD fallback — Codex / Gemini / OpenCode):**
 ```bash
 /workflow-init   # Initialize BMAD workflow
 /workflow-status # Check current step
@@ -890,13 +901,17 @@ JEO stores state at the following paths:
 **State file structure:**
 ```json
 {
+  "mode": "jeo",
   "phase": "plan|execute|verify|verify_ui|cleanup|done",
+  "session_id": "<uuid>",
   "task": "current task description",
   "plan_approved": true,
+  "plan_review_method": null,
   "team_available": true,
   "retry_count": 0,
   "last_error": null,
   "checkpoint": "plan|execute|verify|verify_ui|cleanup",
+  "cleanup_completed": false,
   "created_at": "2026-02-24T00:00:00Z",
   "updated_at": "2026-02-24T00:00:00Z",
   "agentation": {
@@ -916,6 +931,14 @@ JEO stores state at the following paths:
 
 > **agentation fields**: `active` — whether the watch loop is running (used as hook guard), `session_id` — for resuming,
 > `exit_reason` — `"all_resolved"` | `"timeout"` | `"user_cancelled"` | `"error"`
+>
+> **dismissed annotations**: When a user dismisses an annotation in the agentation UI (status becomes `"dismissed"`),
+> the agent should skip code changes for that annotation, increment `annotations.dismissed`, and continue to the next pending annotation.
+> Dismissed annotations are counted but not acted upon. The watch loop exits normally when `pending == 0` (resolved + dismissed covers all).
+>
+> **`plan_review_method`**: set to `"plannotator"` when approved via UI, `"manual"` when approved via TTY fallback gate.
+>
+> **`cleanup_completed`**: set to `true` by `worktree-cleanup.sh` after successful worktree prune.
 
 > **Error recovery fields**:
 > - `retry_count` — number of retries after an error. Increments +1 on each pre-flight failure. Ask user to confirm if `>= 3`.
