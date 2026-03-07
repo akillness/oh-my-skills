@@ -4,7 +4,7 @@ description: Configure Claude Code, Codex CLI, and Gemini CLI for Ralph-style au
 license: CC-BY-4.0
 compatibility: Claude Code, Codex CLI, and Gemini CLI. Requires bash, git, and a repo-scoped workspace. Treat full bypass as sandbox-only. Codex guidance in this skill reflects the official sandbox/approval model current on 2026-03-06; legacy permissions.allow or deny examples are compatibility notes only.
 metadata:
-  version: 0.1.0
+  version: 0.2.0
   author: supercent-io
   keyword: ralphmode
   platforms: Claude Code, Codex CLI, Gemini CLI
@@ -81,6 +81,33 @@ Treat these as different modes:
 - Sandbox YOLO: promptless execution in a disposable environment only.
 
 Do not collapse them into one shared team default.
+
+### Step 6: Configure Mid-Execution Approval Checkpoints
+
+Static permission profiles (Steps 2–3) reduce friction before a run starts, but they do not stop dangerous operations that arise during execution. Add dynamic checkpoints so that Tier 1 actions are blocked or flagged at the moment they are attempted.
+
+#### Dangerous operation tiers
+
+| Tier | Action | Platform response |
+|------|--------|------------------|
+| **Tier 1** (always block) | `rm -rf`, `git reset --hard`, `git push --force`, `DROP TABLE`, `sudo`, `.env*`/`secrets/**` access, production environment changes | Block immediately, require explicit user approval |
+| **Tier 2** (warn) | `npm publish`, `docker push`, `git push` (non-force), DB migrations | Output warning, continue only with confirmation |
+| **Tier 3** (allow) | File reads/edits, tests, local builds, lint | Allow automatically |
+
+#### Platform checkpoint mechanisms
+
+| Platform | Hook | Blocking | Recommended pattern |
+|----------|------|----------|-------------------|
+| Claude Code | `PreToolUse` (Bash) | Yes — exit 2 | Shell script pattern-matches command; blocks Tier 1 |
+| Gemini CLI | `BeforeTool` | Yes — non-zero exit | Shell script blocks tool; stderr fed to next turn |
+| Codex CLI | `notify` (post-turn) | No | `approval_policy="unless-allow-listed"` + prompt contract |
+| OpenCode | None | No | Prompt contract in `opencode.json` instructions |
+
+**Principle**: Combine static profiles (Steps 2–3) with dynamic checkpoints (this step).
+- Platforms with pre-tool hooks (Claude Code, Gemini): use the hook script.
+- Platforms without (Codex, OpenCode): rely on `approval_policy` and explicit prompt contracts that instruct the agent to output `CHECKPOINT_NEEDED: <reason>` and wait before proceeding with Tier 1 actions.
+
+See [references/permission-profiles.md](./references/permission-profiles.md) for full hook script templates per platform.
 
 ## Examples
 

@@ -183,7 +183,7 @@ repository to the current project.
 | `opencontext` | AI agent persistent memory | All platforms |
 | `plannotator`, `계획` *(alias: `plan`, `planno`)* | Visual plan and diff review with Plannotator — annotate, approve, or request changes | Claude |
 | `ralph` | Self-referential completion loop for multi-turn agents | Claude |
-| `ralphmode` | Cross-platform Ralph automation permission profiles for Claude Code, Codex CLI, and Gemini CLI | Claude · Codex · Gemini |
+| `ralphmode` | Cross-platform Ralph automation permission profiles with mid-execution approval checkpoints (PreToolUse/BeforeTool hooks + prompt contracts) | Claude · Codex · Gemini · OpenCode |
 | `skill-standardization` | SKILL.md standardization | All platforms |
 | `vibe-kanban` | Kanban board for AI coding agents with git worktree automation | All platforms |
 | `workflow-automation` | Workflow automation | All platforms |

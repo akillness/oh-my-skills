@@ -48,6 +48,7 @@ curl -s https://raw.githubusercontent.com/akillness/skills-template/main/setup-a
 
 | Change | Details |
 |--------|---------|
+| **ralphmode v0.2.0: Mid-Execution Approval Checkpoints** | 플랫폼별 실행 중 위험 작업 차단 메커니즘 추가. Claude Code `PreToolUse` 훅(exit 2 차단) + Gemini CLI `BeforeTool` 훅(non-zero exit 차단) + Codex CLI `approval_policy="unless-allow-listed"` + prompt contract + OpenCode prompt contract. Tier 1/2/3 위험 작업 분류표 및 훅 스크립트 템플릿 수록 |
 | **jeo: plannotator Claude Code 동작 방식 수정 (P0)** | `plannotator`는 hook-only 바이너리로 Claude Code의 `ExitPlanMode` PermissionRequest 훅으로만 실행 가능. SKILL.md에서 존재하지 않는 `submit_plan` MCP 툴 호출 지시를 제거하고, 올바른 `EnterPlanMode` → write plan → `ExitPlanMode` hook 방식으로 교체. `bmad-orchestrator/SKILL.md`도 플랫폼별(Claude Code / OpenCode) 방식 명확화 |
 | **jeo: Gemini CLI plannotator feedback wait fix** | Gemini CLI AfterAgent hooks now include `timeout: 1800` (30 min) for plannotator, ensuring the blocking review UI stays open until user approves or sends feedback. Old-format hooks without `matcher`/`hooks` wrapper are auto-migrated. Removed invalid `PermissionRequest.ExitPlanMode` (Claude Code-only event) from Gemini settings |
 | **jeo: Claude Code hooks format fix** | Fixed `UserPromptSubmit` hooks to use the new matcher format (`{"matcher": "*", "hooks": [...]}`) instead of flat format. `setup-claude.sh` now auto-migrates old-format entries on re-run, preventing the `hooks: Expected array, but received undefined` error |
@@ -311,7 +312,7 @@ npx skills add https://github.com/akillness/skills-template --skill playwriter
 | `opencontext` | AI agent persistent memory | All platforms |
 | `plannotator` | Visual plan and diff review — annotate, approve, or request changes | Claude |
 | `ralph` | Self-referential completion loop for multi-turn agents | Claude |
-| `ralphmode` | Cross-platform Ralph automation permission profiles for Claude Code, Codex CLI, and Gemini CLI | Claude · Codex · Gemini |
+| `ralphmode` | Cross-platform Ralph automation permission profiles with mid-execution approval checkpoints (PreToolUse/BeforeTool hooks + prompt contracts) | Claude · Codex · Gemini · OpenCode |
 | `skill-standardization` | SKILL.md standardization | All platforms |
 | `vibe-kanban` | Kanban board for AI coding agents with git worktree automation | All platforms |
 | `workflow-automation` | Workflow automation | All platforms |
@@ -580,6 +581,7 @@ Full configuration: [bmad-orchestrator SKILL.md — TOON Format Integration](.ag
 ## Changelog
 
 **v2026-03-08 (latest)**:
+- **ralphmode v0.2.0: Mid-Execution Approval Checkpoints**: Added per-platform dynamic checkpoint patterns for blocking dangerous operations during ralph/jeo runs. Claude Code: `PreToolUse` hook with `ralph-safety-check.sh` (exit 2 block). Gemini CLI: `BeforeTool` hook with `ralph-tier1-check.sh` (non-zero exit block; stderr forwarded to agent's next turn). Codex CLI: `approval_policy="unless-allow-listed"` + `CHECKPOINT_NEEDED` prompt contract. OpenCode: prompt contract in `opencode.json` instructions. Tier 1/2/3 dangerous operation classification table and full hook script templates added to `permission-profiles.md`. Platform summary table updated with mid-execution blocking column and OpenCode row.
 - **jeo: plannotator Claude Code invocation fix (P0)**: `plannotator` is a hook-only binary — calling it via MCP tool or CLI always fails. Removed incorrect `submit_plan` MCP tool instruction from `jeo/SKILL.md` (both deployed and source). Replaced with correct `EnterPlanMode` → write plan → `ExitPlanMode` hook flow. Added pre-flight bash block platform note (Codex/Gemini/OpenCode only). Updated `bmad-orchestrator/SKILL.md` to clarify Claude Code vs OpenCode invocation methods. Added troubleshooting entry for Claude Code plannotator
 - **jeo: Gemini CLI plannotator feedback wait fix**: AfterAgent hooks now include `timeout: 1800` (30 min) for plannotator blocking review. Old-format hook entries (flat `{"type":"command",...}` without `matcher`/`hooks` wrapper) are auto-migrated to new format on setup re-run. Removed invalid `PermissionRequest.ExitPlanMode` from Gemini settings (Claude Code-only event)
 - **jeo: Claude Code hooks format fix**: `setup-claude.sh` now creates `UserPromptSubmit` hooks in the new matcher format and auto-migrates old-format entries, fixing the `hooks: Expected array, but received undefined` settings error after installation

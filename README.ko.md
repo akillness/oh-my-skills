@@ -48,6 +48,7 @@ curl -s https://raw.githubusercontent.com/akillness/skills-template/main/setup-a
 
 | 변경 | 내용 |
 |------|------|
+| **ralphmode v0.2.0: Mid-Execution Approval Checkpoints** | 플랫폼별 실행 중 위험 작업 차단 메커니즘 추가. Claude Code `PreToolUse` 훅(exit 2 차단) + Gemini CLI `BeforeTool` 훅(non-zero exit 차단) + Codex CLI `approval_policy="unless-allow-listed"` + prompt contract + OpenCode prompt contract. Tier 1/2/3 위험 작업 분류표 및 훅 스크립트 템플릿 수록 |
 | **jeo: plannotator Claude Code 동작 방식 수정 (P0)** | `plannotator`는 hook-only 바이너리 — MCP 툴이나 CLI 직접 호출 시 항상 실패. `jeo/SKILL.md`에서 존재하지 않는 `submit_plan` MCP 툴 호출 지시 제거. `EnterPlanMode` → plan 작성 → `ExitPlanMode` 훅 방식으로 교체. pre-flight bash 블록에 Claude Code 스킵 주석 추가 (Codex/Gemini/OpenCode 전용 명시). `bmad-orchestrator/SKILL.md` Claude Code vs OpenCode 호출 방식 명확화. 트러블슈팅 항목 추가 |
 | **jeo: Gemini CLI plannotator 피드백 대기 수정** | Gemini CLI AfterAgent 훅에 `timeout: 1800` (30분) 추가하여 plannotator 브라우저 UI가 사용자 승인/피드백까지 대기. `matcher`/`hooks` 래퍼 없는 구형 훅 자동 마이그레이션. Gemini 설정에서 무효한 `PermissionRequest.ExitPlanMode` (Claude Code 전용 이벤트) 제거 |
 | **jeo: Claude Code 훅 포맷 오류 수정** | `UserPromptSubmit` 훅을 새 matcher 포맷(`{"matcher": "*", "hooks": [...]}`)으로 변환. `setup-claude.sh` 재실행 시 구형 포맷 자동 마이그레이션하여 `hooks: Expected array, but received undefined` 오류 방지 |
@@ -311,7 +312,7 @@ npx skills add https://github.com/akillness/skills-template --skill playwriter
 | `opencontext` | AI agent persistent memory | All platforms |
 | `plannotator` | Visual plan and diff review — annotate, approve, or request changes | Claude |
 | `ralph` | Self-referential completion loop for multi-turn agents | Claude |
-| `ralphmode` | Cross-platform Ralph automation permission profiles for Claude Code, Codex CLI, and Gemini CLI | Claude · Codex · Gemini |
+| `ralphmode` | Cross-platform Ralph automation permission profiles with mid-execution approval checkpoints (PreToolUse/BeforeTool hooks + prompt contracts) | Claude · Codex · Gemini · OpenCode |
 | `skill-standardization` | SKILL.md standardization | All platforms |
 | `vibe-kanban` | Kanban board for AI coding agents with git worktree automation | All platforms |
 | `workflow-automation` | Workflow automation | All platforms |
@@ -578,6 +579,7 @@ U[n]: use cases · S[n]{n,action,details}: steps · R[n]: rules · E[n]{desc,in,
 ## Changelog
 
 **v2026-03-08 (latest)**:
+- **ralphmode v0.2.0: Mid-Execution Approval Checkpoints**: 플랫폼별 실행 중 위험 작업 동적 차단 패턴 추가. Claude Code: `PreToolUse` 훅 + `ralph-safety-check.sh` (exit 2 차단). Gemini CLI: `BeforeTool` 훅 + `ralph-tier1-check.sh` (non-zero exit 차단; stderr 다음 턴 전달). Codex CLI: `approval_policy="unless-allow-listed"` + `CHECKPOINT_NEEDED` 프롬프트 계약. OpenCode: `opencode.json` instructions 프롬프트 계약. Tier 1/2/3 위험 작업 분류표 및 훅 스크립트 템플릿 `permission-profiles.md`에 추가. 플랫폼 요약 테이블에 mid-execution blocking 컬럼 및 OpenCode 행 추가.
 - **jeo: plannotator Claude Code 호출 방식 수정 (P0)**: `plannotator`는 hook-only 바이너리로 Claude Code의 `ExitPlanMode` PermissionRequest 훅으로만 동작. `jeo/SKILL.md`(배포 및 소스)에서 존재하지 않는 `submit_plan` MCP 툴 호출 지시 제거 → `EnterPlanMode` → plan 작성 → `ExitPlanMode` 훅 플로우로 교체. pre-flight bash 블록에 Claude Code 스킵 주석 추가. `bmad-orchestrator/SKILL.md` Claude Code / OpenCode 플랫폼별 호출 방식 명확화. 트러블슈팅 항목 추가
 - **jeo: Gemini CLI plannotator 피드백 대기 수정**: AfterAgent 훅에 `timeout: 1800` (30분) 추가. 구형 훅 엔트리(`matcher`/`hooks` 래퍼 없는 평탄 형식)를 setup 재실행 시 자동 마이그레이션. Gemini 설정에서 무효한 `PermissionRequest.ExitPlanMode` 제거 (Claude Code 전용 이벤트)
 - **jeo: Claude Code 훅 포맷 오류 수정**: `setup-claude.sh`가 `UserPromptSubmit` 훅을 새 matcher 포맷으로 생성하고 구형 포맷을 자동 마이그레이션하여 설치 후 `hooks: Expected array, but received undefined` 설정 오류 해결

@@ -69,6 +69,50 @@ claude --dangerously-skip-permissions
 
 Keep a repo boundary and denylist even when using this mode.
 
+### Mid-Execution Checkpoints — Claude Code
+
+Claude Code fires `PreToolUse` before every tool call. Exit 2 blocks the tool and surfaces the message to the user.
+
+Add to `.claude/settings.json` (project-local) or `~/.claude/settings.json`:
+
+```json
+{
+  "hooks": {
+    "PreToolUse": [{
+      "matcher": "Bash",
+      "hooks": [{
+        "type": "command",
+        "command": "bash ~/.claude/hooks/ralph-safety-check.sh",
+        "timeout": 30
+      }]
+    }]
+  }
+}
+```
+
+Create `~/.claude/hooks/ralph-safety-check.sh`:
+
+```bash
+#!/usr/bin/env bash
+# Blocks Tier 1 dangerous commands during ralph/jeo runs.
+# Reads tool input from CLAUDE_TOOL_INPUT env var (JSON).
+CMD=$(echo "$CLAUDE_TOOL_INPUT" | python3 -c \
+  "import sys,json; print(json.load(sys.stdin).get('command',''))" 2>/dev/null)
+TIER1='(rm[[:space:]]+-rf|git[[:space:]]+reset[[:space:]]+--hard|git[[:space:]]+push.*--force|DROP[[:space:]]+TABLE|[[:space:]]sudo[[:space:]]|chmod[[:space:]]+777|\.env|secrets/)'
+if echo "$CMD" | grep -qE "$TIER1"; then
+  echo "BLOCKED: Tier 1 dangerous command detected." >&2
+  echo "Command: $CMD" >&2
+  echo "Approve manually or remove the dangerous flag before retrying." >&2
+  exit 2
+fi
+```
+
+Make executable: `chmod +x ~/.claude/hooks/ralph-safety-check.sh`
+
+> **Note**: `bypassPermissions` mode may skip `PreToolUse` hooks. Use `bypassPermissions` only in disposable sandboxes — never in repos with production credentials or sensitive data.
+
+---
+
 ## Codex CLI
 
 As of 2026-03-06, the primary official Codex docs focus on:
@@ -133,6 +177,52 @@ If your installed Codex build still supports that shape, keep it project-local a
 
 Treat this as a compatibility shim, not the canonical current model.
 
+### Mid-Execution Checkpoints — Codex CLI
+
+Codex `notify` fires after a turn completes, not before a command runs. True mid-execution blocking is not possible. Use two layers instead:
+
+**Layer 1 — approval_policy with allow-list** (prevents auto-approval of Tier 1 commands):
+
+```toml
+# ~/.codex/config.toml or project-local override
+approval_policy = "unless-allow-listed"
+
+[[allow_list]]
+# List only commands you are confident are safe.
+# Tier 1 patterns must NOT appear here.
+command = "npm test"
+command = "npm run build"
+command = "git status"
+command = "git diff"
+command = "cat"
+command = "ls"
+```
+
+**Layer 2 — prompt contract** (add to `developer_instructions` in config.toml):
+
+```toml
+developer_instructions = """
+...existing instructions...
+
+CHECKPOINT RULE — Before executing any Tier 1 operation, you MUST stop and output:
+  CHECKPOINT_NEEDED: <reason>
+Then wait for the user to respond with explicit approval before proceeding.
+
+Tier 1 operations (always require checkpoint):
+- rm -rf or any recursive deletion
+- git reset --hard
+- git push --force or --force-with-lease
+- DROP TABLE or destructive DB migrations
+- sudo commands
+- Reading or writing .env*, secrets/**, credential files
+- Any command targeting a production environment
+"""
+```
+
+> **Limitation**: Codex cannot block a command mid-turn if the agent decides to proceed without outputting `CHECKPOINT_NEEDED`. The `approval_policy` is the last line of defense — keep it as `unless-allow-listed` rather than `never` for Tier 1 risk scenarios.
+
+---
+
 ## Gemini CLI
 
 Gemini CLI is designed around explicit consent and Trusted Folders, not a true global bypass mode.
@@ -150,15 +240,77 @@ The safe pattern is:
 
 The trust state is persisted in `~/.gemini/trustedFolders.json` (as of Gemini CLI 0.x; verify against the linked official docs if your version differs). Review or reset it there if the repo layout changes or sensitive files are added later.
 
+### Mid-Execution Checkpoints — Gemini CLI
+
+Gemini `BeforeTool` fires before each tool call. A non-zero exit blocks the tool and the stderr output is forwarded to the agent's next turn, creating a natural confirmation loop.
+
+Add to `~/.gemini/settings.json`:
+
+```json
+{
+  "hooks": {
+    "BeforeTool": [{
+      "matcher": "run_shell_command",
+      "hooks": [{
+        "type": "command",
+        "command": "bash ~/.gemini/hooks/ralph-tier1-check.sh",
+        "timeout": 15
+      }]
+    }]
+  }
+}
+```
+
+Create `~/.gemini/hooks/ralph-tier1-check.sh`:
+
+```bash
+#!/usr/bin/env bash
+# Gemini BeforeTool: receives tool call JSON on stdin.
+# Blocks Tier 1 commands and passes the reason to the agent's next turn.
+CMD=$(cat - | python3 -c \
+  "import sys,json; d=json.load(sys.stdin); print(d.get('args',{}).get('command',''))" 2>/dev/null)
+TIER1='(rm[[:space:]]+-rf|git[[:space:]]+reset[[:space:]]+--hard|git[[:space:]]+push.*--force|DROP[[:space:]]+TABLE|[[:space:]]sudo[[:space:]]|chmod[[:space:]]+777|\.env|secrets/)'
+if echo "$CMD" | grep -qE "$TIER1"; then
+  echo "[RALPH-SAFETY] Tier 1 command blocked: $CMD" >&2
+  echo "Reason: matches dangerous pattern. Ask the user for explicit approval before retrying." >&2
+  exit 1
+fi
+```
+
+Make executable: `chmod +x ~/.gemini/hooks/ralph-tier1-check.sh`
+
+The blocked stderr is injected into the agent's context on the next turn. The agent will naturally surface the block reason to the user and wait for a response before retrying.
+
+---
+
+## OpenCode
+
+OpenCode does not expose BeforeTool or PermissionRequest hooks. Use a prompt contract in `opencode.json`.
+
+### Prompt contract
+
+Add to the `instructions` field in `opencode.json`:
+
+```json
+{
+  "instructions": "...existing instructions...\n\nCHECKPOINT RULE: Before any Tier 1 operation, output CHECKPOINT_NEEDED: <reason> and wait for explicit user approval before proceeding.\n\nTier 1 operations: rm -rf, git reset --hard, git push --force, DROP TABLE, sudo commands, reading/writing .env* or secrets/**, any production environment change."
+}
+```
+
+> **Limitation**: OpenCode has no hook-based blocking. The prompt contract relies entirely on the agent following instructions. For higher-risk workflows, prefer Claude Code or Gemini CLI which support true pre-execution blocking.
+
+---
+
 ## Platform selection summary
 
 Use this table to decide quickly:
 
-| Platform | Normal repo automation | Full skip equivalent | Notes |
-| --- | --- | --- | --- |
-| Claude Code | `acceptEdits` or `dontAsk` with allow and deny rules | `bypassPermissions` or `--dangerously-skip-permissions` | Use full bypass only in disposable sandboxes |
-| Codex CLI | `approval_policy = "never"` + `sandbox_mode = "workspace-write"` | `approval_policy = "never"` + `sandbox_mode = "danger-full-access"` | Current official model is approvals plus sandbox, not tool-pattern ACLs |
-| Gemini CLI | Trusted project folder | None | Trusted Folders reduce prompts but do not create YOLO mode |
+| Platform | Normal repo automation | Full skip equivalent | Mid-execution blocking | Notes |
+| --- | --- | --- | --- | --- |
+| Claude Code | `acceptEdits` or `dontAsk` with allow and deny rules | `bypassPermissions` or `--dangerously-skip-permissions` | `PreToolUse` hook (exit 2) | Use full bypass only in disposable sandboxes; `bypassPermissions` may skip hooks |
+| Codex CLI | `approval_policy = "never"` + `sandbox_mode = "workspace-write"` | `approval_policy = "never"` + `sandbox_mode = "danger-full-access"` | `approval_policy = "unless-allow-listed"` + prompt contract | `notify` hook is post-turn; no true pre-execution block |
+| Gemini CLI | Trusted project folder | None | `BeforeTool` hook (non-zero exit) | Strongest mid-execution blocking; stderr forwarded to agent's next turn |
+| OpenCode | Slash commands + `opencode.json` instructions | None | Prompt contract only | No hook-based blocking; rely on agent following instructions |
 
 ## Source notes
 
