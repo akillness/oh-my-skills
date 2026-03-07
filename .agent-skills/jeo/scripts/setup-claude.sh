@@ -111,8 +111,33 @@ else:
     messages.append("✓ agentation MCP already registered")
 
 user_prompt = hooks.setdefault("UserPromptSubmit", [])
-if not any(h.get("command", "").startswith("curl -sf --connect-timeout 1 http://localhost:4747") for h in user_prompt):
-    user_prompt.append({"type": "command", "command": agentation_cmd})
+
+# Migrate old-format entries (flat {"type":"command",...}) to new matcher format
+migrated = False
+new_user_prompt = []
+for entry in user_prompt:
+    if "matcher" in entry and "hooks" in entry:
+        new_user_prompt.append(entry)
+    elif entry.get("type") == "command":
+        # Old format → wrap in new matcher format
+        new_user_prompt.append({"matcher": "*", "hooks": [entry]})
+        migrated = True
+    else:
+        new_user_prompt.append(entry)
+if migrated:
+    hooks["UserPromptSubmit"] = new_user_prompt
+    user_prompt = new_user_prompt
+    changed = True
+    messages.append("✓ UserPromptSubmit hooks migrated to new matcher format")
+
+agentation_hook_exists = any(
+    any(h.get("command", "").startswith("curl -sf --connect-timeout 1 http://localhost:4747")
+        for h in entry.get("hooks", []))
+    for entry in user_prompt
+    if isinstance(entry, dict) and "hooks" in entry
+)
+if not agentation_hook_exists:
+    user_prompt.append({"matcher": "*", "hooks": [{"type": "command", "command": agentation_cmd}]})
     changed = True
     messages.append("✓ agentation UserPromptSubmit hook added")
 else:

@@ -164,6 +164,32 @@ hooks = settings.setdefault("hooks", {})
 # AfterAgent is the correct Gemini CLI hook (ExitPlanMode is Claude Code-only)
 after_agent = hooks.setdefault("AfterAgent", [])
 
+# Migrate old-format entries (flat {"type":"command",...}) to new matcher format
+migrated = False
+new_after_agent = []
+for entry in after_agent:
+    if "matcher" in entry and "hooks" in entry:
+        # Ensure timeout on plannotator hooks (1800s for blocking UI wait)
+        for h in entry.get("hooks", []):
+            if "plannotator" in h.get("command", "") and "timeout" not in h:
+                h["timeout"] = 1800
+                migrated = True
+        new_after_agent.append(entry)
+    elif entry.get("type") == "command":
+        # Old format -> wrap in new matcher format
+        if "timeout" not in entry:
+            entry["timeout"] = 300
+        new_after_agent.append({"matcher": "", "hooks": [entry]})
+        migrated = True
+    else:
+        new_after_agent.append(entry)
+if migrated:
+    hooks["AfterAgent"] = new_after_agent
+    after_agent = new_after_agent
+    with open(settings_path, "w") as f:
+        json.dump(settings, f, indent=2)
+    print("\\u2713 AfterAgent hooks migrated to new matcher format with timeouts")
+
 # Check if jeo plannotator hook already exists (old or new form)
 planno_exists = any(
     any(
@@ -180,6 +206,7 @@ if not planno_exists:
             "name": "plannotator-review",
             "type": "command",
             "command": f"bash {hook_path}",
+            "timeout": 1800,
             "description": "plan.md 감지 시 plannotator 실행 (AfterAgent backup)"
         }]
     })
@@ -205,6 +232,7 @@ if not agentation_exists:
             "name": "agentation-check",
             "type": "command",
             "command": f"bash {agentation_hook_path}",
+            "timeout": 300,
             "description": "VERIFY_UI phase: check pending agentation annotations"
         }]
     })

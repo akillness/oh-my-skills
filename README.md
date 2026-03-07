@@ -2,7 +2,7 @@
 
 > 🌐 Language / 언어: **English** | **[한국어](README.ko.md)**
 
-> v2026-03-06 · **71 Skills** · **TOON Format** · **Flat Skill Layout**
+> v2026-03-08 · **71 Skills** · **TOON Format** · **Flat Skill Layout**
 
 [![GitHub Releases](https://img.shields.io/badge/GitHub-Releases-blue)](https://github.com/akillness/skills-template/releases)
 [![Skills](https://img.shields.io/badge/Skills-71-brightgreen)](#skills-list-71-total)
@@ -15,7 +15,7 @@
 ## Contents
 
 - [Quick Start](#quick-start)
-- [What's New](#whats-new-in-v2026-03-06)
+- [What's New](#whats-new-in-v2026-03-08)
 - [Installation](#installation)
 - [Getting Started Guide](#getting-started-guide)
 - [Skills List (71)](#skills-list-71-total)
@@ -44,13 +44,12 @@ curl -s https://raw.githubusercontent.com/akillness/skills-template/main/setup-a
 
 ---
 
-## What's New in v2026-03-06
+## What's New in v2026-03-08
 
 | Change | Details |
 |--------|---------|
-| **TOON Format — Cross-Platform Hook Integration** | Designed and implemented by a 6-person ultrateam. **Claude Code**: `~/.claude/hooks/toon-inject.mjs` (Node.js, symlink traversal, 3-tier keyword matching, 26-37ms). **Gemini CLI**: `toon-skill-inject.sh` + `includeDirectories`. **Codex CLI**: static catalog + 2-turn sidecar pattern |
-| **bmad-orchestrator TOON Integration Docs** | TOON Format Integration section added to `SKILL.md`. Two-tier architecture: Tier 1 catalog always injected (~875-3,500 tokens) + Tier 2 SKILL.toon on-demand (max 3). Full platform-specific configuration documented |
-| **71 SKILL.toon Full Validation** | All 71 skills verified and corrected for TOON format compliance |
+| **jeo: Gemini CLI plannotator feedback wait fix** | Gemini CLI AfterAgent hooks now include `timeout: 1800` (30 min) for plannotator, ensuring the blocking review UI stays open until user approves or sends feedback. Old-format hooks without `matcher`/`hooks` wrapper are auto-migrated. Removed invalid `PermissionRequest.ExitPlanMode` (Claude Code-only event) from Gemini settings |
+| **jeo: Claude Code hooks format fix** | Fixed `UserPromptSubmit` hooks to use the new matcher format (`{"matcher": "*", "hooks": [...]}`) instead of flat format. `setup-claude.sh` now auto-migrates old-format entries on re-run, preventing the `hooks: Expected array, but received undefined` error |
 
 > Previous changes: [Changelog](#changelog)
 
@@ -579,7 +578,11 @@ Full configuration: [bmad-orchestrator SKILL.md — TOON Format Integration](.ag
 
 ## Changelog
 
-**v2026-03-06 (latest)**:
+**v2026-03-08 (latest)**:
+- **jeo: Gemini CLI plannotator feedback wait fix**: AfterAgent hooks now include `timeout: 1800` (30 min) for plannotator blocking review. Old-format hook entries (flat `{"type":"command",...}` without `matcher`/`hooks` wrapper) are auto-migrated to new format on setup re-run. Removed invalid `PermissionRequest.ExitPlanMode` from Gemini settings (Claude Code-only event)
+- **jeo: Claude Code hooks format fix**: `setup-claude.sh` now creates `UserPromptSubmit` hooks in the new matcher format and auto-migrates old-format entries, fixing the `hooks: Expected array, but received undefined` settings error after installation
+
+**v2026-03-06**:
 - **TOON Format Cross-Platform Hook Integration**: Designed and implemented by a 6-person ultrateam (QA · LLM Expert · Skill Expert · ClaudeCode · Codex · Gemini-CLI). Claude Code: `~/.claude/hooks/toon-inject.mjs` Node.js hook (symlink traversal, 3-tier keyword matching, 26-37ms). Gemini CLI: `~/.gemini/hooks/toon-skill-inject.sh` + `includeDirectories` + `AfterAgent` hook. Codex CLI: static catalog (`skills-toon-catalog.toon`, 62 skills) + `notify-dispatch.py` + 2-turn sidecar pattern
 - **bmad-orchestrator SKILL.md TOON Integration section**: Full two-tier architecture documentation (Tier 1 catalog ~875-3,500 tokens always injected / Tier 2 SKILL.toon on-demand max 3)
 - **71 SKILL.toon full validation**: All skills verified and corrected for TOON format compliance

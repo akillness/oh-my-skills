@@ -2,7 +2,7 @@
 
 > 🌐 Language / 언어: **[English](README.md)** | **한국어**
 
-> v2026-03-06 · **71 Skills** · **TOON Format** · **Flat Skill Layout**
+> v2026-03-08 · **71 Skills** · **TOON Format** · **Flat Skill Layout**
 
 [![GitHub Releases](https://img.shields.io/badge/GitHub-Releases-blue)](https://github.com/akillness/skills-template/releases)
 [![Skills](https://img.shields.io/badge/Skills-71-brightgreen)](#skills-list-71-total)
@@ -15,7 +15,7 @@
 ## Contents
 
 - [Quick Start](#quick-start)
-- [What's New](#whats-new-in-v2026-03-06)
+- [What's New](#whats-new-in-v2026-03-08)
 - [설치 (Install)](#설치-install)
 - [실행 가이드](#실행-가이드)
 - [Skills List (71)](#skills-list-71-total)
@@ -44,13 +44,12 @@ curl -s https://raw.githubusercontent.com/akillness/skills-template/main/setup-a
 
 ---
 
-## What's New in v2026-03-06
+## What's New in v2026-03-08
 
 | 변경 | 내용 |
 |------|------|
-| **TOON Format 전 플랫폼 훅 통합** | ultrateam 6명 설계·구현. **Claude Code**: `~/.claude/hooks/toon-inject.mjs` (Node.js, 심링크 추적, 3단계 키워드 매칭, 26-37ms). **Gemini CLI**: `toon-skill-inject.sh` + `includeDirectories`. **Codex CLI**: 정적 카탈로그 + 2-턴 사이드카 패턴 |
-| **bmad-orchestrator TOON Integration 문서화** | `SKILL.md`에 TOON Format Integration 섹션 추가. Two-tier 아키텍처: Tier 1 카탈로그 항상 주입 (~875-3,500 tokens) + Tier 2 SKILL.toon 온디맨드 (max 3개). 플랫폼별 설정 전체 문서화 |
-| **71개 SKILL.toon 전수 검증** | 모든 71개 스킬 TOON 포맷 준수 여부 검증 및 수정 완료 |
+| **jeo: Gemini CLI plannotator 피드백 대기 수정** | Gemini CLI AfterAgent 훅에 `timeout: 1800` (30분) 추가하여 plannotator 브라우저 UI가 사용자 승인/피드백까지 대기. `matcher`/`hooks` 래퍼 없는 구형 훅 자동 마이그레이션. Gemini 설정에서 무효한 `PermissionRequest.ExitPlanMode` (Claude Code 전용 이벤트) 제거 |
+| **jeo: Claude Code 훅 포맷 오류 수정** | `UserPromptSubmit` 훅을 새 matcher 포맷(`{"matcher": "*", "hooks": [...]}`)으로 변환. `setup-claude.sh` 재실행 시 구형 포맷 자동 마이그레이션하여 `hooks: Expected array, but received undefined` 오류 방지 |
 
 > 이전 변경 내역: [Changelog](#changelog)
 
@@ -577,7 +576,11 @@ U[n]: use cases · S[n]{n,action,details}: steps · R[n]: rules · E[n]{desc,in,
 
 ## Changelog
 
-**v2026-03-06 (latest)**:
+**v2026-03-08 (latest)**:
+- **jeo: Gemini CLI plannotator 피드백 대기 수정**: AfterAgent 훅에 `timeout: 1800` (30분) 추가. 구형 훅 엔트리(`matcher`/`hooks` 래퍼 없는 평탄 형식)를 setup 재실행 시 자동 마이그레이션. Gemini 설정에서 무효한 `PermissionRequest.ExitPlanMode` 제거 (Claude Code 전용 이벤트)
+- **jeo: Claude Code 훅 포맷 오류 수정**: `setup-claude.sh`가 `UserPromptSubmit` 훅을 새 matcher 포맷으로 생성하고 구형 포맷을 자동 마이그레이션하여 설치 후 `hooks: Expected array, but received undefined` 설정 오류 해결
+
+**v2026-03-06**:
 - **TOON Format 전 플랫폼 훅 통합**: ultrateam(QA·LLM전문가·Skill전문가·ClaudeCode·Codex·Gemini-CLI) 6명 설계·구현. Claude Code: `~/.claude/hooks/toon-inject.mjs` Node.js hook (심링크 추적, 3단계 키워드 매칭, 26-37ms). Gemini CLI: `~/.gemini/hooks/toon-skill-inject.sh` + `includeDirectories` + `AfterAgent` 훅. Codex CLI: 정적 카탈로그(`skills-toon-catalog.toon`, 62 skills) + `notify-dispatch.py` + 2-턴 사이드카 패턴
 - **bmad-orchestrator SKILL.md TOON Integration 섹션**: Two-tier 아키텍처 전체 문서화 (Tier 1 카탈로그 ~875-3,500 tokens 항상 주입 / Tier 2 SKILL.toon 온디맨드 max 3개)
 - **71개 SKILL.toon 전수 검증**: 모든 스킬 TOON 포맷 준수 여부 검증 및 수정 완료
