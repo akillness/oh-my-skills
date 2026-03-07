@@ -165,14 +165,20 @@ if os.path.exists(f):
             fcntl.flock(fh,fcntl.LOCK_UN)
 " 2>/dev/null || true
 
-# plannotator is required for the PLAN step
+# NOTE: Claude Code — skip this entire bash block.
+# plannotator is a hook-only binary; calling it directly always fails.
+# For Claude Code: call EnterPlanMode → write plan → call ExitPlanMode.
+# The ExitPlanMode PermissionRequest hook fires plannotator automatically.
+# The following script is for Codex / Gemini / OpenCode only.
+
+# plannotator is required for the PLAN step (Codex/Gemini/OpenCode)
 if ! command -v plannotator >/dev/null 2>&1; then
   echo "❌ plannotator not installed: cannot proceed with PLAN step."
   echo "   Install: bash scripts/install.sh --with-plannotator"
   exit 1
 fi
 
-# Required PLAN gate:
+# Required PLAN gate (Codex / Gemini / OpenCode):
 # - Must wait until approve/feedback is received
 # - Auto-restart on session exit (up to 3 times)
 # - After 3 exits, ask user whether to end PLAN
@@ -203,14 +209,18 @@ mkdir -p .omc/plans .omc/logs
 
 1. Write `plan.md` (include goal, steps, risks, and completion criteria)
 2. **Invoke plannotator** (per platform):
-   - **Claude Code**: call `submit_plan` MCP tool directly
+   - **Claude Code (hook mode — only supported method)**:
+     `plannotator` is a hook-only binary. It cannot be called via MCP tool or CLI directly.
+     Call `EnterPlanMode`, write the plan content in plan mode, then call `ExitPlanMode`.
+     The `ExitPlanMode` PermissionRequest hook fires `plannotator` automatically.
+     Wait for the hook to return before proceeding — approved or feedback will arrive via the hook result.
    - **Codex / Gemini / OpenCode**: run blocking CLI (never use `&`):
      ```bash
      bash scripts/plannotator-plan-loop.sh plan.md /tmp/plannotator_feedback.txt 3
      ```
 3. Check result:
-   - `approved: true` → update `jeo-state.json` `phase` to `"execute"` and `plan_approved` to `true` → **enter STEP 2**
-   - Not approved (`exit 10`) → read `/tmp/plannotator_feedback.txt`, apply feedback → revise `plan.md` → repeat step 2
+   - `approved: true` (Claude Code: hook returns approved) → update `jeo-state.json` `phase` to `"execute"` and `plan_approved` to `true` → **enter STEP 2**
+   - Not approved (Claude Code: hook returns feedback; others: `exit 10`) → read feedback, revise `plan.md` → repeat step 2
    - Infrastructure blocked (`exit 32`) → localhost bind unavailable (e.g., sandbox/CI). Use manual gate in TTY; confirm with user and retry outside sandbox in non-TTY
    - Session exited 3 times (`exit 30/31`) → ask user whether to end PLAN and decide to abort or resume
 
@@ -980,7 +990,8 @@ bash scripts/worktree-cleanup.sh
 | Issue | Solution |
 |------|------|
 | plannotator not running | `bash .agent-skills/plannotator/scripts/check-status.sh` |
-| plannotator feedback not received | Remove `&` background execution → run blocking, then check `/tmp/plannotator_feedback.txt` |
+| plannotator not opening in Claude Code | plannotator is hook-only. Do NOT call it via MCP or CLI. Use `EnterPlanMode` → write plan → `ExitPlanMode`; the hook fires automatically. Verify hook is set: `cat ~/.claude/settings.json \| python3 -c "import sys,json;h=json.load(sys.stdin).get('hooks',{});print(h.get('PermissionRequest','missing'))"` |
+| plannotator feedback not received | Remove `&` background execution → run blocking, then check `/tmp/plannotator_feedback.txt` (Codex/Gemini/OpenCode only) |
 | Codex startup failure (`invalid type: map, expected a string`) | Re-run `bash scripts/setup-codex.sh` and confirm `developer_instructions` in `~/.codex/config.toml` is a top-level string |
 | Gemini feedback loop missing | Add blocking direct call instruction to `~/.gemini/GEMINI.md` |
 | worktree conflict | `git worktree prune && git worktree list` |

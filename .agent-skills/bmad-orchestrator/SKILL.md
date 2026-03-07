@@ -104,7 +104,7 @@ Or submit the plan directly from within your AI session:
 planno — review the PRD before we proceed to Phase 3
 ```
 
-The agent will call `submit_plan` with the document content, opening the plannotator UI for review.
+The agent will open the plannotator UI for review. In Claude Code: call `EnterPlanMode` → write plan → call `ExitPlanMode` (hook fires automatically). In OpenCode: the `submit_plan` plugin tool is available directly.
 
 ### Phase Gate Flow
 
