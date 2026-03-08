@@ -50,6 +50,7 @@ curl -s https://raw.githubusercontent.com/akillness/skills-template/main/setup-a
 |--------|---------|
 | **ralphmode v0.2.0: Mid-Execution Approval Checkpoints** | 플랫폼별 실행 중 위험 작업 차단 메커니즘 추가. Claude Code `PreToolUse` 훅(exit 2 차단) + Gemini CLI `BeforeTool` 훅(non-zero exit 차단) + Codex CLI `approval_policy="unless-allow-listed"` + prompt contract + OpenCode prompt contract. Tier 1/2/3 위험 작업 분류표 및 훅 스크립트 템플릿 수록 |
 | **jeo: plannotator auto-install before PLAN** | `jeo` now auto-runs `bash scripts/ensure-plannotator.sh` when `plannotator` is missing, so the PLAN gate installs the CLI first and only proceeds after the binary is available. `plannotator-plan-loop.sh` and `install.sh` now also fail fast if installation does not actually leave a runnable `plannotator` in `PATH` |
+| **jeo: Claude Code now requires team mode** | In Claude Code, `jeo` no longer falls back to single-agent execution. EXECUTE must use `/omc:team`, and `check-status.sh` now fails when `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` is not configured |
 | **jeo: plannotator Claude Code 동작 방식 수정 (P0)** | `plannotator`는 hook-only 바이너리로 Claude Code의 `ExitPlanMode` PermissionRequest 훅으로만 실행 가능. SKILL.md에서 존재하지 않는 `submit_plan` MCP 툴 호출 지시를 제거하고, 올바른 `EnterPlanMode` → write plan → `ExitPlanMode` hook 방식으로 교체. `bmad-orchestrator/SKILL.md`도 플랫폼별(Claude Code / OpenCode) 방식 명확화 |
 | **jeo: Gemini CLI plannotator feedback wait fix** | Gemini CLI AfterAgent hooks now include `timeout: 1800` (30 min) for plannotator, ensuring the blocking review UI stays open until user approves or sends feedback. Old-format hooks without `matcher`/`hooks` wrapper are auto-migrated. Removed invalid `PermissionRequest.ExitPlanMode` (Claude Code-only event) from Gemini settings |
 | **jeo: Claude Code hooks format fix** | Fixed `UserPromptSubmit` hooks to use the new matcher format (`{"matcher": "*", "hooks": [...]}`) instead of flat format. `setup-claude.sh` now auto-migrates old-format entries on re-run, preventing the `hooks: Expected array, but received undefined` error |
@@ -96,7 +97,7 @@ curl -s https://raw.githubusercontent.com/akillness/skills-template/main/setup-a
 | Phase | Tool | Role |
 |-------|------|------|
 | Plan | ralph + plannotator | AI creates plan, auto-installs `plannotator` if needed, then waits for approve/feedback |
-| Execute | omc team / bmad | Parallel agents write code |
+| Execute | omc team / bmad | Claude Code requires `/omc:team`; other platforms use BMAD fallback |
 | Verify | agent-browser | Browser behavior verification (default) |
 | Cleanup | worktree-cleanup | Auto-cleanup after completion |
 
@@ -495,6 +496,7 @@ npx skills add https://github.com/akillness/skills-template --skill bmad-orchest
 Complete automated orchestration flow: Plan (ralph+plannotator) → Execute (team/bmad) → Browser verify (agent-browser) → UI feedback (agentation/annotate) → Cleanup (worktree cleanup).
 
 If `plannotator` is missing at PLAN time, `jeo` now auto-runs `bash scripts/ensure-plannotator.sh` and proceeds only after the CLI is installed and visible in `PATH`.
+In Claude Code, `jeo` requires team mode and must execute through `/omc:team`; it does not degrade to a single-agent `/ralph` path anymore.
 
 ```bash
 bash scripts/install.sh --all   # Full installation
@@ -503,7 +505,7 @@ bash scripts/install.sh --all   # Full installation
 | Phase | Tool | Description |
 |-------|------|-------------|
 | Plan | ralph + plannotator | Visual plan review → Approve/Feedback |
-| Execute | omc team / bmad | Parallel agent execution |
+| Execute | omc team / bmad | Claude Code requires `/omc:team`; other platforms use BMAD fallback |
 | Verify | agent-browser | Browser behavior verification (default) |
 | Verify UI | agentation (**annotate**) | UI annotation watch loop — pre-flight → ack→fix→resolve→re-snapshot |
 | Cleanup | worktree-cleanup.sh | Auto worktree cleanup after completion |

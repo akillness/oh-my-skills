@@ -83,7 +83,7 @@ except Exception:
   if $TEAMS_ENABLED; then
     ok "Claude Code — experimental agent teams enabled"; ((PASS++)) || true
   else
-    warn "Claude Code — experimental agent teams not enabled"; ((WARN++)) || true
+    err "Claude Code — experimental agent teams not enabled (required for JEO team execution)"; ((FAIL++)) || true
   fi
   if grep -q '"agentation"' "${HOME}/.claude/settings.json" 2>/dev/null; then
     ok "Claude Code — agentation MCP configured"; ((PASS++)) || true

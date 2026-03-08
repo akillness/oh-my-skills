@@ -292,12 +292,13 @@ if os.path.exists(f):
    ```
    /omc:team 3:executor "<task>"
    ```
-3. **omc available but no team (Claude Code + omc, no AGENT_TEAMS)**:
+3. **Claude Code but no team**:
    ```
-   /ralph "<task>" --max-iterations=20
+   echo "❌ JEO requires Claude Code team mode. Re-run bash scripts/setup-claude.sh, restart Claude Code, and confirm CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1."
+   exit 1
    ```
-   Single-agent persistent loop with verification until complete.
-4. **No omc (BMAD fallback — Codex / Gemini / OpenCode)**:
+   Never fall back to single-agent execution in Claude Code.
+4. **No omc (BMAD fallback — Codex / Gemini / OpenCode only)**:
    ```
    /workflow-init   # Initialize BMAD
    /workflow-status # Check current step
@@ -529,11 +530,12 @@ Shift+Tab×2 → enter plan mode → plannotator runs automatically when plan is
 - staged pipeline: team-plan → team-prd → team-exec → team-verify → team-fix
 - Maximize speed with parallel agent execution
 
-**When omc is available but no team (Claude Code + omc, no AGENT_TEAMS):**
+**When Claude Code team mode is unavailable:**
 ```bash
-/ralph "<task based on approved plan>" --max-iterations=20
+echo "❌ JEO requires /omc:team in Claude Code. Run bash scripts/setup-claude.sh, restart Claude Code, then retry."
+exit 1
 ```
-- Single-agent persistent loop with verification until complete
+- Do not degrade to single-agent mode
 
 **When team is unavailable (BMAD fallback — Codex / Gemini / OpenCode):**
 ```bash
@@ -1020,7 +1022,7 @@ bash scripts/worktree-cleanup.sh
 | Codex startup failure (`invalid type: map, expected a string`) | Re-run `bash scripts/setup-codex.sh` and confirm `developer_instructions` in `~/.codex/config.toml` is a top-level string |
 | Gemini feedback loop missing | Add blocking direct call instruction to `~/.gemini/GEMINI.md` |
 | worktree conflict | `git worktree prune && git worktree list` |
-| team mode not working | Set `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` environment variable |
+| team mode not working | JEO requires team mode in Claude Code. Run `bash scripts/setup-claude.sh`, restart Claude Code, and verify `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` before retrying |
 | omc install failed | Run `/omc:omc-doctor` |
 | agent-browser error | Check `agent-browser --version` |
 | annotate (agentation) not opening | Check `curl http://localhost:4747/pending` — verify agentation-mcp server is running |
