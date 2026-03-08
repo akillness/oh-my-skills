@@ -98,6 +98,8 @@ npx skills add https://github.com/akillness/skills-template \
   --skill omc --skill plannotator --skill ralph --skill ralphmode --skill vibe-kanban
 ```
 
+> **Claude Code + jeo**: jeo EXECUTE 단계는 반드시 `/omc:team`을 사용해야 하며 단일 에이전트로 degrade하지 않습니다. jeo 실행 전 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`을 설정하세요.
+
 **Gemini CLI 전용:**
 ```bash
 npx skills add https://github.com/akillness/skills-template \
@@ -287,7 +289,7 @@ npx skills info jeo
 
 | 스킬 | 활성화 키워드 | 설명 |
 |------|-------------|------|
-| `jeo` | `jeo` | 통합 오케스트레이션 (권장 시작점) — 에이전트 실행 프로토콜 내장(STEP 0: state 부트스트랩 → PLAN/plannotator → EXECUTE → VERIFY → CLEANUP). 의존: plannotator, agentation |
+| `jeo` | `jeo` | 통합 오케스트레이션 (권장 시작점) — 에이전트 실행 프로토콜 내장(STEP 0: state 부트스트랩 → PLAN/plannotator → EXECUTE → VERIFY → CLEANUP). PLAN 단계에서 `plannotator`가 없으면 자동 설치. **Claude Code**: `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` 필수, EXECUTE는 `/omc:team`으로만 실행. 의존: plannotator, agentation |
 | `omc` | `omc`, `autopilot` | Claude Code 멀티에이전트 |
 | `ralph` | `ralph`, `ooo`, `ooo ralph`, `ooo interview` | Ouroboros 기반 specification-first 개발 (Interview→Seed→Execute→Evaluate→Evolve) + 영구 완료 루프 |
 | `ralphmode` | `ralphmode` | Claude Code, Codex CLI, Gemini CLI용 Ralph 자동화 permission profile. repo 경계 유지, sandbox-first, secret denylist 중심 |

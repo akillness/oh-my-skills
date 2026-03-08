@@ -98,6 +98,8 @@ npx skills add https://github.com/akillness/skills-template \
   --skill omc --skill plannotator --skill ralph --skill ralphmode --skill vibe-kanban
 ```
 
+> **Claude Code + jeo**: jeo EXECUTE phase requires `/omc:team` and will **not** fall back to single-agent execution. Set `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` before running jeo.
+
 **Gemini CLI only:**
 ```bash
 npx skills add https://github.com/akillness/skills-template \
@@ -287,7 +289,7 @@ First run after installation by platform:
 
 | Skill | Activation Keyword | Description |
 |-------|-------------------|-------------|
-| `jeo` | `jeo` | Integrated orchestration (recommended starting point) — built-in agent execution protocol (STEP 0: state bootstrap → PLAN/plannotator → EXECUTE → VERIFY → CLEANUP). Requires: plannotator, agentation |
+| `jeo` | `jeo` | Integrated orchestration (recommended starting point) — built-in agent execution protocol (STEP 0: state bootstrap → PLAN/plannotator → EXECUTE → VERIFY → CLEANUP). PLAN auto-installs `plannotator` if missing. **Claude Code**: requires `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`; EXECUTE must use `/omc:team`. Requires: plannotator, agentation |
 | `omc` | `omc`, `autopilot` | Claude Code multi-agent orchestration |
 | `ralph` | `ralph`, `ooo`, `ooo ralph`, `ooo interview` | Ouroboros specification-first development (Interview→Seed→Execute→Evaluate→Evolve) + persistent completion loop |
 | `ralphmode` | `ralphmode` | Ralph automation permission profiles for Claude Code, Codex CLI, Gemini CLI. Repo boundary enforcement, sandbox-first, secret denylist focused |
