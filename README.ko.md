@@ -49,6 +49,8 @@ curl -s https://raw.githubusercontent.com/akillness/skills-template/main/setup-a
 | 변경 | 내용 |
 |------|------|
 | **ralphmode v0.2.0: Mid-Execution Approval Checkpoints** | 플랫폼별 실행 중 위험 작업 차단 메커니즘 추가. Claude Code `PreToolUse` 훅(exit 2 차단) + Gemini CLI `BeforeTool` 훅(non-zero exit 차단) + Codex CLI `approval_policy="unless-allow-listed"` + prompt contract + OpenCode prompt contract. Tier 1/2/3 위험 작업 분류표 및 훅 스크립트 템플릿 수록 |
+| **jeo: PLAN 전 plannotator 자동 설치** | `jeo`는 `plannotator`가 없으면 `bash scripts/ensure-plannotator.sh`를 먼저 자동 실행합니다. PLAN gate는 CLI가 실제로 설치되어 `PATH`에서 보일 때만 계속 진행하며, `plannotator-plan-loop.sh`와 `install.sh`도 설치 후 실행 파일이 남지 않으면 즉시 실패합니다 |
+| **jeo: Claude Code는 이제 team mode 필수** | Claude Code에서 `jeo`는 더 이상 단일 에이전트 실행으로 degrade하지 않습니다. EXECUTE는 반드시 `/omc:team`을 사용해야 하며, `check-status.sh`도 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`이 없으면 실패합니다 |
 | **jeo: plannotator Claude Code 동작 방식 수정 (P0)** | `plannotator`는 hook-only 바이너리 — MCP 툴이나 CLI 직접 호출 시 항상 실패. `jeo/SKILL.md`에서 존재하지 않는 `submit_plan` MCP 툴 호출 지시 제거. `EnterPlanMode` → plan 작성 → `ExitPlanMode` 훅 방식으로 교체. pre-flight bash 블록에 Claude Code 스킵 주석 추가 (Codex/Gemini/OpenCode 전용 명시). `bmad-orchestrator/SKILL.md` Claude Code vs OpenCode 호출 방식 명확화. 트러블슈팅 항목 추가 |
 | **jeo: Gemini CLI plannotator 피드백 대기 수정** | Gemini CLI AfterAgent 훅에 `timeout: 1800` (30분) 추가하여 plannotator 브라우저 UI가 사용자 승인/피드백까지 대기. `matcher`/`hooks` 래퍼 없는 구형 훅 자동 마이그레이션. Gemini 설정에서 무효한 `PermissionRequest.ExitPlanMode` (Claude Code 전용 이벤트) 제거 |
 | **jeo: Claude Code 훅 포맷 오류 수정** | `UserPromptSubmit` 훅을 새 matcher 포맷(`{"matcher": "*", "hooks": [...]}`)으로 변환. `setup-claude.sh` 재실행 시 구형 포맷 자동 마이그레이션하여 `hooks: Expected array, but received undefined` 오류 방지 |
@@ -94,8 +96,8 @@ curl -s https://raw.githubusercontent.com/akillness/skills-template/main/setup-a
 
 | 단계 | 도구 | 역할 |
 |------|------|------|
-| 계획 | ralph + plannotator | AI가 계획을 세우고, 당신이 승인/피드백 |
-| 실행 | omc team / bmad | 병렬 에이전트가 코드를 작성 |
+| 계획 | ralph + plannotator | AI가 계획을 세우고, 필요하면 `plannotator`를 자동 설치한 뒤 승인/피드백을 기다림 |
+| 실행 | omc team / bmad | Claude Code는 `/omc:team` 필수, 다른 플랫폼은 BMAD fallback |
 | 검증 | agent-browser | 브라우저 동작 검증 (기본) |
 | 정리 | worktree-cleanup | 완료 후 자동 정리 |
 
@@ -492,6 +494,9 @@ npx skills add https://github.com/akillness/skills-template --skill bmad-orchest
 
 계획(ralph+plannotator) → 실행(team/bmad) → 브라우저검증(agent-browser) → UI피드백(agentation/annotate) → 정리(worktree cleanup)의 완전 자동화 오케스트레이션 플로우.
 
+`plannotator`가 PLAN 시점에 없으면 `jeo`가 `bash scripts/ensure-plannotator.sh`를 먼저 자동 실행하고, CLI가 설치되어 `PATH`에서 확인된 뒤에만 다음 단계로 진행합니다.
+Claude Code에서는 `jeo`가 team mode를 필수로 요구하며, 더 이상 단일 에이전트 경로로 degrade하지 않습니다.
+
 ```bash
 bash scripts/install.sh --all   # 전체 설치
 ```
@@ -499,7 +504,7 @@ bash scripts/install.sh --all   # 전체 설치
 | Phase | Tool | Description |
 |-------|------|-------------|
 | Plan | ralph + plannotator | 시각적 계획 검토 → Approve/Feedback |
-| Execute | omc team / bmad | 병렬 에이전트 실행 |
+| Execute | omc team / bmad | Claude Code는 `/omc:team` 필수, 다른 플랫폼은 BMAD fallback |
 | Verify | agent-browser | 브라우저 동작 검증 (기본) |
 | Verify UI | agentation (**annotate**) | UI 어노테이션 watch loop — pre-flight → ack→fix→resolve→re-snapshot |
 | Cleanup | worktree-cleanup.sh | 완료 후 worktree 자동 정리 |
@@ -580,6 +585,8 @@ U[n]: use cases · S[n]{n,action,details}: steps · R[n]: rules · E[n]{desc,in,
 
 **v2026-03-08 (latest)**:
 - **ralphmode v0.2.0: Mid-Execution Approval Checkpoints**: 플랫폼별 실행 중 위험 작업 동적 차단 패턴 추가. Claude Code: `PreToolUse` 훅 + `ralph-safety-check.sh` (exit 2 차단). Gemini CLI: `BeforeTool` 훅 + `ralph-tier1-check.sh` (non-zero exit 차단; stderr 다음 턴 전달). Codex CLI: `approval_policy="unless-allow-listed"` + `CHECKPOINT_NEEDED` 프롬프트 계약. OpenCode: `opencode.json` instructions 프롬프트 계약. Tier 1/2/3 위험 작업 분류표 및 훅 스크립트 템플릿 `permission-profiles.md`에 추가. 플랫폼 요약 테이블에 mid-execution blocking 컬럼 및 OpenCode 행 추가.
+- **jeo: PLAN 전 plannotator 자동 설치**: `jeo`는 `plannotator`가 없으면 `bash scripts/ensure-plannotator.sh`를 먼저 자동 실행. PLAN gate는 바이너리가 실제로 설치되어 `PATH`에서 확인될 때만 계속 진행. `plannotator-plan-loop.sh`와 `install.sh`도 설치 후 실행 가능한 `plannotator`가 남지 않으면 즉시 실패하도록 강화
+- **jeo: Claude Code는 이제 team mode 필수**: Claude Code에서 `jeo`는 더 이상 단일 에이전트 실행으로 degrade하지 않음. EXECUTE는 `/omc:team`으로만 진행하며, `check-status.sh`도 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`이 없으면 실패
 - **jeo: plannotator Claude Code 호출 방식 수정 (P0)**: `plannotator`는 hook-only 바이너리로 Claude Code의 `ExitPlanMode` PermissionRequest 훅으로만 동작. `jeo/SKILL.md`(배포 및 소스)에서 존재하지 않는 `submit_plan` MCP 툴 호출 지시 제거 → `EnterPlanMode` → plan 작성 → `ExitPlanMode` 훅 플로우로 교체. pre-flight bash 블록에 Claude Code 스킵 주석 추가. `bmad-orchestrator/SKILL.md` Claude Code / OpenCode 플랫폼별 호출 방식 명확화. 트러블슈팅 항목 추가
 - **jeo: Gemini CLI plannotator 피드백 대기 수정**: AfterAgent 훅에 `timeout: 1800` (30분) 추가. 구형 훅 엔트리(`matcher`/`hooks` 래퍼 없는 평탄 형식)를 setup 재실행 시 자동 마이그레이션. Gemini 설정에서 무효한 `PermissionRequest.ExitPlanMode` 제거 (Claude Code 전용 이벤트)
 - **jeo: Claude Code 훅 포맷 오류 수정**: `setup-claude.sh`가 `UserPromptSubmit` 훅을 새 matcher 포맷으로 생성하고 구형 포맷을 자동 마이그레이션하여 설치 후 `hooks: Expected array, but received undefined` 설정 오류 해결

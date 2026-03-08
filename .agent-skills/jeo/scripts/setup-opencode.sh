@@ -114,6 +114,7 @@ jeo_commands = {
         "template": (
             "Write plan.md, then run mandatory PLAN gate: "
             "bash .agent-skills/jeo/scripts/plannotator-plan-loop.sh plan.md /tmp/plannotator_feedback.txt 3. "
+            "If plannotator is missing, the PLAN gate auto-installs it first. "
             "This waits for approve/feedback, restarts dead sessions up to 3 times, "
             "and asks whether to stop PLAN after repeated failures."
         ),

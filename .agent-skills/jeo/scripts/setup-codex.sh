@@ -57,7 +57,7 @@ else
 #
 # PLAN phase protocol (Codex):
 #   1. Write plan to plan.md
-#   2. Run mandatory PLAN gate (blocks for feedback/approve, retries dead sessions up to 3):
+#   2. Run mandatory PLAN gate (auto-installs plannotator if missing, blocks for feedback/approve, retries dead sessions up to 3):
 #      bash .agent-skills/jeo/scripts/plannotator-plan-loop.sh plan.md /tmp/plannotator_feedback.txt 3
 #   3. Output "PLAN_READY" to trigger notify hook as backup signal
 #   4. Check result:
@@ -130,7 +130,7 @@ You are now operating in **JEO mode** — Integrated AI Agent Orchestration.
 ### Step 1: PLAN (plannotator — blocking loop)
 Before writing any code, create and review a plan:
 1. Write a detailed implementation plan in \`plan.md\` (objectives, steps, risks, acceptance criteria)
-2. Run plannotator PLAN gate (blocking, mandatory):
+2. Run plannotator PLAN gate (blocking, mandatory; auto-installs plannotator if missing):
    \`\`\`bash
    bash .agent-skills/jeo/scripts/plannotator-plan-loop.sh plan.md /tmp/plannotator_feedback.txt 3
    echo "PLAN_READY"
@@ -163,6 +163,7 @@ After all tasks complete:
 ## Key Commands
 - Plan review — run plannotator BLOCKING (no &), then output PLAN_READY:
   Mandatory behavior:
+  - If plannotator is missing, the PLAN gate auto-runs \`ensure-plannotator.sh\` first
   - Wait for approve/feedback every time
   - If session dies, restart up to 3 times
   - After 3 dead sessions, stop and ask whether PLAN should be terminated

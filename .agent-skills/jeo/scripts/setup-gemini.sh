@@ -31,7 +31,7 @@ fi
 
 # NOTE: Gemini CLI uses AfterAgent hook (not ExitPlanMode, which is Claude Code-only).
 # The primary method is agent direct blocking call — do NOT use & (background).
-# Manual blocking call (same-turn feedback):
+# Manual blocking call (same-turn feedback, auto-installs plannotator if missing):
 #   bash .agent-skills/jeo/scripts/plannotator-plan-loop.sh plan.md /tmp/plannotator_feedback.txt 3
 
 # ── 2. Configure ~/.gemini/settings.json ─────────────────────────────────────
@@ -274,7 +274,7 @@ JEO provides integrated AI agent orchestration across all AI tools.
 
 **PLAN** (plannotator — 직접 blocking 호출 필수):
 1. `plan.md` 작성 (목표, 단계, 리스크, 완료 기준 포함)
-2. PLAN gate 실행 (& 절대 금지):
+2. PLAN gate 실행 (& 절대 금지, plannotator 없으면 자동 설치 후 계속 진행):
   bash .agent-skills/jeo/scripts/plannotator-plan-loop.sh plan.md /tmp/plannotator_feedback.txt 3
   # 동작 보장:
   # - approve/feedback 입력까지 반드시 대기
