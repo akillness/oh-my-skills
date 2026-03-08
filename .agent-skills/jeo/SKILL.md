@@ -7,7 +7,7 @@ metadata:
   tags: jeo, orchestration, ralph, plannotator, agentation, annotate, agentui, UI검토, team, bmad, omc, omx, ohmg, agent-browser, multi-agent, workflow, worktree-cleanup, browser-verification, ui-feedback
   platforms: Claude, Codex, Gemini, OpenCode
   keyword: jeo
-  version: 1.2.0
+  version: 1.2.1
   source: supercent-io/skills-template
 ---
 
@@ -190,9 +190,29 @@ fi
 
 # plannotator is mandatory for the PLAN step (Codex/Gemini/OpenCode).
 # If missing, JEO auto-installs it before opening the PLAN gate.
-if ! bash scripts/ensure-plannotator.sh; then
+# Resolve the JEO scripts directory (works from any CWD)
+_JEO_SCRIPTS=""
+for _candidate in \
+  "${JEO_SKILL_DIR:-}/scripts" \
+  "$HOME/.agent-skills/jeo/scripts" \
+  "$HOME/.codex/skills/jeo/scripts" \
+  "$(pwd)/.agent-skills/jeo/scripts" \
+  "scripts" \
+  ; do
+  if [ -f "${_candidate}/plannotator-plan-loop.sh" ]; then
+    _JEO_SCRIPTS="$_candidate"
+    break
+  fi
+done
+
+if [ -z "$_JEO_SCRIPTS" ]; then
+  echo "❌ JEO scripts not found. Re-run: bash setup-codex.sh (or setup-gemini.sh)"
+  exit 1
+fi
+
+if ! bash "${_JEO_SCRIPTS}/ensure-plannotator.sh"; then
   echo "❌ plannotator auto-install failed: cannot proceed with PLAN step."
-  echo "   Retry: bash scripts/install.sh --with-plannotator"
+  echo "   Retry: bash ${_JEO_SCRIPTS}/../scripts/install.sh --with-plannotator"
   exit 1
 fi
 
@@ -202,7 +222,7 @@ fi
 # - After 3 exits, ask user whether to end PLAN
 FEEDBACK_DIR=$(python3 -c "import hashlib,os; h=hashlib.md5(os.getcwd().encode()).hexdigest()[:8]; d=f'/tmp/jeo-{h}'; os.makedirs(d,exist_ok=True); print(d)" 2>/dev/null || echo '/tmp')
 FEEDBACK_FILE="${FEEDBACK_DIR}/plannotator_feedback.txt"
-bash scripts/plannotator-plan-loop.sh plan.md "$FEEDBACK_FILE" 3
+bash "${_JEO_SCRIPTS}/plannotator-plan-loop.sh" plan.md "$FEEDBACK_FILE" 3
 PLAN_RC=$?
 
 if [ "$PLAN_RC" -eq 0 ]; then
@@ -234,9 +254,10 @@ mkdir -p .omc/plans .omc/logs
      Wait for the hook to return before proceeding — approved or feedback will arrive via the hook result.
    - **Codex / Gemini / OpenCode**: run blocking CLI (never use `&`):
      ```bash
-     bash scripts/plannotator-plan-loop.sh plan.md /tmp/plannotator_feedback.txt 3
+     # _JEO_SCRIPTS must be resolved first via the dynamic path discovery block in the pre-flight above
+     bash "${_JEO_SCRIPTS}/plannotator-plan-loop.sh" plan.md /tmp/plannotator_feedback.txt 3
      ```
-     If `plannotator` is missing, JEO must auto-run `bash scripts/ensure-plannotator.sh` first and continue only after the CLI is available.
+     If `plannotator` is missing, JEO must auto-run `bash "${_JEO_SCRIPTS}/ensure-plannotator.sh"` first and continue only after the CLI is available.
 3. Check result:
    - `approved: true` (Claude Code: hook returns approved) → update `jeo-state.json` `phase` to `"execute"` and `plan_approved` to `true` → **enter STEP 2**
    - Not approved (Claude Code: hook returns feedback; others: `exit 10`) → read feedback, revise `plan.md` → repeat step 2

@@ -43,7 +43,8 @@ else
   # Backup existing config
   [[ -f "$CODEX_CONFIG" ]] && cp "$CODEX_CONFIG" "${CODEX_CONFIG}.jeo.bak"
 
-  JEO_INSTRUCTION='# JEO Orchestration Workflow
+  JEO_INSTRUCTION=$(cat <<JEOEOF
+# JEO Orchestration Workflow
 # Keyword: jeo | Platforms: Codex, Claude, Gemini, OpenCode
 #
 # JEO provides integrated AI orchestration:
@@ -58,7 +59,7 @@ else
 # PLAN phase protocol (Codex):
 #   1. Write plan to plan.md
 #   2. Run mandatory PLAN gate (auto-installs plannotator if missing, blocks for feedback/approve, retries dead sessions up to 3):
-#      bash .agent-skills/jeo/scripts/plannotator-plan-loop.sh plan.md /tmp/plannotator_feedback.txt 3
+#      bash ${JEO_SKILL_DIR}/scripts/plannotator-plan-loop.sh plan.md /tmp/plannotator_feedback.txt 3
 #   3. Output "PLAN_READY" to trigger notify hook as backup signal
 #   4. Check result:
 #      - approved=true -> EXECUTE
@@ -69,7 +70,9 @@ else
 #   /workflow-init   — initialize BMAD workflow
 #   /workflow-status — check current BMAD phase
 #
-# Tools: agent-browser, playwriter, plannotator'
+# Tools: agent-browser, playwriter, plannotator
+JEOEOF
+)
 
   python3 - <<PYEOF
 import re, os
@@ -218,6 +221,12 @@ Save progress to: \`.omc/state/jeo-state.json\`
 Always check state file on resume to continue from last phase.
 PROMPTEOF
 
+  # Fix absolute paths in prompt file (replace relative .agent-skills paths with absolute JEO_SKILL_DIR)
+  sed -i.bak \
+    -e "s|bash .agent-skills/jeo/scripts/plannotator-plan-loop.sh|bash ${JEO_SKILL_DIR}/scripts/plannotator-plan-loop.sh|g" \
+    -e "s|\\\${JEO_SKILL_DIR}|${JEO_SKILL_DIR}|g" \
+    "$JEO_PROMPT_FILE"
+  rm -f "${JEO_PROMPT_FILE}.bak"
   ok "JEO prompt file created: $JEO_PROMPT_FILE"
 
   # ── 4. Create plannotator notify hook ────────────────────────────────────────
@@ -352,6 +361,11 @@ if __name__ == "__main__":
 HOOKEOF
 
   chmod +x "$HOOK_FILE"
+  # Inject absolute JEO script path as first candidate in get_plan_loop_script()
+  sed -i.bak \
+    "s|os.path.join(cwd, \".agent-skills\", \"jeo\", \"scripts\", \"plannotator-plan-loop.sh\")|\"${JEO_SKILL_DIR}/scripts/plannotator-plan-loop.sh\",\n        os.path.join(cwd, \".agent-skills\", \"jeo\", \"scripts\", \"plannotator-plan-loop.sh\")|" \
+    "$HOOK_FILE"
+  rm -f "${HOOK_FILE}.bak"
   ok "JEO notify hook created: $HOOK_FILE"
 
   # Add notify + tui to config.toml
