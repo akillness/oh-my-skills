@@ -152,13 +152,28 @@ if $INSTALL_PLANNOTATOR; then
   echo ""
   info "Installing plannotator..."
   PLANNOTATOR_INSTALL="$SKILLS_ROOT/plannotator/scripts/install.sh"
+  PLANNOTATOR_INSTALLED=false
   if [[ -f "$PLANNOTATOR_INSTALL" ]]; then
-    run "bash '$PLANNOTATOR_INSTALL' --all"
-    ok "plannotator installed via skills script"
+    if run "bash '$PLANNOTATOR_INSTALL' --all"; then
+      PLANNOTATOR_INSTALLED=true
+      ok "plannotator installed via skills script"
+    else
+      err "plannotator install script failed: $PLANNOTATOR_INSTALL"
+    fi
   else
     # Fallback: direct install
-    run "curl -fsSL https://plannotator.ai/install.sh | bash" || warn "plannotator install failed — check https://plannotator.ai"
-    ok "plannotator installed"
+    if run "curl -fsSL https://plannotator.ai/install.sh | bash"; then
+      PLANNOTATOR_INSTALLED=true
+      ok "plannotator installed"
+    else
+      err "plannotator install failed — check https://plannotator.ai"
+    fi
+  fi
+
+  export PATH="$HOME/.local/bin:$HOME/bin:$PATH"
+  if ! $PLANNOTATOR_INSTALLED || ! command -v plannotator >/dev/null 2>&1; then
+    err "plannotator is still unavailable after install attempt"
+    exit 1
   fi
 fi
 

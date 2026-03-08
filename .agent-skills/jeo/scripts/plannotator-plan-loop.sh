@@ -4,15 +4,20 @@
 
 set -euo pipefail
 
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 PLAN_FILE="${1:-plan.md}"
 FEEDBACK_FILE="${2:-}"
 MAX_RESTARTS="${3:-3}"
 PORT_ERROR_REGEX='Failed to start server\. Is port .* in use|EADDRINUSE|EPERM|operation not permitted|Failed to listen'
 
 if ! command -v plannotator >/dev/null 2>&1; then
-  echo "[JEO][PLAN] plannotator is required in PLAN phase." >&2
-  exit 127
+  if ! bash "$SCRIPT_DIR/ensure-plannotator.sh" --quiet; then
+    echo "[JEO][PLAN] plannotator is required in PLAN phase." >&2
+    exit 127
+  fi
 fi
+
+export PATH="$HOME/.local/bin:$HOME/bin:$PATH"
 
 if [[ ! -f "$PLAN_FILE" ]]; then
   echo "[JEO][PLAN] plan file not found: $PLAN_FILE" >&2

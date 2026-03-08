@@ -171,10 +171,11 @@ if os.path.exists(f):
 # The ExitPlanMode PermissionRequest hook fires plannotator automatically.
 # The following script is for Codex / Gemini / OpenCode only.
 
-# plannotator is required for the PLAN step (Codex/Gemini/OpenCode)
-if ! command -v plannotator >/dev/null 2>&1; then
-  echo "❌ plannotator not installed: cannot proceed with PLAN step."
-  echo "   Install: bash scripts/install.sh --with-plannotator"
+# plannotator is mandatory for the PLAN step (Codex/Gemini/OpenCode).
+# If missing, JEO auto-installs it before opening the PLAN gate.
+if ! bash scripts/ensure-plannotator.sh; then
+  echo "❌ plannotator auto-install failed: cannot proceed with PLAN step."
+  echo "   Retry: bash scripts/install.sh --with-plannotator"
   exit 1
 fi
 
@@ -218,6 +219,7 @@ mkdir -p .omc/plans .omc/logs
      ```bash
      bash scripts/plannotator-plan-loop.sh plan.md /tmp/plannotator_feedback.txt 3
      ```
+     If `plannotator` is missing, JEO must auto-run `bash scripts/ensure-plannotator.sh` first and continue only after the CLI is available.
 3. Check result:
    - `approved: true` (Claude Code: hook returns approved) → update `jeo-state.json` `phase` to `"execute"` and `plan_approved` to `true` → **enter STEP 2**
    - Not approved (Claude Code: hook returns feedback; others: `exit 10`) → read feedback, revise `plan.md` → repeat step 2
@@ -426,7 +428,7 @@ Tools that JEO installs and configures:
 | **ohmg** | Multi-agent framework for Gemini CLI | `bunx oh-my-ag` |
 | **bmad** | BMAD workflow orchestration | Included in skills |
 | **ralph** | Self-referential completion loop | Included in omc or install separately |
-| **plannotator** | Visual plan/diff review | `bash scripts/install.sh --with-plannotator` |
+| **plannotator** | Visual plan/diff review | Auto-installed during PLAN via `bash scripts/ensure-plannotator.sh` (or preinstall with `bash scripts/install.sh --with-plannotator`) |
 | **agentation** | UI annotation → agent code fix integration (`annotate` keyword, `agentui` compatibility maintained) | `bash scripts/install.sh --with-agentation` |
 | **agent-browser** | Headless browser for AI agents — **primary tool for browser behavior verification** | `npm install -g agent-browser` |
 | **playwriter** | Playwright-based browser automation (optional) | `npm install -g playwriter` |
@@ -1012,7 +1014,7 @@ bash scripts/worktree-cleanup.sh
 
 | Issue | Solution |
 |------|------|
-| plannotator not running | `bash .agent-skills/plannotator/scripts/check-status.sh` |
+| plannotator not running | JEO first auto-runs `bash scripts/ensure-plannotator.sh`; if it still fails, run `bash .agent-skills/plannotator/scripts/check-status.sh` |
 | plannotator not opening in Claude Code | plannotator is hook-only. Do NOT call it via MCP or CLI. Use `EnterPlanMode` → write plan → `ExitPlanMode`; the hook fires automatically. Verify hook is set: `cat ~/.claude/settings.json \| python3 -c "import sys,json;h=json.load(sys.stdin).get('hooks',{});print(h.get('PermissionRequest','missing'))"` |
 | plannotator feedback not received | Remove `&` background execution → run blocking, then check `/tmp/plannotator_feedback.txt` (Codex/Gemini/OpenCode only) |
 | Codex startup failure (`invalid type: map, expected a string`) | Re-run `bash scripts/setup-codex.sh` and confirm `developer_instructions` in `~/.codex/config.toml` is a top-level string |
