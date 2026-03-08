@@ -2,7 +2,7 @@
 
 > 🌐 Language / 언어: **English** | **[한국어](README.ko.md)**
 
-> v2026-03-08 · **71 Skills** · **TOON Format** · **Flat Skill Layout**
+> v2026-03-09 · **71 Skills** · **TOON Format** · **Flat Skill Layout**
 
 [![GitHub Releases](https://img.shields.io/badge/GitHub-Releases-blue)](https://github.com/akillness/skills-template/releases)
 [![Skills](https://img.shields.io/badge/Skills-71-brightgreen)](#skills-list-71-total)
@@ -15,7 +15,7 @@
 ## Contents
 
 - [Quick Start](#quick-start)
-- [What's New](#whats-new-in-v2026-03-08)
+- [What's New](#whats-new-in-v2026-03-09)
 - [Installation](#installation)
 - [Getting Started Guide](#getting-started-guide)
 - [Skills List (71)](#skills-list-71-total)
@@ -44,10 +44,13 @@ curl -s https://raw.githubusercontent.com/akillness/skills-template/main/setup-a
 
 ---
 
-## What's New in v2026-03-08
+## What's New in v2026-03-09
 
 | Change | Details |
 |--------|---------|
+| **jeo: Gemini/Antigravity repeated plannotator call fix** | `plannotator-plan-loop.sh` now writes `plan_approved` + `phase` to `jeo-state.json` on approval or feedback. `SKILL.md` PLAN block now has a GUARD that reads `jeo-state.json` and skips plannotator if already approved in a previous turn. AfterAgent hook logs result clearly. Prevents infinite re-invocation in environments without direct hook feedback injection. |
+| **jeo: Codex config.toml stray quote fix** | `setup-codex.sh` now guards the legacy JEO strip regex — only runs when no `developer_instructions = """` block exists, preventing the closing `"""` from being consumed on re-runs. Post-write TOML validation added: auto-strips standalone `"` lines if parse fails. |
+| **setup guides: jeo team mode + plannotator auto-install sync** | `setup-all-skills-prompt.md` and `setup-all-skills-prompt.ko.md` updated to document Claude Code team mode requirement (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`) and plannotator auto-install behavior. |
 | **ralphmode v0.2.0: Mid-Execution Approval Checkpoints** | 플랫폼별 실행 중 위험 작업 차단 메커니즘 추가. Claude Code `PreToolUse` 훅(exit 2 차단) + Gemini CLI `BeforeTool` 훅(non-zero exit 차단) + Codex CLI `approval_policy="unless-allow-listed"` + prompt contract + OpenCode prompt contract. Tier 1/2/3 위험 작업 분류표 및 훅 스크립트 템플릿 수록 |
 | **jeo: plannotator auto-install before PLAN** | `jeo` now auto-runs `bash scripts/ensure-plannotator.sh` when `plannotator` is missing, so the PLAN gate installs the CLI first and only proceeds after the binary is available. `plannotator-plan-loop.sh` and `install.sh` now also fail fast if installation does not actually leave a runnable `plannotator` in `PATH` |
 | **jeo: Claude Code now requires team mode** | In Claude Code, `jeo` no longer falls back to single-agent execution. EXECUTE must use `/omc:team`, and `check-status.sh` now fails when `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` is not configured |
@@ -585,7 +588,12 @@ Full configuration: [bmad-orchestrator SKILL.md — TOON Format Integration](.ag
 
 ## Changelog
 
-**v2026-03-08 (latest)**:
+**v2026-03-09 (latest)**:
+- **jeo: Gemini/Antigravity repeated plannotator call fix**: `plannotator-plan-loop.sh` now writes `plan_approved=true/false` and `phase=execute` to `jeo-state.json` after approval or feedback. `SKILL.md` PLAN bash block now has a GUARD that reads `jeo-state.json` and exits immediately if `plan_approved=true`, preventing re-invocation across turns in hook-based environments (Gemini CLI / Antigravity). `setup-gemini.sh` AfterAgent hook logs result (approved/feedback/bind-blocked) explicitly after the loop script completes.
+- **jeo: Codex config.toml stray quote fix on re-run**: `setup-codex.sh` now guards the legacy JEO content strip regex so it only fires when no `developer_instructions = """` block exists, preventing the closing `"""` from being consumed on subsequent runs. Post-write TOML validation added via `tomllib`; on parse failure, auto-strips standalone `"` lines before saving.
+- **setup guides sync**: `setup-all-skills-prompt.md` and `setup-all-skills-prompt.ko.md` updated with Claude Code team mode requirement note and plannotator auto-install behavior in Step 1 and keyword reference table.
+
+**v2026-03-08**:
 - **ralphmode v0.2.0: Mid-Execution Approval Checkpoints**: Added per-platform dynamic checkpoint patterns for blocking dangerous operations during ralph/jeo runs. Claude Code: `PreToolUse` hook with `ralph-safety-check.sh` (exit 2 block). Gemini CLI: `BeforeTool` hook with `ralph-tier1-check.sh` (non-zero exit block; stderr forwarded to agent's next turn). Codex CLI: `approval_policy="unless-allow-listed"` + `CHECKPOINT_NEEDED` prompt contract. OpenCode: prompt contract in `opencode.json` instructions. Tier 1/2/3 dangerous operation classification table and full hook script templates added to `permission-profiles.md`. Platform summary table updated with mid-execution blocking column and OpenCode row.
 - **jeo: plannotator auto-install before PLAN**: `jeo` now auto-runs `bash scripts/ensure-plannotator.sh` when `plannotator` is missing, so the PLAN gate installs the CLI first and only proceeds after the binary is available. `plannotator-plan-loop.sh` and `install.sh` now also fail fast if installation does not actually leave a runnable `plannotator` in `PATH`
 - **jeo: Claude Code now requires team mode**: In Claude Code, `jeo` no longer falls back to single-agent execution. EXECUTE must use `/omc:team`, and `check-status.sh` now fails when `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` is not configured

@@ -2,7 +2,7 @@
 
 > 🌐 Language / 언어: **[English](README.md)** | **한국어**
 
-> v2026-03-08 · **71 Skills** · **TOON Format** · **Flat Skill Layout**
+> v2026-03-09 · **71 Skills** · **TOON Format** · **Flat Skill Layout**
 
 [![GitHub Releases](https://img.shields.io/badge/GitHub-Releases-blue)](https://github.com/akillness/skills-template/releases)
 [![Skills](https://img.shields.io/badge/Skills-71-brightgreen)](#skills-list-71-total)
@@ -15,7 +15,7 @@
 ## Contents
 
 - [Quick Start](#quick-start)
-- [What's New](#whats-new-in-v2026-03-08)
+- [What's New](#whats-new-in-v2026-03-09)
 - [설치 (Install)](#설치-install)
 - [실행 가이드](#실행-가이드)
 - [Skills List (71)](#skills-list-71-total)
@@ -44,10 +44,13 @@ curl -s https://raw.githubusercontent.com/akillness/skills-template/main/setup-a
 
 ---
 
-## What's New in v2026-03-08
+## What's New in v2026-03-09
 
 | 변경 | 내용 |
 |------|------|
+| **jeo: Gemini/Antigravity plannotator 반복 호출 방지** | `plannotator-plan-loop.sh`가 승인/피드백 결과를 `jeo-state.json`에 기록(`plan_approved`, `phase`). `SKILL.md` PLAN 블록에 GUARD 추가 — 이전 턴에서 이미 승인됐으면 plannotator 스킵. AfterAgent 훅 결과 로그 명확화. 훅 피드백 주입이 없는 환경(Antigravity)에서 무한 재호출 방지. |
+| **jeo: Codex config.toml stray quote 수정** | `setup-codex.sh`의 legacy strip 정규식에 guard 추가 — `developer_instructions = """` 블록이 이미 있으면 실행 안 함 (재실행 시 닫는 `"""` 소비 방지). 파일 저장 후 TOML 검증 추가: 파싱 실패 시 단독 `"` 라인 자동 제거. |
+| **setup 가이드: jeo team mode + plannotator 자동설치 동기화** | `setup-all-skills-prompt.md`, `setup-all-skills-prompt.ko.md`에 Claude Code team mode 필수 조건(`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`)과 plannotator 자동설치 동작 설명 추가. |
 | **ralphmode v0.2.0: Mid-Execution Approval Checkpoints** | 플랫폼별 실행 중 위험 작업 차단 메커니즘 추가. Claude Code `PreToolUse` 훅(exit 2 차단) + Gemini CLI `BeforeTool` 훅(non-zero exit 차단) + Codex CLI `approval_policy="unless-allow-listed"` + prompt contract + OpenCode prompt contract. Tier 1/2/3 위험 작업 분류표 및 훅 스크립트 템플릿 수록 |
 | **jeo: PLAN 전 plannotator 자동 설치** | `jeo`는 `plannotator`가 없으면 `bash scripts/ensure-plannotator.sh`를 먼저 자동 실행합니다. PLAN gate는 CLI가 실제로 설치되어 `PATH`에서 보일 때만 계속 진행하며, `plannotator-plan-loop.sh`와 `install.sh`도 설치 후 실행 파일이 남지 않으면 즉시 실패합니다 |
 | **jeo: Claude Code는 이제 team mode 필수** | Claude Code에서 `jeo`는 더 이상 단일 에이전트 실행으로 degrade하지 않습니다. EXECUTE는 반드시 `/omc:team`을 사용해야 하며, `check-status.sh`도 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`이 없으면 실패합니다 |
@@ -583,7 +586,12 @@ U[n]: use cases · S[n]{n,action,details}: steps · R[n]: rules · E[n]{desc,in,
 
 ## Changelog
 
-**v2026-03-08 (latest)**:
+**v2026-03-09 (latest)**:
+- **jeo: Gemini/Antigravity plannotator 반복 호출 방지**: `plannotator-plan-loop.sh`가 승인(exit 0) 시 `plan_approved=true` + `phase=execute`, 피드백(exit 10) 시 `plan_approved=false` + `plannotator_feedback`를 `jeo-state.json`에 기록. `SKILL.md` PLAN 블록에 GUARD 추가 — `jeo-state.json`의 `plan_approved=true` 감지 시 plannotator 즉시 스킵. 훅 결과가 다음 턴에 주입되지 않는 환경(Gemini CLI / Antigravity)에서 무한 재호출 방지. `setup-gemini.sh` AfterAgent 훅이 plannotator 결과(승인/피드백/바인드 차단)를 명확히 로그.
+- **jeo: Codex config.toml stray quote 재발 방지**: `setup-codex.sh`의 legacy JEO 콘텐츠 제거 정규식에 guard 추가 — `developer_instructions = """` 블록이 이미 있으면 실행 안 함 (재실행 시 닫는 `"""` 소비 방지). 파일 저장 후 `tomllib` TOML 검증 추가; 파싱 실패 시 단독 `"` 라인 자동 제거.
+- **setup 가이드 동기화**: `setup-all-skills-prompt.md`, `setup-all-skills-prompt.ko.md`에 Claude Code team mode 필수 조건과 plannotator 자동설치 동작 설명 추가 (Step 1 및 키워드 레퍼런스 테이블).
+
+**v2026-03-08**:
 - **ralphmode v0.2.0: Mid-Execution Approval Checkpoints**: 플랫폼별 실행 중 위험 작업 동적 차단 패턴 추가. Claude Code: `PreToolUse` 훅 + `ralph-safety-check.sh` (exit 2 차단). Gemini CLI: `BeforeTool` 훅 + `ralph-tier1-check.sh` (non-zero exit 차단; stderr 다음 턴 전달). Codex CLI: `approval_policy="unless-allow-listed"` + `CHECKPOINT_NEEDED` 프롬프트 계약. OpenCode: `opencode.json` instructions 프롬프트 계약. Tier 1/2/3 위험 작업 분류표 및 훅 스크립트 템플릿 `permission-profiles.md`에 추가. 플랫폼 요약 테이블에 mid-execution blocking 컬럼 및 OpenCode 행 추가.
 - **jeo: PLAN 전 plannotator 자동 설치**: `jeo`는 `plannotator`가 없으면 `bash scripts/ensure-plannotator.sh`를 먼저 자동 실행. PLAN gate는 바이너리가 실제로 설치되어 `PATH`에서 확인될 때만 계속 진행. `plannotator-plan-loop.sh`와 `install.sh`도 설치 후 실행 가능한 `plannotator`가 남지 않으면 즉시 실패하도록 강화
 - **jeo: Claude Code는 이제 team mode 필수**: Claude Code에서 `jeo`는 더 이상 단일 에이전트 실행으로 degrade하지 않음. EXECUTE는 `/omc:team`으로만 진행하며, `check-status.sh`도 `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`이 없으면 실패
