@@ -98,7 +98,13 @@ if [[ -n "$LOOP_SCRIPT" ]]; then
   bash "$LOOP_SCRIPT" "$PLAN_FILE" /tmp/plannotator_feedback.txt 3
   LOOP_RC=$?
   set -e
-  if [[ "$LOOP_RC" -eq 32 ]]; then
+  # plannotator-plan-loop.sh already writes to jeo-state.json on approved/feedback.
+  # Log result for AfterAgent hook visibility.
+  if [[ "$LOOP_RC" -eq 0 ]]; then
+    echo "[JEO] plannotator approved=true (written to jeo-state.json)"
+  elif [[ "$LOOP_RC" -eq 10 ]]; then
+    echo "[JEO] plannotator approved=false — feedback written to jeo-state.json"
+  elif [[ "$LOOP_RC" -eq 32 ]]; then
     echo "[JEO] plannotator unavailable: localhost bind blocked (sandbox/CI)." >&2
     echo "[JEO] run PLAN gate in local TTY to use manual fallback approve/feedback." >&2
   fi

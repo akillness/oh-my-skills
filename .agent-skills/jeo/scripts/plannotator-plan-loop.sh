@@ -140,11 +140,48 @@ PYEOF
 
   if [[ "$rc" -eq 0 ]]; then
     echo "[JEO][PLAN] approved=true"
+    # Persist approval to jeo-state.json so agent skips re-calling on next turn
+    python3 - <<'PYEOF'
+import json, os, datetime
+state_path = os.path.join(os.getcwd(), '.omc/state/jeo-state.json')
+if os.path.exists(state_path):
+    try:
+        s = json.load(open(state_path))
+        s['plan_approved'] = True
+        s['phase'] = 'execute'
+        s['updated_at'] = datetime.datetime.utcnow().isoformat() + 'Z'
+        with open(state_path, 'w') as f:
+            json.dump(s, f, indent=2)
+    except Exception:
+        pass
+PYEOF
     exit 0
   fi
 
   if [[ "$rc" -eq 10 ]]; then
     echo "[JEO][PLAN] approved=false (feedback)"
+    # Persist feedback to jeo-state.json so agent reads it on next turn
+    python3 - "$FEEDBACK_FILE" <<'PYEOF'
+import json, os, sys, datetime
+state_path = os.path.join(os.getcwd(), '.omc/state/jeo-state.json')
+feedback_path = sys.argv[1] if len(sys.argv) > 1 else ''
+if os.path.exists(state_path):
+    try:
+        s = json.load(open(state_path))
+        fb = {}
+        if feedback_path and os.path.exists(feedback_path):
+            try:
+                fb = json.load(open(feedback_path))
+            except Exception:
+                pass
+        s['plan_approved'] = False
+        s['plannotator_feedback'] = fb
+        s['updated_at'] = datetime.datetime.utcnow().isoformat() + 'Z'
+        with open(state_path, 'w') as f:
+            json.dump(s, f, indent=2)
+    except Exception:
+        pass
+PYEOF
     exit 10
   fi
 

@@ -171,6 +171,23 @@ if os.path.exists(f):
 # The ExitPlanMode PermissionRequest hook fires plannotator automatically.
 # The following script is for Codex / Gemini / OpenCode only.
 
+# GUARD: Check if plan was already approved in a previous turn (Gemini/Antigravity hook result).
+# plannotator-plan-loop.sh writes plan_approved=true and phase=execute to jeo-state.json on approval.
+# This prevents repeated plannotator calls across turns in hook-based environments.
+ALREADY_APPROVED=$(python3 -c "
+import json, os
+try:
+    s = json.load(open('.omc/state/jeo-state.json'))
+    print('true' if s.get('plan_approved') is True else 'false')
+except Exception:
+    print('false')
+" 2>/dev/null || echo "false")
+
+if [[ "$ALREADY_APPROVED" == "true" ]]; then
+  echo "✅ Plan already approved (from previous turn). Proceeding to EXECUTE."
+  exit 0
+fi
+
 # plannotator is mandatory for the PLAN step (Codex/Gemini/OpenCode).
 # If missing, JEO auto-installs it before opening the PLAN gate.
 if ! bash scripts/ensure-plannotator.sh; then
