@@ -83,7 +83,9 @@ except Exception:
     content = ""
 
 content = re.sub(r'(?ms)^\[developer_instructions\]\s*\n.*?(?=^\[|\Z)', '', content).strip() + "\n"
-content = re.sub(r'(?ms)^# JEO Orchestration Workflow\n.*?^"""\s*\n', '', content)
+# Only strip legacy bare JEO block if it is NOT inside a developer_instructions value
+if not re.search(r'(?ms)^developer_instructions\s*=\s*"""', content):
+    content = re.sub(r'(?ms)^# JEO Orchestration Workflow\n.*?^"""\s*\n', '', content)
 
 def parse_existing_instructions(text: str) -> str:
     m = re.search(r'(?ms)^developer_instructions\s*=\s*"""\n?(.*?)\n?"""\s*$', text)
@@ -115,6 +117,19 @@ else:
 
 with open(config_path, "w") as f:
     f.write(content)
+
+# Post-write: validate TOML and auto-fix stray standalone " lines
+try:
+    import tomllib as _toml
+    with open(config_path, "rb") as f:
+        _toml.load(f)
+except Exception:
+    with open(config_path) as f:
+        raw = f.read()
+    cleaned = re.sub(r'(?m)^"$\n', '', raw)
+    with open(config_path, "w") as f:
+        f.write(cleaned)
+
 print("✓ JEO developer_instructions synced (top-level string)")
 PYEOF
   ok "JEO developer_instructions synced in ~/.codex/config.toml"
