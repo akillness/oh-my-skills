@@ -1,0 +1,26 @@
+N:survey
+D:Cross-platform landscape scan before planning or implementation. Research context, workarounds, existing solutions, and structural gaps, then save reusable survey artifacts for OMC, OMX, OHMG, and general agent workflows.
+G:survey landscape-scan research discovery groundwork omc omx ohmg claude codex gemini hooks rules settings
+U[5]:
+  Run a problem-space scan before planning or coding
+  Compare existing tools, workflows, and market gaps
+  Normalize agent-platform differences into settings rules hooks
+  Produce reusable research artifacts in a neutral shared folder
+  Hand off clean discovery outputs to plan jeo ralph or implementation
+S[6]{n,action,details}:
+  1,Triage,Clarify what who why and reuse-or-overwrite existing .survey/{slug} results
+  2,Choose adapter,Map execution to OMC OMX OHMG or generic web-capable agents without changing output shape
+  3,Run context lane,Research workflow context affected users workarounds adjacent problems and user voices
+  4,Run solutions lane,Find products plugins libraries SaaS curated lists pricing and repeated limitations
+  5,Run behavior lane,Separate marketed claims from what people actually use in practice
+  6,Synthesize,Write triage.md context.md solutions.md and platform-map.md for agent-platform topics then summarize facts only
+R[6]:
+  Never write implementation code in survey mode
+  Search in English for breadth unless the user requires another language
+  Save outputs in the user's language by default
+  Run all four lanes in parallel whenever possible
+  Deduplicate solution names and include source links for claims
+  Use settings rules hooks as the common abstraction for Claude Codex Gemini comparisons
+E[2]{desc,in,out}:
+  "Product discovery","survey AI ad creative analysis for mobile games","Creates .survey/ai-ad-creative-analysis/ with triage context and solution landscape files"
+  "Agent-platform comparison","survey cross-platform hook rule setting abstraction for Claude Codex Gemini","Creates platform-map.md normalizing vendor features into settings rules hooks and highlights portability gaps"

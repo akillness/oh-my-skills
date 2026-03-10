@@ -1,0 +1,30 @@
+N:playwriter
+D:Playwright CLI+MCP connecting to your running Chrome browser (existing logins/cookies/extensions preserved). Session-based stateful automation via -e flag or MCP execute tool. Use when you need authenticated browser control without re-logging in.
+G:playwright browser-automation chrome-extension mcp stateful authenticated session-based aria-ref snapshot
+
+U[5]:
+  Automate websites that require login without re-authenticating
+  Control real browser tabs with full Playwright API and existing cookies
+  Run MCP-based browser automation from Claude Desktop or AI agents
+  Execute multi-step stateful flows (shopping carts, multi-page forms, SPAs)
+  Record browser sessions or remote-control Chrome on another machine
+
+S[6]{n,action,details}:
+  1,Install,npm install -g playwriter; install Playwriter Chrome extension (Web Store); click extension icon on tab (turns green)
+  2,Session,playwriter session new → creates isolated stateful sandbox; playwriter session list to see active sessions
+  3,Navigate,playwriter -s 1 -e 'await page.goto("https://example.com")' — use -s for session ID and -e for Playwright JS code
+  4,Snapshot,playwriter -s 1 -e 'await snapshot({ page })' — returns accessibility tree (preferred over screenshots for tokens)
+  5,Interact,playwriter -s 1 -e 'await page.locator("aria-ref=e5").click()' — use aria-ref from snapshot output; re-snapshot after actions
+  6,MCP,Add to MCP config: {"command":"npx","args":["-y","playwriter@latest"]} — exposes execute and reset tools to AI agents
+
+R[5]:
+  Always Observe→Act→Observe: call snapshot({ page }) before and after every action
+  Never reuse aria-ref labels after navigation or DOM changes — re-snapshot first
+  Use state object to persist data across -e calls within the same session
+  Prefer snapshot() over screenshotWithAccessibilityLabels() for text inspection (fewer tokens)
+  Use playwriter session reset <id> to recover from CDP disconnects without losing session
+
+E[3]{desc,in,out}:
+  "Navigate and snapshot","playwriter session new; playwriter -s 1 -e 'await page.goto(\"https://github.com\"); await snapshot({ page })'","Accessibility tree with aria-ref labels (e1, e2, ...) for each interactive element"
+  "Click with label","playwriter -s 1 -e 'await page.locator(\"aria-ref=e3\").click(); await snapshot({ page })'","Page state after click; updated accessibility tree shows new UI state"
+  "MCP setup","Add playwriter to mcpServers in Claude Desktop config then restart","AI agent can call execute tool with Playwright code; existing Chrome logins are available"

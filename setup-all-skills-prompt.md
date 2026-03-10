@@ -5,7 +5,7 @@
 > Pass this file to an AI agent and it will automatically proceed with installation.
 >
 > ```bash
-> curl -s https://raw.githubusercontent.com/akillness/skills-template/main/setup-all-skills-prompt.md
+> curl -s https://raw.githubusercontent.com/supercent-io/skills-template/main/setup-all-skills-prompt.md
 > ```
 
 ---
@@ -35,9 +35,9 @@ Before installation, confirm:
 1. **Which AI platform are you using?**
    - Claude Code → recommend `omc`, `plannotator`, `ralph`, `ralphmode`, `bmad-orchestrator`
    - Gemini CLI → recommend `ohmg`, `ralph`, `ralphmode`, `jeo`
-   - OpenAI Codex CLI → recommend `oh-my-codex`, `ralph`, `ralphmode`, `jeo`
+   - OpenAI Codex CLI → recommend `omx`, `ralph`, `ralphmode`, `jeo`
    - OpenCode → requires oh-my-opencode installation (see Step 3)
-   - All / Unsure → install `jeo` only (unified cross-platform integration)
+   - All / Unsure → install `jeo` + `survey` (`survey` for discovery, `jeo` for delivery)
 
 2. **Is the `skills` CLI installed?**
 
@@ -49,26 +49,29 @@ else
 fi
 ```
 
-3. **Declare installation path standardization variables**
+3. **Declare installation path standardization variables and wipe existing paths**
 
 ```bash
 # Canonical path (recommended default)
 export SKILLS_CANONICAL="${HOME}/.agent-skills"
-# Remove ALL existing skill directories (canonical + all platform-specific) for a clean slate
-for dir in \
-    "${HOME}/.agent-skills" \
-    "${HOME}/.claude/skills" "${PWD}/.claude/skills" \
-    "${HOME}/.codex/skills" "${PWD}/.codex/skills" \
-    "${HOME}/.gemini/skills" "${PWD}/.gemini/skills" \
-    "${HOME}/.opencode/skills" "${PWD}/.opencode/skills" \
-    "${HOME}/.config/opencode/skills" "${PWD}/.config/opencode/skills"; do
-    if [ -d "${dir}" ]; then
-        echo "Removing existing skill directory: ${dir}"
-        rm -rf "${dir}"
-    fi
+
+SKILL_DESTS=(
+  "${HOME}/.claude/skills" "${PWD}/.claude/skills"
+  "${HOME}/.codex/skills" "${PWD}/.codex/skills"
+  "${HOME}/.gemini/skills" "${PWD}/.gemini/skills"
+  "${HOME}/.opencode/skills" "${PWD}/.opencode/skills"
+  "${HOME}/.config/opencode/skills" "${PWD}/.config/opencode/skills"
+)
+
+# Always wipe existing skill paths to guarantee a clean install
+echo "Wiping existing skill paths for clean install..."
+rm -rf "${SKILLS_CANONICAL}"
+for dest in "${SKILL_DESTS[@]}"; do
+  rm -rf "${dest}"
 done
+
 mkdir -p "${SKILLS_CANONICAL}"
-echo "Fresh installation directory created: ${SKILLS_CANONICAL}"
+echo "✅ Skill paths cleared"
 ```
 
 ---
@@ -79,11 +82,14 @@ Execute based on Step 0 results:
 
 **All platforms (recommended starting point):**
 ```bash
+# research-first survey skill
+npx skills add https://github.com/supercent-io/skills-template --skill survey
+
 # jeo core skill
-npx skills add https://github.com/akillness/skills-template --skill jeo
+npx skills add https://github.com/supercent-io/skills-template --skill jeo
 
 # jeo dependency skills (recommended to install together)
-npx skills add https://github.com/akillness/skills-template --skill plannotator --skill agentation
+npx skills add https://github.com/supercent-io/skills-template --skill plannotator --skill agentation
 ```
 
 > **jeo Agent Protocol**: When jeo runs, it automatically creates `jeo-state.json` and proceeds sequentially through PLAN → EXECUTE → VERIFY → CLEANUP phases.
@@ -94,7 +100,7 @@ npx skills add https://github.com/akillness/skills-template --skill plannotator 
 
 **Claude Code only:**
 ```bash
-npx skills add https://github.com/akillness/skills-template \
+npx skills add https://github.com/supercent-io/skills-template \
   --skill omc --skill plannotator --skill ralph --skill ralphmode --skill vibe-kanban
 ```
 
@@ -102,27 +108,45 @@ npx skills add https://github.com/akillness/skills-template \
 
 **Gemini CLI only:**
 ```bash
-npx skills add https://github.com/akillness/skills-template \
+npx skills add https://github.com/supercent-io/skills-template \
   --skill ohmg --skill ralph --skill ralphmode --skill vibe-kanban
 ```
 
 **Codex CLI only:**
 ```bash
-npx skills add https://github.com/akillness/skills-template \
-  --skill oh-my-codex --skill ralph --skill ralphmode
+npx skills add https://github.com/supercent-io/skills-template \
+  --skill omx --skill ralph --skill ralphmode
 ```
 
 **Gemini CLI (extension install):**
 ```bash
-gemini extensions install https://github.com/akillness/skills-template
+gemini extensions install https://github.com/supercent-io/skills-template
 ```
 
 ---
 
-### Step 2: Full 71-Skill Installation (Default Execution Step)
+### Step 2: Full 80-Skill Installation (Default Execution Step)
+
+> **Always wipe existing skill directories before running — ensures no stale skills from previous installs or Step 1 partial install remain.**
 
 ```bash
-npx skills add https://github.com/akillness/skills-template \
+# Wipe all skill paths before full install (unconditional — always required)
+_SKILLS_CANONICAL="${HOME}/.agent-skills"
+for _dest in \
+  "${_SKILLS_CANONICAL}" \
+  "${HOME}/.claude/skills"  "${PWD}/.claude/skills" \
+  "${HOME}/.codex/skills"   "${PWD}/.codex/skills" \
+  "${HOME}/.gemini/skills"  "${PWD}/.gemini/skills" \
+  "${HOME}/.opencode/skills" "${PWD}/.opencode/skills" \
+  "${HOME}/.config/opencode/skills" "${PWD}/.config/opencode/skills"; do
+  rm -rf "${_dest}"
+done
+mkdir -p "${_SKILLS_CANONICAL}"
+echo "✅ All skill directories wiped — ready for clean install"
+```
+
+```bash
+npx skills add https://github.com/supercent-io/skills-template \
   --skill agent-configuration --skill agent-evaluation \
   --skill agentic-development-principles --skill agentic-principles \
   --skill agentic-workflow --skill bmad-orchestrator \
@@ -130,7 +154,8 @@ npx skills add https://github.com/akillness/skills-template \
   --skill prompt-repetition --skill api-design \
   --skill api-documentation --skill authentication-setup \
   --skill backend-testing --skill database-schema-design \
-  --skill design-system --skill react-best-practices \
+  --skill design-system --skill frontend-design-system \
+  --skill react-best-practices --skill vercel-react-best-practices \
   --skill responsive-design --skill state-management \
   --skill ui-component-patterns --skill web-accessibility \
   --skill web-design-guidelines --skill code-refactoring \
@@ -147,19 +172,23 @@ npx skills add https://github.com/akillness/skills-template \
   --skill codebase-search --skill data-analysis \
   --skill log-analysis --skill pattern-detection \
   --skill llm-monitoring-dashboard \
-  --skill image-generation --skill pollinations-ai \
-  --skill video-production --skill marketing-automation \
+  --skill image-generation --skill image-generation-mcp --skill pollinations-ai \
+  --skill remotion-video-production --skill video-production \
+  --skill marketing-automation --skill marketing-skills-collection \
   --skill agent-browser --skill agentation --skill copilot-coding-agent \
   --skill ai-tool-compliance \
   --skill environment-setup --skill file-organization \
   --skill git-submodule --skill git-workflow --skill jeo \
-  --skill npm-git-install --skill ohmg --skill oh-my-codex \
-  --skill omc --skill opencontext --skill plannotator \
-  --skill ralph --skill ralphmode --skill skill-standardization \
-  --skill vibe-kanban --skill workflow-automation
+  --skill npm-git-install --skill ohmg --skill omx \
+  --skill omc --skill opencontext --skill plannotator --skill playwriter \
+  --skill ralph --skill ralphmode --skill skill-standardization --skill survey \
+  --skill vibe-kanban --skill workflow-automation \
+  --skill fabric
 ```
 
 > Skip condition is only allowed when the user explicitly requests (`core only`, `minimal install`, `quick install`).
+
+> `presentation-builder` note: this skill now assumes a `slides-grab` workflow. Before first real use, install Node.js 18+, run `npx playwright install chromium`, and ensure `slides-grab --help` succeeds in the working environment.
 
 ---
 
@@ -202,7 +231,7 @@ Check the guide for installation flags matching your subscription (Claude Pro/Ma
 
 After installation, add skills:
 ```bash
-npx skills add https://github.com/akillness/skills-template
+npx skills add https://github.com/supercent-io/skills-template
 ```
 
 #### Gemini CLI — jeo hook setup
@@ -221,46 +250,46 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 ### Step 4: Verify Installation and Activation
 
 ```bash
-# Auto-detect installation directory
-if [ -d "${HOME}/.agent-skills" ]; then
+# Auto-detect installation directory (must be non-empty)
+is_non_empty_dir() { [ -d "$1" ] && [ -n "$(ls -A "$1" 2>/dev/null)" ]; }
+
+if is_non_empty_dir "${HOME}/.agent-skills"; then
   SKILL_SRC="${HOME}/.agent-skills"
-elif [ -d "${PWD}/.agent-skills" ]; then
+elif is_non_empty_dir "${PWD}/.agent-skills"; then
   SKILL_SRC="${PWD}/.agent-skills"
-elif [ -d "${PWD}/.agents/skills" ]; then
+elif is_non_empty_dir "${PWD}/.agents/skills"; then
   SKILL_SRC="${PWD}/.agents/skills"
 else
-  echo "skills directory not found"; exit 1
+  echo "non-empty skills directory not found"; exit 1
 fi
 
 echo "Detected skills dir: ${SKILL_SRC}"
 
-# Sync to canonical path
+# Sync to canonical path (force mirror)
 mkdir -p "${HOME}/.agent-skills"
-if [ "${SKILL_SRC}" != "${HOME}/.agent-skills" ]; then
-  cp -R "${SKILL_SRC}"/. "${HOME}/.agent-skills"/
+if command -v rsync >/dev/null 2>&1; then
+  rsync -a --delete "${SKILL_SRC}/" "${HOME}/.agent-skills/"
+else
+  rm -rf "${HOME}/.agent-skills"
+  mkdir -p "${HOME}/.agent-skills"
+  cp -R "${SKILL_SRC}/." "${HOME}/.agent-skills/"
 fi
 
-# Remove existing platform-specific skill directories and recreate
+# Remove existing platform-specific skill directories and force copy
 for dest in \
     "${HOME}/.claude/skills" "${PWD}/.claude/skills" \
     "${HOME}/.codex/skills" "${PWD}/.codex/skills" \
     "${HOME}/.gemini/skills" "${PWD}/.gemini/skills" \
     "${HOME}/.opencode/skills" "${PWD}/.opencode/skills" \
     "${HOME}/.config/opencode/skills" "${PWD}/.config/opencode/skills"; do
-    rm -rf "${dest}"
-    mkdir -p "${dest}"
+  rm -rf "${dest}"
+  mkdir -p "${dest}"
+  if command -v rsync >/dev/null 2>&1; then
+    rsync -a --delete "${HOME}/.agent-skills/" "${dest}/"
+  else
+    cp -R "${HOME}/.agent-skills"/. "${dest}/"
+  fi
 done
-
-cp -R "${HOME}/.agent-skills"/. "${HOME}/.claude/skills"/
-cp -R "${HOME}/.agent-skills"/. "${PWD}/.claude/skills"/
-cp -R "${HOME}/.agent-skills"/. "${HOME}/.codex/skills"/
-cp -R "${HOME}/.agent-skills"/. "${PWD}/.codex/skills"/
-cp -R "${HOME}/.agent-skills"/. "${HOME}/.gemini/skills"/
-cp -R "${HOME}/.agent-skills"/. "${PWD}/.gemini/skills"/
-cp -R "${HOME}/.agent-skills"/. "${HOME}/.opencode/skills"/
-cp -R "${HOME}/.agent-skills"/. "${PWD}/.opencode/skills"/
-cp -R "${HOME}/.agent-skills"/. "${HOME}/.config/opencode/skills"/
-cp -R "${HOME}/.agent-skills"/. "${PWD}/.config/opencode/skills"/
 
 # Check installed skill list
 ls "${HOME}/.agent-skills" 2>/dev/null
@@ -300,9 +329,10 @@ First run after installation by platform:
 | `bmad-idea` | `bmad-idea` | Creative ideas · design thinking · innovation strategy |
 | `ai-tool-compliance` | `ai-tool-compliance` | Internal AI tool compliance automation (P0/P1) |
 | `agent-browser` | `agent-browser` | Headless browser automation |
+| `survey` | `survey` | Cross-platform landscape scan before planning or implementation |
 | `llm-monitoring-dashboard` | `llm-monitoring-dashboard` | LLM usage monitoring dashboard generation |
 | `agentation` | `annotate`, `UI검토`, `agentui` | UI annotation → agent code modification. Install: `npx add-mcp "npx -y agentation-mcp server"` (Universal) or `npx skills add benjitaylor/agentation` → `/agentation` (Claude Code Official Skill). Local-first architecture, offline operation, session continuity. |
-| `oh-my-codex` | `omx` | Codex CLI multi-agent orchestration |
+| `omx` | `omx` | Codex CLI multi-agent orchestration |
 | `ohmg` | `ohmg` | Gemini / Antigravity workflows |
 
 ---

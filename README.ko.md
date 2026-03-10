@@ -2,11 +2,11 @@
 
 > 🌐 Language / 언어: **[English](README.md)** | **한국어**
 
-> v2026-03-09 · **71 Skills** · **TOON Format** · **Flat Skill Layout**
+> v2026-03-11 · **80 Skills** · **TOON Format** · **Flat Skill Layout**
 
 [![GitHub Releases](https://img.shields.io/badge/GitHub-Releases-blue)](https://github.com/akillness/skills-template/releases)
-[![Skills](https://img.shields.io/badge/Skills-71-brightgreen)](#skills-list-71-total)
-[![BMAD Deploy Version](https://img.shields.io/badge/BMAD-1.0.0-orange)](docs/bmad/README.md)
+[![Skills](https://img.shields.io/badge/Skills-80-brightgreen)](#skills-list-80-total)
+[![BMAD Deploy Version](https://img.shields.io/badge/BMAD-1.1.0-orange)](docs/bmad/README.md)
 
 > 스킬 구성 및 상세 목록: [.agent-skills/README.md](.agent-skills/README.md)
 
@@ -18,7 +18,7 @@
 - [What's New](#whats-new-in-v2026-03-09)
 - [설치 (Install)](#설치-install)
 - [실행 가이드](#실행-가이드)
-- [Skills List (71)](#skills-list-71-total)
+- [Skills List (80)](#skills-list-80-total)
 - [Featured Tools](#featured-tools)
 - [TOON Format Injection](#toon-format-injection)
 - [Structure](#structure)
@@ -44,10 +44,11 @@ curl -s https://raw.githubusercontent.com/akillness/skills-template/main/setup-a
 
 ---
 
-## What's New in v2026-03-09
+## What's New in v2026-03-11
 
 | 변경 | 내용 |
 |------|------|
+| **신규 스킬 9개 추가 (71 → 80)** | `fabric`, `frontend-design-system`, `image-generation-mcp`, `marketing-skills-collection`, `omx`, `playwriter`, `remotion-video-production`, `survey`, `vercel-react-best-practices` 추가. README.md, README.ko.md, 설치 가이드 스킬 목록 전수 업데이트. |
 | **jeo: Gemini/Antigravity plannotator 반복 호출 방지** | `plannotator-plan-loop.sh`가 승인/피드백 결과를 `jeo-state.json`에 기록(`plan_approved`, `phase`). `SKILL.md` PLAN 블록에 GUARD 추가 — 이전 턴에서 이미 승인됐으면 plannotator 스킵. AfterAgent 훅 결과 로그 명확화. 훅 피드백 주입이 없는 환경(Antigravity)에서 무한 재호출 방지. |
 | **jeo: Codex config.toml stray quote 수정** | `setup-codex.sh`의 legacy strip 정규식에 guard 추가 — `developer_instructions = """` 블록이 이미 있으면 실행 안 함 (재실행 시 닫는 `"""` 소비 방지). 파일 저장 후 TOML 검증 추가: 파싱 실패 시 단독 `"` 라인 자동 제거. |
 | **setup 가이드: jeo team mode + plannotator 자동설치 동기화** | `setup-all-skills-prompt.md`, `setup-all-skills-prompt.ko.md`에 Claude Code team mode 필수 조건(`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`)과 plannotator 자동설치 동작 설명 추가. |
@@ -192,7 +193,7 @@ npx skills add https://github.com/akillness/skills-template --skill playwriter
 
 ---
 
-## Skills List (71 total)
+## Skills List (80 total)
 
 > Full manifest + descriptions: `.agent-skills/skills.json` · each folder's `SKILL.md`
 
@@ -218,15 +219,17 @@ npx skills add https://github.com/akillness/skills-template --skill playwriter
 | `backend-testing` | Backend testing strategies | All platforms |
 | `database-schema-design` | Database schema design | All platforms |
 
-### Frontend (7)
+### Frontend (9)
 
 | Skill | Description | Platforms |
 |-------|-------------|-----------|
 | `design-system` | Design system implementation *(in development)* | All platforms |
+| `frontend-design-system` | 프로덕션 수준 프론트엔드 디자인 시스템 *(개발 중)* | All platforms |
 | `react-best-practices` | React & Next.js best practices | All platforms |
 | `responsive-design` | Responsive web design | All platforms |
 | `state-management` | State management patterns | All platforms |
 | `ui-component-patterns` | UI component patterns | All platforms |
+| `vercel-react-best-practices` | Vercel + React & Next.js 베스트 프랙티스 | All platforms |
 | `web-accessibility` | Web accessibility (a11y) | All platforms |
 | `web-design-guidelines` | Web design guidelines | All platforms |
 
@@ -282,21 +285,24 @@ npx skills add https://github.com/akillness/skills-template --skill playwriter
 | `log-analysis` | Log analysis & debugging | All platforms |
 | `pattern-detection` | Pattern detection | All platforms |
 
-### Creative Media (3)
+### Creative Media (5)
 
 | Skill | Description | Platforms |
 |-------|-------------|-----------|
 | `image-generation` | AI image generation *(in development)* | Claude · Gemini |
+| `image-generation-mcp` | MCP를 통한 AI 이미지 생성 *(개발 중)* | Claude · Gemini |
 | `pollinations-ai` | Free image generation via Pollinations.ai *(in development)* | All platforms |
+| `remotion-video-production` | Remotion을 사용한 프로그래머블 비디오 제작 *(개발 중)* | All platforms |
 | `video-production` | Video production workflows *(in development)* | All platforms |
 
-### Marketing (1)
+### Marketing (2)
 
 | Skill | Description | Platforms |
 |-------|-------------|-----------|
 | `marketing-automation` | Marketing automation *(in development)* | All platforms |
+| `marketing-skills-collection` | 23개 마케팅 서브스킬 컬렉션 *(개발 중)* | All platforms |
 
-### Utilities (20)
+### Utilities (25)
 
 | Skill | Description | Platforms |
 |-------|-------------|-----------|
@@ -306,19 +312,23 @@ npx skills add https://github.com/akillness/skills-template --skill playwriter
 | `bmad-idea` | BMAD Creative Intelligence Suite — brainstorming, design thinking, innovation strategy, problem-solving, storytelling | Claude · Gemini · Codex · OpenCode |
 | `copilot-coding-agent` | GitHub Copilot Coding Agent — Issue → Draft PR automation | Claude · Codex |
 | `environment-setup` | Environment setup | All platforms |
+| `fabric` | Daniel Miessler의 오픈소스 AI 프롬프트 오케스트레이션 프레임워크 | All platforms |
 | `file-organization` | File & folder organization | All platforms |
 | `git-submodule` | Git submodule management | All platforms |
 | `git-workflow` | Git workflow management | All platforms |
 | `jeo` | Integrated AI orchestration: ralph+plannotator → team/bmad → agent-browser verify → agentation(annotate) UI피드백 → worktree cleanup | Claude · Codex · Gemini · OpenCode |
 | `npm-git-install` | Install npm from GitHub | All platforms |
-| `ohmg` | Multi-agent orchestration for Antigravity workflows | Claude · Gemini |
 | `oh-my-codex` | Multi-agent orchestration for OpenAI Codex CLI *(in development)* | Codex |
+| `ohmg` | Multi-agent orchestration for Antigravity workflows | Claude · Gemini |
 | `omc` | oh-my-claudecode — Teams-first multi-agent orchestration | Claude |
+| `omx` | OpenAI Codex CLI 멀티에이전트 오케스트레이션 *(개발 중)* | Codex |
 | `opencontext` | AI agent persistent memory | All platforms |
 | `plannotator` | Visual plan and diff review — annotate, approve, or request changes | Claude |
+| `playwriter` | Playwright 기반 브라우저 제어 — AI 에이전트를 Chrome에 연결 | All platforms |
 | `ralph` | Self-referential completion loop for multi-turn agents | Claude |
 | `ralphmode` | Cross-platform Ralph automation permission profiles with mid-execution approval checkpoints (PreToolUse/BeforeTool hooks + prompt contracts) | Claude · Codex · Gemini · OpenCode |
 | `skill-standardization` | SKILL.md standardization | All platforms |
+| `survey` | 계획 또는 구현 전 전 플랫폼 리서치 스킬 | All platforms |
 | `vibe-kanban` | Kanban board for AI coding agents with git worktree automation | All platforms |
 | `workflow-automation` | Workflow automation | All platforms |
 
@@ -558,7 +568,7 @@ U[n]: use cases · S[n]{n,action,details}: steps · R[n]: rules · E[n]{desc,in,
 │   ├── skill-query-handler.py
 │   ├── skills.json
 │   ├── skills.toon
-│   └── [70 skill folders]
+│   └── [79 skill folders]
 ├── docs/
 │   ├── bmad/           ← bmad-orchestrator harness guide
 │   ├── omc/            ← oh-my-claudecode guide
@@ -586,7 +596,10 @@ U[n]: use cases · S[n]{n,action,details}: steps · R[n]: rules · E[n]{desc,in,
 
 ## Changelog
 
-**v2026-03-09 (latest)**:
+**v2026-03-11 (latest)**:
+- **신규 스킬 9개 추가 (71 → 80)**: `fabric`, `frontend-design-system`, `image-generation-mcp`, `marketing-skills-collection`, `omx`, `playwriter`, `remotion-video-production`, `survey`, `vercel-react-best-practices`. 전체 스킬 목록 테이블 업데이트.
+
+**v2026-03-09**:
 - **jeo: Gemini/Antigravity plannotator 반복 호출 방지**: `plannotator-plan-loop.sh`가 승인(exit 0) 시 `plan_approved=true` + `phase=execute`, 피드백(exit 10) 시 `plan_approved=false` + `plannotator_feedback`를 `jeo-state.json`에 기록. `SKILL.md` PLAN 블록에 GUARD 추가 — `jeo-state.json`의 `plan_approved=true` 감지 시 plannotator 즉시 스킵. 훅 결과가 다음 턴에 주입되지 않는 환경(Gemini CLI / Antigravity)에서 무한 재호출 방지. `setup-gemini.sh` AfterAgent 훅이 plannotator 결과(승인/피드백/바인드 차단)를 명확히 로그.
 - **jeo: Codex config.toml stray quote 재발 방지**: `setup-codex.sh`의 legacy JEO 콘텐츠 제거 정규식에 guard 추가 — `developer_instructions = """` 블록이 이미 있으면 실행 안 함 (재실행 시 닫는 `"""` 소비 방지). 파일 저장 후 `tomllib` TOML 검증 추가; 파싱 실패 시 단독 `"` 라인 자동 제거.
 - **setup 가이드 동기화**: `setup-all-skills-prompt.md`, `setup-all-skills-prompt.ko.md`에 Claude Code team mode 필수 조건과 plannotator 자동설치 동작 설명 추가 (Step 1 및 키워드 레퍼런스 테이블).

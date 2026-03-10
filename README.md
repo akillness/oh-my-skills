@@ -2,10 +2,10 @@
 
 > 🌐 Language / 언어: **English** | **[한국어](README.ko.md)**
 
-> v2026-03-09 · **71 Skills** · **TOON Format** · **Flat Skill Layout**
+> v2026-03-11 · **80 Skills** · **TOON Format** · **Flat Skill Layout**
 
 [![GitHub Releases](https://img.shields.io/badge/GitHub-Releases-blue)](https://github.com/akillness/skills-template/releases)
-[![Skills](https://img.shields.io/badge/Skills-71-brightgreen)](#skills-list-71-total)
+[![Skills](https://img.shields.io/badge/Skills-80-brightgreen)](#skills-list-80-total)
 [![BMAD Deploy Version](https://img.shields.io/badge/BMAD-1.1.0-orange)](docs/bmad/README.md)
 
 > Skill configuration and full list: [.agent-skills/README.md](.agent-skills/README.md)
@@ -18,7 +18,7 @@
 - [What's New](#whats-new-in-v2026-03-09)
 - [Installation](#installation)
 - [Getting Started Guide](#getting-started-guide)
-- [Skills List (71)](#skills-list-71-total)
+- [Skills List (80)](#skills-list-80-total)
 - [Featured Tools](#featured-tools)
 - [TOON Format Injection](#toon-format-injection)
 - [Structure](#structure)
@@ -44,10 +44,11 @@ curl -s https://raw.githubusercontent.com/akillness/skills-template/main/setup-a
 
 ---
 
-## What's New in v2026-03-09
+## What's New in v2026-03-11
 
 | Change | Details |
 |--------|---------|
+| **9 new skills added (71 → 80)** | Added `fabric`, `frontend-design-system`, `image-generation-mcp`, `marketing-skills-collection`, `omx`, `playwriter`, `remotion-video-production`, `survey`, `vercel-react-best-practices`. Skill list tables updated across README.md, README.ko.md, and setup guides. |
 | **jeo: Gemini/Antigravity repeated plannotator call fix** | `plannotator-plan-loop.sh` now writes `plan_approved` + `phase` to `jeo-state.json` on approval or feedback. `SKILL.md` PLAN block now has a GUARD that reads `jeo-state.json` and skips plannotator if already approved in a previous turn. AfterAgent hook logs result clearly. Prevents infinite re-invocation in environments without direct hook feedback injection. |
 | **jeo: Codex config.toml stray quote fix** | `setup-codex.sh` now guards the legacy JEO strip regex — only runs when no `developer_instructions = """` block exists, preventing the closing `"""` from being consumed on re-runs. Post-write TOML validation added: auto-strips standalone `"` lines if parse fails. |
 | **setup guides: jeo team mode + plannotator auto-install sync** | `setup-all-skills-prompt.md` and `setup-all-skills-prompt.ko.md` updated to document Claude Code team mode requirement (`CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1`) and plannotator auto-install behavior. |
@@ -192,7 +193,7 @@ npx skills add https://github.com/akillness/skills-template --skill playwriter
 
 ---
 
-## Skills List (71 total)
+## Skills List (80 total)
 
 > Full manifest + descriptions: `.agent-skills/skills.json` · each folder's `SKILL.md`
 
@@ -218,15 +219,17 @@ npx skills add https://github.com/akillness/skills-template --skill playwriter
 | `backend-testing` | Backend testing strategies | All platforms |
 | `database-schema-design` | Database schema design | All platforms |
 
-### Frontend (7)
+### Frontend (9)
 
 | Skill | Description | Platforms |
 |-------|-------------|-----------|
 | `design-system` | Design system implementation *(in development)* | All platforms |
+| `frontend-design-system` | Production-grade frontend design system *(in development)* | All platforms |
 | `react-best-practices` | React & Next.js best practices | All platforms |
 | `responsive-design` | Responsive web design | All platforms |
 | `state-management` | State management patterns | All platforms |
 | `ui-component-patterns` | UI component patterns | All platforms |
+| `vercel-react-best-practices` | Vercel + React & Next.js best practices | All platforms |
 | `web-accessibility` | Web accessibility (a11y) | All platforms |
 | `web-design-guidelines` | Web design guidelines | All platforms |
 
@@ -282,21 +285,24 @@ npx skills add https://github.com/akillness/skills-template --skill playwriter
 | `log-analysis` | Log analysis & debugging | All platforms |
 | `pattern-detection` | Pattern detection | All platforms |
 
-### Creative Media (3)
+### Creative Media (5)
 
 | Skill | Description | Platforms |
 |-------|-------------|-----------|
 | `image-generation` | AI image generation *(in development)* | Claude · Gemini |
+| `image-generation-mcp` | AI image generation via MCP *(in development)* | Claude · Gemini |
 | `pollinations-ai` | Free image generation via Pollinations.ai *(in development)* | All platforms |
+| `remotion-video-production` | Programmable video production using Remotion *(in development)* | All platforms |
 | `video-production` | Video production workflows *(in development)* | All platforms |
 
-### Marketing (1)
+### Marketing (2)
 
 | Skill | Description | Platforms |
 |-------|-------------|-----------|
 | `marketing-automation` | Marketing automation *(in development)* | All platforms |
+| `marketing-skills-collection` | Collection of 23 marketing sub-skills *(in development)* | All platforms |
 
-### Utilities (20)
+### Utilities (25)
 
 | Skill | Description | Platforms |
 |-------|-------------|-----------|
@@ -306,19 +312,23 @@ npx skills add https://github.com/akillness/skills-template --skill playwriter
 | `bmad-idea` | BMAD Creative Intelligence Suite — brainstorming, design thinking, innovation strategy, problem-solving, storytelling | Claude · Gemini · Codex · OpenCode |
 | `copilot-coding-agent` | GitHub Copilot Coding Agent — Issue → Draft PR automation | Claude · Codex |
 | `environment-setup` | Environment setup | All platforms |
+| `fabric` | Open-source AI prompt orchestration framework by Daniel Miessler | All platforms |
 | `file-organization` | File & folder organization | All platforms |
 | `git-submodule` | Git submodule management | All platforms |
 | `git-workflow` | Git workflow management | All platforms |
 | `jeo` | Integrated AI orchestration: ralph+plannotator → team/bmad → agent-browser verify → agentation(annotate) UI feedback → worktree cleanup | Claude · Codex · Gemini · OpenCode |
 | `npm-git-install` | Install npm from GitHub | All platforms |
-| `ohmg` | Multi-agent orchestration for Antigravity workflows | Claude · Gemini |
 | `oh-my-codex` | Multi-agent orchestration for OpenAI Codex CLI *(in development)* | Codex |
+| `ohmg` | Multi-agent orchestration for Antigravity workflows | Claude · Gemini |
 | `omc` | oh-my-claudecode — Teams-first multi-agent orchestration | Claude |
+| `omx` | OpenAI Codex CLI multi-agent orchestration *(in development)* | Codex |
 | `opencontext` | AI agent persistent memory | All platforms |
 | `plannotator` | Visual plan and diff review — annotate, approve, or request changes | Claude |
+| `playwriter` | Playwright-based browser control — connects AI agents to Chrome | All platforms |
 | `ralph` | Self-referential completion loop for multi-turn agents | Claude |
 | `ralphmode` | Cross-platform Ralph automation permission profiles with mid-execution approval checkpoints (PreToolUse/BeforeTool hooks + prompt contracts) | Claude · Codex · Gemini · OpenCode |
 | `skill-standardization` | SKILL.md standardization | All platforms |
+| `survey` | Cross-platform landscape research before planning or implementation | All platforms |
 | `vibe-kanban` | Kanban board for AI coding agents with git worktree automation | All platforms |
 | `workflow-automation` | Workflow automation | All platforms |
 
@@ -559,7 +569,7 @@ Full configuration: [bmad-orchestrator SKILL.md — TOON Format Integration](.ag
 │   ├── skill-query-handler.py
 │   ├── skills.json
 │   ├── skills.toon
-│   └── [70 skill folders]
+│   └── [79 skill folders]
 ├── docs/
 │   ├── bmad/           ← bmad-orchestrator harness guide
 │   ├── omc/            ← oh-my-claudecode guide
@@ -588,7 +598,10 @@ Full configuration: [bmad-orchestrator SKILL.md — TOON Format Integration](.ag
 
 ## Changelog
 
-**v2026-03-09 (latest)**:
+**v2026-03-11 (latest)**:
+- **9 new skills added (71 → 80)**: `fabric`, `frontend-design-system`, `image-generation-mcp`, `marketing-skills-collection`, `omx`, `playwriter`, `remotion-video-production`, `survey`, `vercel-react-best-practices`. All skill list tables updated across README.md, README.ko.md, and setup guides.
+
+**v2026-03-09**:
 - **jeo: Gemini/Antigravity repeated plannotator call fix**: `plannotator-plan-loop.sh` now writes `plan_approved=true/false` and `phase=execute` to `jeo-state.json` after approval or feedback. `SKILL.md` PLAN bash block now has a GUARD that reads `jeo-state.json` and exits immediately if `plan_approved=true`, preventing re-invocation across turns in hook-based environments (Gemini CLI / Antigravity). `setup-gemini.sh` AfterAgent hook logs result (approved/feedback/bind-blocked) explicitly after the loop script completes.
 - **jeo: Codex config.toml stray quote fix on re-run**: `setup-codex.sh` now guards the legacy JEO content strip regex so it only fires when no `developer_instructions = """` block exists, preventing the closing `"""` from being consumed on subsequent runs. Post-write TOML validation added via `tomllib`; on parse failure, auto-strips standalone `"` lines before saving.
 - **setup guides sync**: `setup-all-skills-prompt.md` and `setup-all-skills-prompt.ko.md` updated with Claude Code team mode requirement note and plannotator auto-install behavior in Step 1 and keyword reference table.

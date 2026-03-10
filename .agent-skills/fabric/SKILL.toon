@@ -1,0 +1,32 @@
+N:fabric
+D:AI prompt orchestration CLI by Daniel Miessler. Apply 250+ reusable Patterns via stdin/stdout piping for YouTube summarization, document analysis, content extraction, code explanation, and more. Supports 20+ AI providers (OpenAI, Claude, Gemini, Ollama, etc.). Use in agent workflows to pipe any tool output through intelligent patterns.
+G:fabric patterns ai-prompts youtube summarize extract-wisdom piping cli multi-provider openai claude gemini ollama agent-workflow
+
+U[6]:
+  Summarize YouTube videos or documents with a single pipe command
+  Apply 250+ pre-built AI patterns to any text content
+  Extract insights, wisdom, or structure from articles and papers
+  Route different patterns to different AI providers for cost/quality optimization
+  Create and share custom patterns for repeatable AI workflows
+  Use as AI agent utility — pipe command output (logs, git diff, test results) through patterns
+
+S[6]{n,action,details}:
+  1,Install,curl -fsSL https://raw.githubusercontent.com/danielmiessler/fabric/main/scripts/installer/install.sh | bash; then fabric --setup to configure API keys and default model
+  2,Discover,fabric -u to update patterns from repo; fabric -l to list patterns; fabric -l | grep <term> to search by keyword
+  3,Pipe,cat file.txt | fabric -p <pattern> --stream or echo "text" | fabric -p summarize; use --stream for progressive output on long content
+  4,YouTube,fabric -y "https://youtube.com/watch?v=ID" -p extract_wisdom; --transcript for raw text; --transcript-with-timestamps for timestamped output
+  5,Custom,mkdir -p ~/.config/fabric/patterns/my-pattern; write system.md with IDENTITY/STEPS/OUTPUT INSTRUCTIONS sections
+  6,Agent workflow,git diff HEAD~1 | fabric -p explain_code; npm test 2>&1 | fabric -p analyze_logs; fabric --serve for REST API mode
+
+R[5]:
+  Run fabric -u before first use and regularly to get latest community patterns
+  Use --stream for long documents to see output progressively instead of waiting
+  Create shell aliases (alias wisdom="fabric -p extract_wisdom") for most-used patterns
+  Chain patterns with pipes: cat doc.txt | fabric -p summarize | fabric -p extract_wisdom
+  Follow IDENTITY→STEPS→OUTPUT INSTRUCTIONS structure when creating custom patterns
+
+E[4]{desc,in,out}:
+  "YouTube summary","fabric -y https://youtube.com/watch?v=ID -p summarize","Structured summary with key points, takeaways, and timestamps"
+  "Document wisdom","cat article.txt | fabric -p extract_wisdom --stream","Ideas, insights, quotes, habits, and facts extracted from the text"
+  "Agent log analysis","npm test 2>&1 | fabric -p analyze_logs","Structured failure analysis with root causes and suggested fixes"
+  "Custom pattern","echo 'code snippet' | fabric -p explain_code","Plain-language explanation of what the code does and why"

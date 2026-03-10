@@ -1,0 +1,26 @@
+N:omx
+D:Multi-agent orchestration layer for Codex CLI. Provides 30 specialized agents, 40+ workflow skills, tmux team mode, persistent MCP servers, and a staged pipeline (plan->prd->exec->verify->fix).
+G:omx multi-agent orchestration codex openai team-mode mcp-servers workflow
+
+U[5]:
+  Orchestrate complex multi-agent workflows (Codex CLI)
+  Collaborate on large tasks via parallel tmux team workers
+  Use persistent MCP servers for state, memory, and code intelligence
+  Run staged pipeline (plan->prd->exec->verify->fix)
+  Perform specialized work via role-based agent prompts
+S[5]{n,action,details}:
+  1,Install,npm install -g oh-my-codex && omx setup && omx doctor
+  2,Launch,omx --xhigh --madmax (recommended; high reasoning + dangerously-bypass-approvals)
+  3,Role Prompts,/prompts:architect "analyze..." / /prompts:executor "implement..." / /prompts:security-reviewer "audit..."
+  4,Workflow Skills,$plan "$task" / $autopilot "$task" / $team 3:executor "$task" / $ulw (ultrawork)
+  5,Team Mode,omx team 4:executor "$task" -> manage status/resume/shutdown
+R[4]:
+  Run omx doctor first for install/runtime diagnostics
+  Follow staged pipeline order: plan->prd->exec->verify->fix
+  Pre-verify team mode with omx doctor --team
+  Persist state across sessions with MCP server omx_state
+E[4]{desc,in,out}:
+  "Install and initialize","npm install -g oh-my-codex && omx setup && omx doctor","OMX installed; prompts/skills/MCP configured"
+  "Run team mode","omx team 4:executor 'fix all TypeScript errors'","4 parallel executor agents run concurrently in tmux"
+  "Code review","$code-review (inside Codex)","Combined code review report from quality/security/api reviewers"
+  "Autonomous execution","$autopilot 'implement user registration with email verification'","Automatically runs stages through plan->prd->exec->verify"
