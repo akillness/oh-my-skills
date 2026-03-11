@@ -1,0 +1,28 @@
+N:autoresearch
+D:Autonomous ML experimentation framework by Andrej Karpathy. AI agent modifies train.py, runs 5-minute GPU experiments, evaluates with val_bpb, and commits only improvements via git ratcheting for overnight autonomous research.
+G:autoresearch ml-experiments autonomous-research karpathy gpu train val-bpb overnight ratcheting
+
+U[5]:
+  Set up autoresearch repo on a GPU machine and run first baseline experiment
+  Write effective program.md research directives for the autonomous agent
+  Run overnight autonomous experiment loop with git ratcheting
+  Interpret results.tsv to understand what improvements the agent found
+  Configure MAX_SEQ_LEN and EVAL_TOKENS for constrained-VRAM GPUs
+
+S[5]{n,action,details}:
+  1,Setup,Install uv; git clone karpathy/autoresearch; uv sync; uv run prepare.py (or bash scripts/setup.sh --seq-len N)
+  2,Baseline,Run uv run train.py; grep val_bpb and peak_vram_mb from run.log to confirm setup works
+  3,AuthorProgram,Write program.md with goal, current baseline val_bpb, prioritized directions, constraints (VRAM, TIME_BUDGET), and what has already been tried
+  4,RunLoop,Point AI agent at repo with program.md context; loop: modify train.py → commit → run 300s → eval → keep/revert → log to results.tsv
+  5,Analyze,Use bash scripts/show-results.sh to view improvement timeline, best val_bpb, and experiment statistics
+
+R[5]:
+  Never modify prepare.py or constants.py — they define the immutable evaluation harness
+  Never change TIME_BUDGET (300s) — this is required for all experiment results to be comparable
+  Never add new packages — pyproject.toml is locked; agent can only use what is already installed
+  Record what has been tried in program.md to prevent redundant experiments
+  Always run check-hardware.sh before a session to verify GPU VRAM and CUDA availability
+
+E[2]{desc,in,out}:
+  "Overnight GPU session","bash scripts/run-loop.sh --max 100 --desc session-1","results.tsv with 100 experiments, improvements kept via git ratchet, best val_bpb logged"
+  "Hardware check","bash scripts/check-hardware.sh","JSON with gpu_name, vram_mb, cuda_version, ready flag"

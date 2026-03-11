@@ -1,9 +1,0 @@
-N:agent-configuration
-D:AI agent configuration policies and security guide. Covers project description file creation, Hooks/Skills/Plugins setup, security policies, and team-shared workflow definitions.
-G:agent-configuration security hooks skills plugins
-U[6]:
-  Set up AI agent environment for new projects
-  Create and optimize project description files
-  Configure Hooks/Skills/Plugins
-  Establish security policies
-  Share team configuration settings

@@ -1,0 +1,26 @@
+N:remotion-video-production
+D:Produce programmable videos with Remotion using scene planning, asset orchestration, and validation gates for automated, brand-consistent video content.
+G:video remotion animation storytelling automation react scenes programmatic
+
+U[4]:
+  Plan and scaffold a multi-scene Remotion video with consistent branding
+  Orchestrate text, image, audio, and motion assets across video scenes
+  Implement validation gates to ensure render quality before export
+  Automate brand-consistent video production from structured content inputs
+
+S[5]{n,action,details}:
+  1,Plan,Define video structure: total duration, scenes list with timestamps, assets required (fonts, images, audio), brand tokens (colors, typography)
+  2,Scaffold,Initialize Remotion project; create scene components; define composition with fps, width, height, durationInFrames
+  3,Orchestrate,Build scene components using useCurrentFrame and interpolate; compose with Sequence and Series; add audio with Audio component
+  4,Validate,Run validation gates: check asset availability, test render at key frames, verify timing alignment, confirm brand token usage
+  5,Render,Export with npx remotion render or Lambda render for production; validate output resolution and file size
+
+R[4]:
+  Define all brand tokens (colors, fonts, spacing) in a single config file imported by all scenes
+  Use interpolate with Easing functions for all animations — never hard-code frame offsets
+  Add useVideoConfig() at scene level to support dynamic composition dimensions
+  Test render 3 frames per scene (first, mid, last) before full render
+
+E[2]{desc,in,out}:
+  "Product demo video","Script with 4 scenes, brand colors, product screenshots","Multi-scene Remotion composition with transitions, text overlays, and screen recordings"
+  "Social clip","30-second highlight reel from long-form content, 9:16 vertical","Vertical short-form composition with captions, music sync, and brand end card"

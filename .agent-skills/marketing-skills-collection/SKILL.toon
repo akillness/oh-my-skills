@@ -1,0 +1,26 @@
+N:marketing-skills-collection
+D:Generate marketing deliverables across CRO, copywriting, SEO, analytics, and growth using 23 specialized sub-skills with clear objectives, constraints, and validation.
+G:marketing cro copywriting seo analytics growth automation landing-page conversion
+
+U[5]:
+  Generate landing page copy with CRO optimization and A/B test variants
+  Write SEO-optimized blog posts, meta descriptions, and structured content
+  Analyze marketing funnel metrics and identify conversion drop-off points
+  Create email sequences, ad copy, and social media content calendars
+  Build growth experiment roadmaps with hypothesis, metric, and success criteria
+
+S[4]{n,action,details}:
+  1,SelectSubSkill,Choose one of 23 sub-skills: cro-audit, landing-page, email-sequence, ad-copy, seo-post, meta-description, social-calendar, funnel-analysis, growth-experiment, persona, value-proposition, positioning, competitive-analysis, content-strategy, onboarding-copy, retention-copy, product-launch, press-release, case-study, testimonial, pricing-page, faq, upsell
+  2,DefineObjective,State the specific deliverable, target audience, conversion goal, and key message constraints
+  3,Generate,Produce the deliverable following the sub-skill template: objective, constraints, content, validation criteria
+  4,Validate,Check against success metrics: CTA clarity, benefit-over-feature ratio, urgency/trust signals, SEO requirements
+
+R[4]:
+  Lead with benefits not features in all customer-facing copy
+  Include exactly one primary CTA per section; secondary CTAs must not compete
+  All SEO content must include target keyword in first 100 words, H1, and meta description
+  Validate CRO elements: headline clarity, social proof, objection handling, urgency
+
+E[2]{desc,in,out}:
+  "Landing page","Product: SaaS project management tool, audience: CTOs, goal: demo signup","Hero headline, subheadline, 3 benefit blocks, social proof section, CTA with urgency"
+  "Email sequence","Onboarding sequence for free trial users, days 1/3/7/14","4-email sequence with subject lines, preview text, body copy, and CTA for each email"

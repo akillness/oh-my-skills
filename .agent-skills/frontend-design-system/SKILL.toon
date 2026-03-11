@@ -1,0 +1,25 @@
+N:frontend-design-system
+D:Produce production-grade UI designs using clear design tokens, layout rules, motion guidance, and accessibility checks for consistent, scalable frontend development.
+G:frontend design ui ux typography animation design-tokens accessibility components
+
+U[4]:
+  Define and document a design token system (colors, spacing, typography, shadow)
+  Create accessible, responsive component layouts with motion guidance
+  Audit existing UI code for design system compliance and accessibility
+  Build scalable design specifications for developer handoff
+
+S[4]{n,action,details}:
+  1,Tokens,Define design tokens: color palette (primitive + semantic + component), spacing scale, typography scale, elevation and shadow layers
+  2,Layout,Apply layout rules: grid system, spacing rhythm, responsive breakpoints, container constraints
+  3,Motion,Specify motion guidance: duration scale, easing curves, enter/exit/emphasis patterns, reduced-motion fallbacks
+  4,Accessibility,Run accessibility checks: color contrast ratios (WCAG AA/AAA), focus management, ARIA roles, keyboard navigation
+
+R[4]:
+  Use semantic token naming (color-background-primary) not primitive names (blue-500) in components
+  Always include reduced-motion media query alternatives for all animations
+  Test color contrast at both AA (4.5:1) and AAA (7:1) levels for text
+  Prefer component-level tokens over global tokens for encapsulation and theming
+
+E[2]{desc,in,out}:
+  "Token audit","Review existing CSS/Tailwind codebase for design consistency","Report with inconsistent values, proposed token names, and migration plan"
+  "Component spec","Design spec for a card component","Token-annotated layout, spacing values, motion spec, accessibility checklist"
