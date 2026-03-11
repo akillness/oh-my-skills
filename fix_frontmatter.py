@@ -6,7 +6,7 @@ import re
 import sys
 from pathlib import Path
 
-SKILLS_DIR = Path(__file__).parent / ".agent-skills"
+SKILLS_DIR = Path("/Users/supercent/Documents/Github/skills-template/.agent-skills")
 
 
 def parse_frontmatter(content: str):

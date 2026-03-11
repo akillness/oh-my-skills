@@ -10,15 +10,16 @@ Modular skill collection for AI agents. Works with Claude, Gemini, ChatGPT, and 
 
 ```bash
 # Install all skills
-npx skills add https://github.com/akillness/skills-template
+npx skills add https://github.com/supercent-io/skills-template
 
 # Install specific skills
-npx skills add https://github.com/akillness/skills-template --skill api-design
-npx skills add https://github.com/akillness/skills-template --skill code-review
-npx skills add https://github.com/akillness/skills-template --skill jeo
-npx skills add https://github.com/akillness/skills-template --skill ohmg
-npx skills add https://github.com/akillness/skills-template --skill oh-my-codex
-npx skills add https://github.com/akillness/skills-template --skill plannotator
+npx skills add https://github.com/supercent-io/skills-template --skill api-design
+npx skills add https://github.com/supercent-io/skills-template --skill code-review
+npx skills add https://github.com/supercent-io/skills-template --skill jeo
+npx skills add https://github.com/supercent-io/skills-template --skill ohmg
+npx skills add https://github.com/supercent-io/skills-template --skill oh-my-codex
+npx skills add https://github.com/supercent-io/skills-template --skill plannotator
+npx skills add https://github.com/supercent-io/skills-template --skill survey
 ```
 
 ### oh-my-ag MCP Setup
@@ -38,7 +39,7 @@ npx skills add https://github.com/ComposioHQ/awesome-claude-skills --skill slack
 ### AI Agent Prompt
 
 ```
-Copy the .agent-skills folder from the https://github.com/akillness/skills-template
+Copy the .agent-skills folder from the https://github.com/supercent-io/skills-template
 repository to the current project.
 ```
 
@@ -68,7 +69,7 @@ repository to the current project.
 
 ---
 
-## Skills List (60 functional)
+## Skills List (62 functional)
 
 > Skills marked *(in development)* exist on disk but do not yet have a SKILL.toon file.
 
@@ -130,7 +131,7 @@ repository to the current project.
 | Skill | Description | Platforms |
 |-------|-------------|-----------|
 | `changelog-maintenance` | Changelog management | All platforms |
-| `presentation-builder` | Presentation builder *(in development)* | All platforms |
+| `presentation-builder` | slides-grab-based presentation builder with visual review and PPTX/PDF export | All platforms |
 | `technical-writing` | Technical documentation | All platforms |
 | `user-guide-writing` | User guides & tutorials | All platforms |
 
@@ -166,10 +167,11 @@ repository to the current project.
 |-------|-------------|-----------|
 | `marketing-automation` | Marketing automation *(in development)* | All platforms |
 
-### Utilities (18)
+### Utilities (19)
 | Skill | Description | Platforms |
 |-------|-------------|-----------|
 | `agent-browser` | Fast headless browser CLI for AI agents | All platforms |
+| `fabric` | AI prompt orchestration CLI using reusable Patterns for YouTube, documents, and content via piping | All platforms |
 | `copilot-coding-agent` | GitHub Copilot Coding Agent — Issue → Draft PR automation | Claude · Codex |
 | `environment-setup` | Environment setup | All platforms |
 | `file-organization` | File & folder organization | All platforms |
@@ -183,8 +185,9 @@ repository to the current project.
 | `opencontext` | AI agent persistent memory | All platforms |
 | `plannotator`, `계획` *(alias: `plan`, `planno`)* | Visual plan and diff review with Plannotator — annotate, approve, or request changes | Claude |
 | `ralph` | Self-referential completion loop for multi-turn agents | Claude |
-| `ralphmode` | Cross-platform Ralph automation permission profiles with mid-execution approval checkpoints (PreToolUse/BeforeTool hooks + prompt contracts) | Claude · Codex · Gemini · OpenCode |
+| `ralphmode` | Cross-platform Ralph automation permission profiles for Claude Code, Codex CLI, and Gemini CLI | Claude · Codex · Gemini |
 | `skill-standardization` | SKILL.md standardization | All platforms |
+| `survey` | Cross-platform landscape scan before planning or implementation | Claude · Codex · Gemini · OpenCode |
 | `vibe-kanban` | Kanban board for AI coding agents with git worktree automation | All platforms |
 | `workflow-automation` | Workflow automation | All platforms |
 
@@ -303,4 +306,4 @@ npx skills add <skill-name>
 
 ---
 
-**Version**: 4.7.0 | **Updated**: 2026-03-06 | **Skills**: 60 functional | **Format**: TOON (Default) | **Structure**: Flat
+**Version**: 4.7.1 | **Updated**: 2026-03-10 | **Skills**: 62 functional | **Format**: TOON (Default) | **Structure**: Flat

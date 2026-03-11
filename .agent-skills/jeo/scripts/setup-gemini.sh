@@ -50,7 +50,8 @@ if ! $MD_ONLY; then
     cat > "${GEMINI_HOOK_DIR}/jeo-plannotator.sh" << 'HOOKEOF'
 #!/usr/bin/env bash
 # JEO AfterAgent backup hook — runs plannotator if plan.md exists in cwd
-# Phase guard: only fire during PLAN phase to prevent conflict with agentation
+# Phase guard: only fire during PLAN phase to prevent conflict with agentation.
+# Repeat guard: same plan hash + terminal gate status must not reopen plannotator.
 
 JEO_STATE="${PWD}/.omc/state/jeo-state.json"
 if [[ ! -f "$JEO_STATE" ]]; then
@@ -98,8 +99,6 @@ if [[ -n "$LOOP_SCRIPT" ]]; then
   bash "$LOOP_SCRIPT" "$PLAN_FILE" /tmp/plannotator_feedback.txt 3
   LOOP_RC=$?
   set -e
-  # plannotator-plan-loop.sh already writes to jeo-state.json on approved/feedback.
-  # Log result for AfterAgent hook visibility.
   if [[ "$LOOP_RC" -eq 0 ]]; then
     echo "[JEO] plannotator approved=true (written to jeo-state.json)"
   elif [[ "$LOOP_RC" -eq 10 ]]; then
@@ -120,16 +119,21 @@ fi
 HOOKEOF
     chmod +x "${GEMINI_HOOK_DIR}/jeo-plannotator.sh"
 
-    # Create agentation AfterAgent hook (phase-guarded: verify_ui only)
+    # Create agentation AfterAgent hook (phase-guarded + submit-gated)
     cat > "${GEMINI_HOOK_DIR}/jeo-agentation.sh" << 'AGENTHOOKEOF'
 #!/usr/bin/env bash
 # JEO AfterAgent hook — check pending agentation annotations during VERIFY_UI phase
+# Submit gate: only process annotations after explicit Send Annotations / onSubmit confirmation.
 
 # Phase guard: only fire during verify_ui phase
 JEO_STATE="${PWD}/.omc/state/jeo-state.json"
 if [[ -f "$JEO_STATE" ]]; then
   PHASE=$(python3 -c "import json; print(json.load(open('$JEO_STATE')).get('phase',''))" 2>/dev/null || echo "")
-  if [[ "$PHASE" != "verify_ui" && "$PHASE" != "verify" ]]; then
+  SUBMIT_GATE=$(python3 -c "import json; print(json.load(open('$JEO_STATE')).get('agentation',{}).get('submit_gate_status',''))" 2>/dev/null || echo "")
+  if [[ "$PHASE" != "verify_ui" ]]; then
+    exit 0
+  fi
+  if [[ "$SUBMIT_GATE" != "submitted" ]]; then
     exit 0
   fi
 else
@@ -213,7 +217,7 @@ if not planno_exists:
             "type": "command",
             "command": f"bash {hook_path}",
             "timeout": 1800,
-            "description": "plan.md 감지 시 plannotator 실행 (AfterAgent backup)"
+            "description": "PLAN phase backup gate with no-repeat hash guard"
         }]
     })
     with open(settings_path, "w") as f:
@@ -222,7 +226,7 @@ if not planno_exists:
 else:
     print("\u2713 plannotator hook already present")
 
-# Add agentation AfterAgent hook (phase-guarded: only fires during verify_ui phase)
+# Add agentation AfterAgent hook (phase-guarded + submit-gated)
 agentation_hook_path = os.path.expanduser("~/.gemini/hooks/jeo-agentation.sh")
 agentation_exists = any(
     any(
@@ -239,7 +243,7 @@ if not agentation_exists:
             "type": "command",
             "command": f"bash {agentation_hook_path}",
             "timeout": 300,
-            "description": "VERIFY_UI phase: check pending agentation annotations"
+            "description": "VERIFY_UI submit gate opened: check pending agentation annotations"
         }]
     })
     with open(settings_path, "w") as f:
@@ -284,6 +288,8 @@ JEO provides integrated AI agent orchestration across all AI tools.
   bash .agent-skills/jeo/scripts/plannotator-plan-loop.sh plan.md /tmp/plannotator_feedback.txt 3
   # 동작 보장:
   # - approve/feedback 입력까지 반드시 대기
+  # - 같은 plan hash 에 이미 approved/feedback/infrastructure_blocked가 기록돼 있으면 재실행 금지
+  # - plan.md 내용이 바뀔 때만 gate_status를 pending으로 리셋
   # - 세션 종료 시 자동 재시작 (최대 3회)
   # - 3회 종료 시 PLAN 종료 여부를 사용자에게 확인
   # - exit 32 시 localhost bind 차단(sandbox/CI): local TTY에서 수동 PLAN gate 실행
@@ -307,10 +313,13 @@ NEVER skip plannotator. NEVER proceed to EXECUTE without approved=true.
 
 **ANNOTATE** (agentation watch loop — HTTP API 폴백):
 When user says "annotate" or "agentui" (deprecated alias) or asks to process UI annotations:
-1. GET http://localhost:4747/pending — check count
-2. For each annotation: PATCH status:acknowledged, fix code via elementPath, PATCH status:resolved + resolution
-3. Repeat until count=0. Emit AGENTUI_READY when done.
-NEVER proceed without resolving all annotations.
+1. Set `.omc/state/jeo-state.json` → `phase="verify_ui"` and `agentation.submit_gate_status="waiting_for_submit"`
+2. Wait for the human to click **Send Annotations** / trigger `onSubmit`
+3. Only after that explicit submit signal, reply `ANNOTATE_READY` and update `agentation.submit_gate_status="submitted"`
+4. Then GET http://localhost:4747/pending — check count
+5. For each annotation: PATCH status:acknowledged, fix code via elementPath, PATCH status:resolved + resolution
+6. Repeat until count=0. Emit `AGENTUI_READY` when done.
+NEVER poll `/pending` before submit gate opens. NEVER treat draft annotations as actionable.
 
 ### ohmg Integration
 For Gemini multi-agent orchestration:
@@ -326,9 +335,20 @@ bunx oh-my-ag           # Initialize ohmg
     mkdir -p "$(dirname "$GEMINI_MD")"
     [[ -f "$GEMINI_MD" ]] && cp "$GEMINI_MD" "${GEMINI_MD}.jeo.bak"
 
-    # Check if JEO section already present
-    if [[ -f "$GEMINI_MD" ]] && grep -q "JEO Orchestration" "$GEMINI_MD"; then
-      ok "JEO section already in GEMINI.md"
+    if [[ -f "$GEMINI_MD" ]] && grep -q "^## JEO Orchestration Workflow" "$GEMINI_MD"; then
+      GEMINI_MD="$GEMINI_MD" JEO_SECTION="$JEO_SECTION" python3 - <<'PYEOF'
+import os
+import re
+
+path = os.environ["GEMINI_MD"]
+section = os.environ["JEO_SECTION"].strip()
+text = open(path, encoding="utf-8").read()
+pattern = re.compile(r"\n## JEO Orchestration Workflow\n.*?\Z", re.S)
+updated = pattern.sub("\n" + section + "\n", text.rstrip() + "\n")
+with open(path, "w", encoding="utf-8") as f:
+    f.write(updated)
+PYEOF
+      ok "JEO section synced in ~/.gemini/GEMINI.md"
     else
       echo "$JEO_SECTION" >> "$GEMINI_MD"
       ok "JEO instructions added to ~/.gemini/GEMINI.md"

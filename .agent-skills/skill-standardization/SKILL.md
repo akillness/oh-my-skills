@@ -1,86 +1,133 @@
 ---
 name: skill-standardization
-description: Standardize and validate SKILL.md files to match the project specification. Use when creating new skills, converting existing skills to standard format, or validating skill file structure. Handles section heading conversion, frontmatter standardization, and missing section detection.
+description: >
+  Standardize and validate SKILL.md files against the Agent Skills specification
+  (agentskills.io). Use when creating new skills, auditing existing skills for
+  spec compliance, converting legacy skill formats to standard structure, or
+  improving descriptions for reliable triggering. Triggers on: "validate skill",
+  "create SKILL.md", "standardize skill format", "check skill spec", "skill
+  frontmatter", "improve skill description", "add evals to skill".
 allowed-tools: Bash Read Write Edit Glob Grep
+compatibility: Designed for Claude Code and compatible agent clients with filesystem access
 metadata:
-  tags: skill-management, standardization, validation, automation, scripting
-  platforms: Claude, ChatGPT, Gemini
+  tags: skill-management, standardization, validation, agentskills-spec, automation
+  version: "2.0"
 ---
-
 
 # Skill Standardization
 
 ## When to use this skill
 
-- Creating new SKILL.md files following the standard template
-- Converting existing skills with non-standard section headings
-- Validating skill files against the project specification
-- Batch processing multiple skill files for consistency
-- Ensuring all skills have required sections (Examples, Best practices, References)
+- Creating a new SKILL.md file from scratch
+- Auditing existing skills for Agent Skills specification compliance
+- Converting legacy skill formats (non-standard headings, frontmatter) to standard
+- Improving skill descriptions to trigger more reliably on relevant prompts
+- Adding evaluation test cases (`evals/evals.json`) to a skill
+- Batch-validating all skills in a directory for consistency
+
+## Agent Skills Specification Reference
+
+### Frontmatter fields
+
+| Field | Required | Constraints |
+|-------|----------|-------------|
+| `name` | Yes | 1–64 chars, lowercase alphanumeric + hyphens, no leading/trailing/consecutive hyphens, must match parent directory name |
+| `description` | Yes | 1–1024 chars, must describe what skill does AND when to trigger |
+| `allowed-tools` | No | Space-delimited list of pre-approved tools |
+| `compatibility` | No | Max 500 chars, environment requirements |
+| `license` | No | License name or reference to bundled file |
+| `metadata` | No | Arbitrary key-value map for additional fields |
+
+### Standard directory structure
+
+```
+skill-name/
+├── SKILL.md          # Required
+├── scripts/          # Optional: executable scripts
+├── references/       # Optional: detailed documentation
+├── assets/           # Optional: templates, images, data
+└── evals/            # Optional: evaluation test cases
+    └── evals.json
+```
+
+### Progressive disclosure tiers
+
+| Tier | What's loaded | When | Token budget |
+|------|--------------|------|-------------|
+| 1. Catalog | name + description | Session start | ~100 tokens per skill |
+| 2. Instructions | Full SKILL.md body | On activation | < 5000 tokens (500 lines max) |
+| 3. Resources | scripts/, references/ | When needed | Varies |
 
 ## Instructions
 
-### Step 1: Run the conversion script
+### Step 1: Validate an existing skill
 
-Execute the main conversion script to standardize all SKILL.md files:
-
-```bash
-cd /path/to/.agent-skills
-python3 scripts/convert_skills.py
-```
-
-This script will:
-- Convert Korean section headings to English
-- Standardize frontmatter (add missing tags, platforms)
-- Add missing required sections with templates
-
-### Step 2: Remove duplicate sections
-
-If files have duplicate sections after conversion:
+Run the validation script on a skill directory:
 
 ```bash
-python3 scripts/remove_duplicates.py
+bash scripts/validate_skill.sh path/to/skill-directory
 ```
 
-### Step 3: Final cleanup
-
-For any remaining non-standard headings:
+Validate all skills in a directory:
 
 ```bash
-python3 scripts/final_cleanup.py
+bash scripts/validate_skill.sh --all .agent-skills/
 ```
 
-## Available Scripts
+The script checks:
+- Required frontmatter fields (`name`, `description`)
+- `name` format: lowercase, no consecutive hyphens, matches directory name
+- `description` length: 1–1024 characters
+- `allowed-tools` format: space-delimited (not YAML list)
+- Recommended sections present
+- File length: warns if over 500 lines
 
-| Script | Purpose |
-|--------|---------|
-| `convert_skills.py` | Main conversion script - handles section headings, frontmatter, missing sections |
-| `remove_duplicates.py` | Removes duplicate Examples, Best practices, References sections |
-| `final_cleanup.py` | Direct string replacement for remaining Korean headings |
+### Step 2: Write an effective description
 
-## Section Heading Conversions
+The `description` field determines when a skill triggers. A weak description means the skill never activates; an over-broad one triggers at wrong times.
 
-| Legacy heading | Standard heading |
-|--------|---------|
-| `## Purpose (legacy)` | `## Purpose` |
-| `## When to Use (legacy)` | `## When to use this skill` |
-| `## Procedure (legacy)` | `## Instructions` |
-| `## Examples (legacy)` | `## Examples` |
-| `## Best Practices (legacy)` | `## Best practices` |
-| `## References (legacy)` | `## References` |
-| `## Output Format (legacy)` | `## Output format` |
-| `## Constraints (legacy)` | `## Constraints` |
-| `## Metadata (legacy)` | `## Metadata` |
-| `### Step N (legacy):` | `### Step N:` |
+**Template:**
+```yaml
+description: >
+  [What the skill does — list specific operations.]
+  Use when [trigger conditions]. Even if the user doesn't explicitly
+  mention [domain keyword] — also triggers on: [synonym list].
+```
 
-## Standard SKILL.md Structure
+**Principles** (from agentskills.io):
+1. **Imperative phrasing** — "Use this skill when..." not "This skill does..."
+2. **User intent, not implementation** — describe what the user wants to achieve
+3. **Be explicit about edge cases** — "even if they don't say X"
+4. **List trigger keywords** — synonyms, related terms the user might type
+5. **Stay under 1024 characters** — descriptions grow during editing; watch the limit
+
+**Before / After:**
+```yaml
+# Before (weak — never triggers)
+description: Helps with PDFs.
+
+# After (optimized — reliable triggering)
+description: >
+  Extract text and tables from PDF files, fill forms, merge and split documents.
+  Use when the user needs to work with PDF files, even if they don't explicitly
+  say 'PDF' — triggers on: fill form, extract text from document, merge files,
+  read scanned pages.
+```
+
+### Step 3: Create a new SKILL.md
+
+Use this template as the starting point:
 
 ```markdown
 ---
 name: skill-name
-description: Clear description (max 1024 chars)
-tags: [tag1, tag2]
-platforms: [Claude, ChatGPT, Gemini]
+description: >
+  [What it does and specific operations it handles.]
+  Use when [trigger conditions]. Triggers on: [keyword list].
+allowed-tools: Bash Read Write Edit Glob Grep
+metadata:
+  tags: tag1, tag2, tag3
+  version: "1.0"
 ---
 
 # Skill Title
@@ -100,7 +147,8 @@ Content...
 ## Examples
 
 ### Example 1: [Scenario]
-Content...
+Input: ...
+Output: ...
 
 ## Best practices
 1. Practice 1
@@ -110,40 +158,101 @@ Content...
 - [Link](url)
 ```
 
-## Examples
+### Step 4: Convert legacy section headings
 
-### Example 1: Convert a single file manually
+| Legacy heading | Standard heading |
+|----------------|-----------------|
+| `## Purpose` | `## When to use this skill` |
+| `## When to Use` | `## When to use this skill` |
+| `## Procedure` | `## Instructions` |
+| `## Best Practices` | `## Best practices` |
+| `## Reference` | `## References` |
+| `## Output Format` | `## Output format` |
 
-```python
-from pathlib import Path
-import re
+### Step 5: Add evaluation test cases
 
-filepath = Path('backend/new-skill/SKILL.md')
-content = filepath.read_text()
+Create `evals/evals.json` with 2–5 realistic test prompts:
 
-# Normalize legacy headings to standard
-content = content.replace('## Best Practices', '## Best practices')
-content = content.replace('## Reference', '## References')
-content = re.sub(r'### Step (\d+):', r'### Step \1:', content)
-
-filepath.write_text(content)
+```json
+{
+  "skill_name": "your-skill-name",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Realistic user message that should trigger this skill",
+      "expected_output": "Description of what success looks like",
+      "assertions": [
+        "Specific verifiable claim (file exists, count is correct, format is valid)",
+        "Another specific claim"
+      ]
+    }
+  ]
+}
 ```
 
-### Example 2: Validate a skill file
+Good assertions are **verifiable**: file exists, JSON is valid, chart has 3 bars. Avoid vague assertions like "output is good."
+
+## Available scripts
+
+- **`scripts/validate_skill.sh`** — Validates a SKILL.md against the Agent Skills spec
+
+## Examples
+
+### Example 1: Validate a skill directory
 
 ```bash
-# Check for required sections
-grep -E "^## (When to use|Instructions|Examples|Best practices|References)" SKILL.md
+bash scripts/validate_skill.sh .agent-skills/my-skill/
+```
+
+Output:
+```
+Validating: .agent-skills/my-skill/SKILL.md
+✓ Required field: name = 'my-skill'
+✓ Required field: description present
+✗ Description length: 1087 chars (max 1024)
+✓ Name format: valid lowercase
+✗ Name/directory mismatch: name='myskill' vs dir='my-skill'
+✓ Recommended section: When to use this skill
+✓ Recommended section: Instructions
+⚠ Missing recommended section: Examples
+✓ File length: 234 lines (OK)
+
+Issues: 2 errors, 1 warning
+```
+
+### Example 2: Batch validate all skills
+
+```bash
+bash scripts/validate_skill.sh --all .agent-skills/
+```
+
+### Example 3: Fix common frontmatter issues
+
+```yaml
+# WRONG — tags inside metadata is non-standard for some validators
+metadata:
+  tags: [tag1, tag2]   # list syntax
+  platforms: Claude    # non-spec field
+
+# CORRECT — per Agent Skills spec
+metadata:
+  tags: tag1, tag2     # string value
+allowed-tools: Bash Read Write  # space-delimited, not a YAML list
 ```
 
 ## Best practices
 
-1. **Run all three scripts in sequence** for complete standardization
-2. **Review changes** before committing to ensure content wasn't lost
-3. **Keep section content** - only headings are converted, not content
-4. **Test with one file first** when making script modifications
+1. **Description quality first** — weak descriptions mean the skill never activates; improve it before anything else
+2. **Keep SKILL.md under 500 lines** — move detailed reference docs to `references/`
+3. **Pin script versions** — use `uvx ruff@0.8.0` not just `ruff` to ensure reproducibility
+4. **No interactive prompts in scripts** — agents run in non-interactive shells; use `--flag` inputs, never TTY prompts
+5. **Structured output from scripts** — prefer JSON/CSV over free-form text; send data to stdout, diagnostics to stderr
+6. **Add evals before publishing** — at least 2–3 test cases covering core and edge cases
 
 ## References
 
-- [README.md](../../README.md) - Repository overview and SKILL.md conventions
-- [.agent-skills/README.md](../README.md) - Skill repository structure and examples
+- [Agent Skills Specification](https://agentskills.io/specification)
+- [Optimizing Descriptions](https://agentskills.io/skill-creation/optimizing-descriptions)
+- [Evaluating Skills](https://agentskills.io/skill-creation/evaluating-skills)
+- [Using Scripts](https://agentskills.io/skill-creation/using-scripts)
+- [Adding Skills Support](https://agentskills.io/client-implementation/adding-skills-support)

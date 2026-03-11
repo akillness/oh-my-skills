@@ -119,10 +119,15 @@ Use the Claude sandbox preset from [references/permission-profiles.md](./referen
 /ralph "fix all failing tests" --max-iterations=10
 ```
 
-### Example 2: Codex CLI repo-scoped Ralph run
+### Example 2: Codex CLI sandbox Ralph run
 
-Apply the Codex repo preset from [references/permission-profiles.md](./references/permission-profiles.md), then run the task.
-The current official model uses config file settings, not CLI flag overrides:
+For sandbox ralph runs, use the CLI flags directly:
+
+```bash
+codex -c model_reasoning_effort="high" --dangerously-bypass-approvals-and-sandbox -c model_reasoning_summary="detailed" -c model_supports_reasoning_summaries=true
+```
+
+For repo-scoped (non-sandbox) runs, use the config file approach from [references/permission-profiles.md](./references/permission-profiles.md):
 
 ```toml
 approval_policy = "never"
@@ -131,9 +136,15 @@ sandbox_mode = "workspace-write"
 
 Place this in `~/.codex/config.toml` (or a project-local override) and restart Codex before running Ralph.
 
-### Example 3: Gemini CLI trust-only setup
+### Example 3: Gemini CLI sandbox or trust-only setup
 
-Trust the current project folder, keep explicit file selection, then run the Ralph workflow for that repo only.
+For sandbox ralph runs, use `--yolo` mode:
+
+```bash
+gemini --yolo
+```
+
+For normal repo automation, trust the current project folder with explicit file selection and run the Ralph workflow for that repo only. See [references/permission-profiles.md](./references/permission-profiles.md) for details.
 
 ## Best practices
 

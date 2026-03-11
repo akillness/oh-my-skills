@@ -1,23 +1,23 @@
 N:presentation-builder
-D:Professional PPTX presentation builder aligned with brand guidelines. Generates pitch decks, roadmaps, and product decks with slide-by-slide content and speaker notes using structured briefs and validation steps.
-G:presentation pptx slides storytelling branding pitch-deck
+D:Build editable presentations with slides-grab. Plan a deck, generate HTML slides, review visually, then export approved decks to PPTX or PDF.
+G:presentation slides-grab pptx pdf html-slides slide-editor storytelling
 
 U[3]:
-  Generate professional slide decks — auto-generate presentations from prompts
-  Ensure brand consistency — adhere to color/font/style guidelines
-  Reusable templates — standardize pitch/roadmap/product decks
+  Create a real presentation artifact — not just an outline
+  Iterate visually on HTML slides before export
+  Export approved decks to PPTX/PDF from a stable deck workspace
 S[5]{n,action,details}:
-  1,Brand Kit,Define colors(primary/secondary/accent)·fonts(heading/body)·logo·style(tone/corners/shadows)
-  2,Deck Brief,Meta(title/audience/goal/duration) + slide list(number/type/title/key message)
-  3,Generate Slides,Generate layouts per slide type (Title/Agenda/Problem/Solution/Features/Stats/Team/CTA)
-  4,Review,Layout balance·typography hierarchy·one idea per slide·data source verification
-  5,Export Handoff,presentation.pptx + assets/ + editing notes + font embedding/resolution/link check
+  1,Preflight,Install slides-grab + Playwright Chromium and verify CLI help with Node.js 18+
+  2,Plan,Create slide-outline.md with audience·goal·tone·slide titles·key messages and get approval
+  3,Generate Slides,Create self-contained slide-*.html files in decks/<deck-name>/
+  4,Review Validate,Run build-viewer·validate·edit and iterate visually until approved
+  5,Export,Run slides-grab convert/pdf and report artifact paths + remaining manual polish items
 R[4]:
-  One idea per slide — avoid overcrowding
-  Use speaker notes to minimize text on slides
-  Use only defined brand tokens — no arbitrary colors/fonts
-  Logical narrative arc — Problem→Solution→Evidence→CTA
+  Follow Plan -> Design -> Review -> Export order
+  Do not export before user approval
+  Fix HTML/CSS source when conversion fails
+  Reuse the same deck directory across revisions
 E[3]{desc,in,out}:
-  "Roadmap Deck","Create a 5-slide roadmap deck for Q2-Q4. Target: Engineering leadership","Title·Executive Summary·Gantt Timeline·Dependencies & Risks·Next Steps slides"
-  "Investor Pitch Deck","Build a 10-slide investor pitch deck for AI SaaS, Series A $5M target","Slide-by-slide content+speaker notes+visualization·brand style·clear Ask slide"
-  "Product Demo Deck","Create an 8-slide product demo deck for enterprise. Focus: Features, integrations, security","Feature showcase·integration diagram·security compliance·success stories·Trial CTA"
+  "Investor Deck","Turn this brief into a 10-slide investor deck in decks/series-a and show the outline first","Approved outline + slide HTML + PPTX/PDF export"
+  "Product Launch Deck","Create an 8-slide enterprise launch deck with technical tone using slides-grab","Deck workspace + validated viewer + export artifacts"
+  "Revise Existing Deck","Update decks/q2-review visuals, validate, and re-export","Edited HTML slides + fresh PPTX/PDF outputs"

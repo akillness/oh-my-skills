@@ -61,7 +61,7 @@ info "AI Tool Integrations"
 
 # Claude Code
 if [[ -f "${HOME}/.claude/settings.json" ]]; then
-  if grep -q "plannotator" "${HOME}/.claude/settings.json" 2>/dev/null; then
+  if grep -Eq "claude-plan-gate.py|plannotator" "${HOME}/.claude/settings.json" 2>/dev/null; then
     ok "Claude Code — plannotator hook configured"; ((PASS++)) || true
   else
     warn "Claude Code — plannotator hook not found in settings.json"; ((WARN++)) || true
@@ -90,7 +90,7 @@ except Exception:
   else
     warn "Claude Code — agentation MCP not configured"; ((WARN++)) || true
   fi
-  if grep -q "localhost:4747/pending" "${HOME}/.claude/settings.json" 2>/dev/null; then
+  if grep -Eq "claude-agentation-submit-hook.py|localhost:4747/pending" "${HOME}/.claude/settings.json" 2>/dev/null; then
     ok "Claude Code — agentation prompt hook configured"; ((PASS++)) || true
   else
     warn "Claude Code — agentation prompt hook not configured"; ((WARN++)) || true
@@ -180,8 +180,14 @@ if [[ -f "$STATE_FILE" ]]; then
     TASK=$(python3 -c "import json; d=json.load(open('$STATE_FILE')); print(d.get('task','(none)'))" 2>/dev/null || echo "(none)")
     RETRY=$(python3 -c "import json; d=json.load(open('$STATE_FILE')); print(d.get('retry_count',0))" 2>/dev/null || echo "0")
     LAST_ERR=$(python3 -c "import json; d=json.load(open('$STATE_FILE')); e=d.get('last_error'); print(e if e else '(none)')" 2>/dev/null || echo "(none)")
+    PLAN_GATE=$(python3 -c "import json; d=json.load(open('$STATE_FILE')); print(d.get('plan_gate_status','(none)'))" 2>/dev/null || echo "(none)")
+    PLAN_HASH=$(python3 -c "import json; d=json.load(open('$STATE_FILE')); print(d.get('last_reviewed_plan_hash') or '(none)')" 2>/dev/null || echo "(none)")
+    SUBMIT_GATE=$(python3 -c "import json; d=json.load(open('$STATE_FILE')); print(d.get('agentation',{}).get('submit_gate_status','(none)'))" 2>/dev/null || echo "(none)")
     echo "     Current phase: $PHASE"
     echo "     Task: $TASK"
+    echo "     Plan gate: $PLAN_GATE"
+    [[ "$PLAN_HASH" != "(none)" ]] && echo "     Last reviewed hash: ${PLAN_HASH:0:12}..."
+    echo "     Agentation submit gate: $SUBMIT_GATE"
     [[ "$RETRY" -gt 0 ]] && echo "     Retry count: $RETRY"
     [[ "$LAST_ERR" != "(none)" ]] && echo -e "     ${RED}Last error: $LAST_ERR${NC}"
   fi
@@ -206,6 +212,10 @@ state = {
     "session_id": str(uuid.uuid4()),
     "task": "resumed session",
     "plan_approved": False,
+    "plan_gate_status": "pending",
+    "plan_current_hash": None,
+    "last_reviewed_plan_hash": None,
+    "last_reviewed_plan_at": None,
     "plan_review_method": None,
     "checkpoint": None,
     "last_error": None,
@@ -214,7 +224,16 @@ state = {
     "agentation": {
         "active": False,
         "session_id": None,
-        "annotations": {"pending": 0, "acknowledged": 0, "resolved": 0}
+        "keyword_used": None,
+        "submit_gate_status": "idle",
+        "submit_signal": None,
+        "submit_received_at": None,
+        "submitted_annotation_count": 0,
+        "started_at": None,
+        "timeout_seconds": 120,
+        "annotations": {"total": 0, "pending": 0, "acknowledged": 0, "resolved": 0, "dismissed": 0},
+        "completed_at": None,
+        "exit_reason": None
     },
     "created_at": now,
     "updated_at": now

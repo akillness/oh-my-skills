@@ -18,11 +18,12 @@ S[5]{n,action,details}:
 
 R[4]:
   For detailed templates, read only the required sections per platform in references/permission-profiles.md
-  For Codex (as of 2026-03-06), prioritize the official model centered on approval_policy, sandbox_mode, and rules over permissions.allow/deny
-  Gemini only reduces prompts via Trusted Folder; it does not have a global YOLO mode like Claude
+  For Codex sandbox runs use: codex -c model_reasoning_effort="high" --dangerously-bypass-approvals-and-sandbox -c model_reasoning_summary="detailed" -c model_supports_reasoning_summaries=true
+  Gemini now supports --yolo flag for sandbox YOLO mode (combines sandbox + auto-approve); use only in disposable environments
   Use full bypass only in a disposable sandbox and never as the default for day-to-day repo work
 
-E[3]{desc,in,out}:
-  "Claude repo preset","Apply acceptEdits + allow/deny in project .claude/settings.json","Edits within the repo get faster while secrets and dangerous commands stay blocked"
-  "Codex repo preset","approval_policy=never sandbox_mode=workspace-write","Workspace-scoped automation"
+E[4]{desc,in,out}:
+  "Claude sandbox preset","claude --dangerously-skip-permissions in disposable sandbox","Fully bypasses approval prompts; combine with repo boundary and denylist"
+  "Codex CLI sandbox flags","codex -c model_reasoning_effort=high --dangerously-bypass-approvals-and-sandbox -c model_reasoning_summary=detailed -c model_supports_reasoning_summaries=true","Bypasses sandbox and approvals with high-reasoning mode; use only in disposable environments"
+  "Gemini YOLO mode","gemini --yolo","Combines sandbox + auto-approve for disposable-sandbox ralph runs"
   "Gemini trust-only","Trust only the repo root folder","Fewer approvals when re-entering the same folder"

@@ -1,336 +1,148 @@
 ---
 name: presentation-builder
-description: Build professional PPTX presentations with brand-aligned layouts using structured deck briefs and validation steps for pitch, roadmap, and product decks.
+description: Build editable presentations with slides-grab. Use when creating slide decks as HTML slides, iterating visually in a browser, and exporting approved decks to PPTX or PDF.
 metadata:
-  tags: presentation, pptx, slides, storytelling, branding, pitch-deck
+  tags: presentation, slides-grab, pptx, pdf, html-slides, slide-editor, storytelling
   platforms: Claude, ChatGPT, Gemini, Codex
 ---
 
+# Presentation Builder
 
-# PPTX Presentation Builder
-
-A professional PPTX presentation builder skill aligned with brand guidelines. Generates various presentations including pitch decks, roadmaps, and product introductions using structured briefs and validation steps.
+Use `slides-grab` when the user needs a real slide deck artifact, not just an outline. The workflow is HTML-first: plan the deck, generate slide HTML, review visually, then export to PPTX/PDF.
 
 ## When to use this skill
 
-- **Professional Slide Deck Needed**: Generate presentations from prompts
-- **Brand Consistency Required**: Consistent slides aligned with guidelines
-- **Reusable Templates**: Templatize product, pitch, roadmap decks
+- Create a presentation from a topic, document, or brief
+- Iterate on slide design visually instead of editing raw PPT manually
+- Export approved decks to `.pptx` or `.pdf`
+- Maintain multi-deck workspaces under `decks/<deck-name>/`
 
----
+## Preflight
 
-## Instructions
+Install and verify `slides-grab` before authoring:
 
-### Step 1: Gather Brand Constraints
-
-```yaml
-brand_kit:
-  colors:
-    primary: "#2563EB"
-    secondary: "#6366F1"
-    accent: "#F59E0B"
-    background: "#FFFFFF"
-    text: "#1F2937"
-  fonts:
-    heading: "Inter"
-    body: "Inter"
-    mono: "JetBrains Mono"
-  logo:
-    placement: "top-left" | "bottom-right"
-    size: "small" | "medium"
-  style:
-    tone: "minimal" | "bold" | "executive"
-    corners: "sharp" | "rounded"
-    shadows: true | false
+```bash
+git clone https://github.com/vkehfdl1/slides-grab.git
+cd slides-grab
+npm ci
+npx playwright install chromium
+npm exec -- slides-grab --help
 ```
 
-### Step 2: Define Deck Structure
+Minimum requirement: `Node.js >= 18`.
 
-```markdown
-## Deck Brief
+If `slides-grab` is already available in the current project, reuse the existing install instead of cloning again.
 
-### Meta
-- **Title**: [deck title]
-- **Audience**: [audience]
-- **Goal**: [goal - fundraising, product intro, reporting]
-- **Duration**: [presentation time]
+## Workflow
 
-### Slides
-| # | Type | Title | Key Message |
-|---|------|-------|-------------|
-| 1 | Title | Company Name | Tagline |
-| 2 | Agenda | Today's Agenda | 3-5 bullet points |
-| 3 | Problem | The Challenge | Pain point statement |
-| 4 | Solution | Our Approach | Value proposition |
-| 5 | Features | Key Capabilities | 3 features with icons |
-| 6 | Demo | Product in Action | Screenshot/video |
-| 7 | Traction | Growth Numbers | Key metrics |
-| 8 | Team | Who We Are | Team photos + roles |
-| 9 | Ask | The Opportunity | Investment/partnership ask |
-| 10 | Contact | Get in Touch | Contact info + CTA |
+### 1. Plan the deck
+
+Collect:
+
+- presentation goal
+- audience
+- tone/style
+- target slide count
+- required source material
+
+Create a concise outline, usually `slide-outline.md`, with:
+
+- slide number
+- slide title
+- key message
+- required visuals/data
+
+Do not move to slide generation until the outline is approved.
+
+### 2. Generate slide HTML
+
+Use a dedicated workspace such as `decks/<deck-name>/`.
+
+Create self-contained slide files:
+
+```text
+decks/<deck-name>/
+  slide-01-cover.html
+  slide-02-problem.html
+  slide-03-solution.html
+  ...
 ```
 
-### Step 3: Generate Slides
+Rules:
 
-Generate content per slide:
+- one primary idea per slide
+- keep HTML/CSS easy for agents to edit
+- inline only the assets/styles the deck actually needs
+- keep speaker notes or rationale outside slide body when possible
 
-```markdown
-## Slide 1: Title Slide
+### 3. Build and review
 
-### Layout: Centered
+After generating or editing slides:
 
-### Content
-- **Title**: [Company Name]
-- **Subtitle**: [Tagline - 10 words max]
-- **Visual**: Logo centered
-- **Background**: Gradient (#2563EB → #6366F1)
-
-### Speaker Notes
-Welcome the audience. Introduce yourself and the company.
-Set the context for why you're presenting today.
+```bash
+slides-grab build-viewer --slides-dir decks/<deck-name>
+slides-grab validate --slides-dir decks/<deck-name>
 ```
 
-**Templates by Slide Type**:
+For visual iteration:
 
-| Type | Layout | Elements |
-|------|--------|----------|
-| Title | Centered | Logo, Title, Subtitle |
-| Agenda | Left-aligned | Numbered list (3-5 items) |
-| Problem | Split | Text left, Visual right |
-| Solution | Split | Visual left, Text right |
-| Features | 3-column | Icon + Title + Description |
-| Stats | Data cards | 3-4 key metrics |
-| Quote | Centered | Quote text + attribution |
-| Team | Grid | Photos + Names + Roles |
-| CTA | Centered | Headline + Button |
-
-### Step 4: Review and Refine
-
-```markdown
-## Review Checklist
-
-### Layout Balance
-- [ ] Check visual balance
-- [ ] Ensure sufficient whitespace
-- [ ] Alignment consistency
-
-### Typography
-- [ ] Font size hierarchy (H1 > H2 > Body)
-- [ ] Ensure readability (minimum 18pt body)
-- [ ] Consistent font usage
-
-### Content
-- [ ] One idea per slide
-- [ ] Avoid text density
-- [ ] Cite sources for data/claims
-
-### Accessibility
-- [ ] Sufficient color contrast
-- [ ] Alt text for images
-- [ ] Logical reading order
+```bash
+slides-grab edit --slides-dir decks/<deck-name>
 ```
 
-### Step 5: Export and Handoff
+Use the editor to select a region, request changes, and revise the corresponding HTML until the deck is approved.
 
-```markdown
-## Handoff Package
+### 4. Export artifacts
 
-### Files
-- presentation.pptx
-- presentation.pdf (backup)
-- assets/ (images, logos)
+Only export after the design is approved.
 
-### Summary
-- **Total Slides**: [count]
-- **Estimated Duration**: [minutes]
-- **Key Narrative Arc**: [brief description]
-
-### Editing Notes
-- Slide 5: [specific edit note]
-- Slide 8: [specific edit note]
-
-### Post-Export Checklist
-- [ ] Font embedding verified
-- [ ] Images high resolution
-- [ ] Animations functional
-- [ ] Links active
+```bash
+slides-grab convert --slides-dir decks/<deck-name> --output decks/<deck-name>.pptx
+slides-grab pdf --slides-dir decks/<deck-name> --output decks/<deck-name>.pdf
 ```
 
----
+Report:
 
-## Examples
+- output file paths
+- validation status
+- any slides that still need manual polish
 
-### Example 1: 5-Slide Roadmap
+## Core commands
 
-**Prompt**:
-```
-Create a 5-slide roadmap deck for Q2–Q4
-with modern design and speaker notes.
-Target: Engineering leadership.
-```
-
-**Expected output**:
-```markdown
-## Roadmap Deck
-
-### Slide 1: Title
-- Q2-Q4 Product Roadmap
-- Engineering Review | [Date]
-
-### Slide 2: Executive Summary
-- 3 key themes for the period
-- Success metrics overview
-
-### Slide 3: Timeline
-- Gantt-style view
-- Q2: Foundation | Q3: Scale | Q4: Optimize
-- Key milestones marked
-
-### Slide 4: Dependencies & Risks
-- Cross-team dependencies
-- Risk matrix (Impact vs Likelihood)
-- Mitigation strategies
-
-### Slide 5: Next Steps
-- Immediate action items
-- Review cadence
-- Feedback channels
+```bash
+slides-grab edit
+slides-grab build-viewer
+slides-grab validate
+slides-grab convert
+slides-grab pdf
+slides-grab list-templates
+slides-grab list-themes
 ```
 
-### Example 2: Investor Pitch Deck
+All commands support `--slides-dir <path>`.
 
-**Prompt**:
-```
-Build a 10-slide investor pitch deck for an AI SaaS.
-Include: problem, solution, market, traction, team, ask.
-Series A context, $5M target.
-```
+## Guardrails
 
-**Expected output**:
-- Slide-by-slide content with speaker notes
-- Consistent brand styling
-- Data visualization for traction
-- Clear ask slide with use of funds
+- Follow the stage order: Plan -> Design -> Review -> Export
+- Do not export a deck the user has not approved
+- Fix source HTML/CSS when validation or conversion fails; do not patch exported binaries
+- Reuse the same deck directory through revisions to preserve stable iteration history
 
-### Example 3: Product Demo Deck
+## Example prompts
 
-**Prompt**:
-```
-Create an 8-slide product demo deck.
-Audience: Potential enterprise customers.
-Focus: Features, integrations, security.
+```text
+Create an 8-slide enterprise product deck in decks/acme-launch.
+Audience: IT buyers.
+Tone: confident, clean, technical.
+Need PPTX and PDF exports after approval.
 ```
 
-**Expected output**:
-- Feature showcase slides
-- Integration diagram
-- Security compliance overview
-- Customer success stories
-- Next steps / trial CTA
-
----
-
-## Best practices
-
-1. **One idea per slide**: Avoid overcrowding
-2. **Visual hierarchy**: Titles > Headings > Body
-3. **Use speaker notes**: Minimize text on slides
-4. **Data clarity**: Charts > text paragraphs
-5. **Consistent theming**: Unify colors, fonts, spacing
-
----
-
-## Common pitfalls
-
-- **Mixed Themes**: Multiple styles in one deck
-- **Inconsistent Spacing/Typography**: Different across slides
-- **No Narrative Flow**: Lack of logical connection
-
----
-
-## Troubleshooting
-
-### Issue: Slides feel inconsistent
-**Cause**: Missing brand tokens
-**Solution**: Provide template, enforce theme
-
-### Issue: Slides are too dense
-**Cause**: Too much text per slide
-**Solution**: Split content, use visuals
-
-### Issue: Narrative unclear
-**Cause**: Slide order issue
-**Solution**: Restructure story arc
-
----
-
-## Output format
-
-```markdown
-## Presentation Report
-
-### Overview
-- **Title**: [deck title]
-- **Slides**: [count]
-- **Duration**: [minutes]
-- **Audience**: [target]
-
-### Slide-by-Slide
-
-#### Slide 1: [Title]
-**Type**: [slide type]
-**Layout**: [layout description]
-**Content**:
-- [content items]
-
-**Speaker Notes**:
-[notes]
-
----
-#### Slide 2: [Title]
-...
-
-### Brand Tokens Applied
-- Primary: [color]
-- Font: [font family]
-- Style: [tone]
-
-### Files Delivered
-- [ ] presentation.pptx
-- [ ] assets.zip
+```text
+Turn this product brief into a 10-slide investor deck.
+Use slides-grab, show me the outline first, then generate the deck in decks/series-a.
 ```
 
----
+## References
 
-## Multi-Agent Workflow
-
-### Validation & Retrospectives
-
-- **Round 1 (Orchestrator)**: Narrative arc, slide count alignment
-- **Round 2 (Analyst)**: Layout consistency, brand compliance
-- **Round 3 (Executor)**: Export readiness check
-
-### Agent Roles
-
-| Agent | Role |
-|-------|------|
-| Claude | Narrative composition, content generation |
-| Gemini | Data visualization suggestions, reference research |
-| Codex | Template code generation, automation |
-
----
-
-## Metadata
-
-### Version
-- **Current Version**: 1.0.0
-- **Last Updated**: 2026-01-21
-- **Compatible Platforms**: Claude, ChatGPT, Gemini, Codex
-
-### Related Skills
-- [technical-writing](../technical-writing/SKILL.md)
-- [image-generation](../../creative-media/image-generation/SKILL.md)
-- [marketing-automation](../../marketing/marketing-automation/SKILL.md)
-
-### Tags
-`#presentation` `#pptx` `#slides` `#storytelling` `#branding` `#pitch-deck`
+- Source repo: `https://github.com/vkehfdl1/slides-grab`
+- Key workflow from upstream: plan -> design -> visual edit -> export

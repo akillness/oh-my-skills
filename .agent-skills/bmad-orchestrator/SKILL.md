@@ -6,7 +6,7 @@ metadata:
   tags: bmad, orchestrator, workflow, planning, implementation
   platforms: Claude, Gemini, Codex, OpenCode
   keyword: bmad
-  version: 1.1.0
+  version: 1.2.0
   source: user-installed skill
 ---
 
@@ -32,6 +32,20 @@ npx skills add https://github.com/supercent-io/skills-template --skill bmad-orch
 
 `bmad-orchestrator`'s default execution path is Claude Code.
 To run the same flow directly in Codex, we recommend operating BMAD stages via a higher-level orchestration path such as `omx`/`ohmg`.
+
+## Control Model
+
+BMAD phase routing should be treated with the same three-layer abstraction used by JEO:
+
+- `settings`: platform-specific runtime configuration such as Claude hooks, Codex/Gemini instructions, and MCP setup
+- `rules`: phase constraints such as "do not advance before the current phase document is approved" and "do not reopen the same unchanged phase document for review"
+- `hooks`: platform callbacks such as Claude `ExitPlanMode`, Codex `notify`, or Gemini `AfterAgent`
+
+For BMAD phase gates, the intended rule is strict:
+
+- review the current phase document before moving forward
+- if the document hash has not changed since the last terminal review result, do not relaunch plannotator
+- only a revised document resets the gate and permits another review cycle
 
 ---
 
@@ -113,6 +127,10 @@ The agent will open the plannotator UI for review. In Claude Code: call `EnterPl
        ↓
  bash scripts/phase-gate-review.sh docs/prd-myapp.md
        ↓
+ hash guard checks whether this exact document was already reviewed
+       ↓
+ unchanged hash? yes → keep previous terminal result, do not reopen UI
+       ↓ no
  plannotator UI opens in browser
        ↓
   [Approve]              [Request Changes]

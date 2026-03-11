@@ -14,6 +14,7 @@ info() { echo -e "${BLUE}→${NC} $*"; }
 DRY_RUN=false
 [[ "${1:-}" == "--dry-run" ]] && DRY_RUN=true
 
+JEO_SKILL_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 CLAUDE_SETTINGS="${HOME}/.claude/settings.json"
 
 echo ""
@@ -51,17 +52,14 @@ fi
 if $DRY_RUN; then
   echo -e "${YELLOW}[DRY-RUN]${NC} Would sync plannotator hook, agent teams, agentation MCP, and UserPromptSubmit hook in $CLAUDE_SETTINGS"
 else
-  python3 - <<'PYEOF'
+  JEO_SKILL_DIR="$JEO_SKILL_DIR" python3 - <<'PYEOF'
 import json
 import os
 
 settings_path = os.path.expanduser("~/.claude/settings.json")
-agentation_cmd = (
-    "curl -sf --connect-timeout 1 http://localhost:4747/pending 2>/dev/null | "
-    "python3 -c \"import sys,json;d=json.load(sys.stdin);"
-    "c=d['count'];exit(0) if c==0 else print(f'=== AGENTATION: {c} UI annotations pending ===')\" "
-    "2>/dev/null;exit 0"
-)
+jeo_skill_dir = os.environ["JEO_SKILL_DIR"]
+plan_gate_cmd = f'python3 "{jeo_skill_dir}/scripts/claude-plan-gate.py"'
+agentation_cmd = f'python3 "{jeo_skill_dir}/scripts/claude-agentation-submit-hook.py"'
 
 try:
     with open(settings_path) as f:
@@ -80,16 +78,31 @@ if plannotator_entry is None:
     perm_req.append(plannotator_entry)
     changed = True
 
-if not any(h.get("command", "").startswith("plannotator") for h in plannotator_entry.get("hooks", [])):
-    plannotator_entry.setdefault("hooks", []).append({
+plan_hooks = plannotator_entry.setdefault("hooks", [])
+existing_plan_hook = next(
+    (
+        h for h in plan_hooks
+        if h.get("command", "").startswith("plannotator")
+        or "claude-plan-gate.py" in h.get("command", "")
+    ),
+    None,
+)
+if existing_plan_hook is None:
+    plan_hooks.append({
         "type": "command",
-        "command": "plannotator",
+        "command": plan_gate_cmd,
         "timeout": 1800,
     })
     changed = True
-    messages.append("✓ plannotator PermissionRequest hook added")
+    messages.append("✓ JEO plan gate wrapper added to ExitPlanMode")
 else:
-    messages.append("✓ plannotator hook already present")
+    if existing_plan_hook.get("command") != plan_gate_cmd:
+        existing_plan_hook["command"] = plan_gate_cmd
+        changed = True
+    if existing_plan_hook.get("timeout") != 1800:
+        existing_plan_hook["timeout"] = 1800
+        changed = True
+    messages.append("✓ JEO plan gate wrapper synced")
 
 env = settings.setdefault("env", {})
 if env.get("CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS") != "1":
@@ -130,18 +143,46 @@ if migrated:
     changed = True
     messages.append("✓ UserPromptSubmit hooks migrated to new matcher format")
 
-agentation_hook_exists = any(
-    any(h.get("command", "").startswith("curl -sf --connect-timeout 1 http://localhost:4747")
-        for h in entry.get("hooks", []))
-    for entry in user_prompt
-    if isinstance(entry, dict) and "hooks" in entry
+agentation_entry = next(
+    (
+        entry for entry in user_prompt
+        if isinstance(entry, dict)
+        and any(
+            "claude-agentation-submit-hook.py" in h.get("command", "")
+            or h.get("command", "").startswith("curl -sf --connect-timeout 1 http://localhost:4747")
+            for h in entry.get("hooks", [])
+        )
+    ),
+    None,
 )
-if not agentation_hook_exists:
-    user_prompt.append({"matcher": "*", "hooks": [{"type": "command", "command": agentation_cmd}]})
+if agentation_entry is None:
+    user_prompt.append({
+        "matcher": "*",
+        "hooks": [{"type": "command", "command": agentation_cmd, "timeout": 300}],
+    })
     changed = True
-    messages.append("✓ agentation UserPromptSubmit hook added")
+    messages.append("✓ agentation submit-gate hook added")
 else:
-    messages.append("✓ agentation UserPromptSubmit hook already present")
+    hook_list = agentation_entry.setdefault("hooks", [])
+    target_hook = next(
+        (
+            h for h in hook_list
+            if "claude-agentation-submit-hook.py" in h.get("command", "")
+            or h.get("command", "").startswith("curl -sf --connect-timeout 1 http://localhost:4747")
+        ),
+        None,
+    )
+    if target_hook is None:
+        hook_list.append({"type": "command", "command": agentation_cmd, "timeout": 300})
+        changed = True
+    else:
+        if target_hook.get("command") != agentation_cmd:
+            target_hook["command"] = agentation_cmd
+            changed = True
+        if target_hook.get("timeout") != 300:
+            target_hook["timeout"] = 300
+            changed = True
+    messages.append("✓ agentation submit-gate hook synced")
 
 if changed or not os.path.exists(settings_path):
     os.makedirs(os.path.dirname(settings_path), exist_ok=True)

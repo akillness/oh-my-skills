@@ -12,6 +12,7 @@
 │          │         PHASE 1: PLAN             │                  │
 │          │   ralph creates plan.md           │                  │
 │          │   plannotator reviews visually    │                  │
+│          │   same hash never reopens gate    │                  │
 │          │   ┌──────────────────────────┐   │                  │
 │          │   │  Approve → continue      │   │                  │
 │          │   │  Feedback → re-plan      │   │                  │
@@ -35,7 +36,7 @@
 │          │                                   │                  │
 │          │   [annotate keyword? (agentui alias)]│                │
 │          │   └─ YES: VERIFY_UI (agentation)  │                  │
-│          │       watch_annotations loop      │                  │
+│          │       wait for onSubmit first     │                  │
 │          │       ack → fix → resolve         │                  │
 │          └───────────────┬──────────────────┘                  │
 │                          │                                      │
@@ -66,8 +67,14 @@ annotate keyword detected (or agentui alias — or user requests UI annotation r
     ├─ FAIL (server down) → retry 3x, 5s interval → ERROR (exit with message)
     │
     ▼  OK → update jeo-state.json: phase="verify_ui", agentation.active=true
+[SUBMIT GATE]  wait for explicit Send Annotations / onSubmit
+         state: agentation.submit_gate_status="waiting_for_submit"
+    │
+    ├─ no submit yet → stay idle, do not poll /pending
+    │
+    ▼  submit observed → set submit_gate_status="submitted"
 [WATCH]  agentation_watch_annotations({batchWindowSeconds:10, timeoutSeconds:120})
-         blocking — waits for annotations or timeout
+         blocking — waits for submitted annotations or timeout
     │
     ├─ Annotations received (sorted by severity: blocking → important → suggestion):
     │   │
@@ -123,14 +130,14 @@ LOOP:
                    FAIL        OK
                      │            │
                      ▼            ▼
-                  RECOVER     WATCHING
+                  RECOVER   WAIT_FOR_SUBMIT
                   (3x retry)      │
-                     │      ┌─────┼──────┐
-                     │      │     │      │
-                   ERROR  count>0  0   timeout
+                     │      ┌─────┼───────────────┐
+                     │      │     │               │
+                   ERROR  submit  no submit    timeout
                      │      │     │      │
                      ▼      ▼     ▼      ▼
-                   FAIL  PROCESS DONE  TIMEOUT
+                   FAIL WATCHING IDLE  TIMEOUT
                           │              │
                    ACK→FIX→RESOLVE    report
                           │
@@ -151,6 +158,7 @@ Phase Guard: hooks check jeo-state.json phase before executing
   PLAN phase:
     plannotator ✅ (allowed)
     agentation  ❌ (blocked by phase guard)
+    rule        same hash + terminal gate status => skip re-entry
 
   EXECUTE phase:
     plannotator ❌ (blocked by phase guard)
@@ -158,7 +166,7 @@ Phase Guard: hooks check jeo-state.json phase before executing
 
   VERIFY / VERIFY_UI phase:
     plannotator ❌ (blocked by phase guard)
-    agentation  ✅ (allowed)
+    agentation  ✅ (allowed only after submit gate opens)
 ```
 
 ---
@@ -177,8 +185,8 @@ jeo keyword detected
     │   ├─ team-verify: verifier + reviewers
     │   └─ team-fix: debugger/executor (loop until done)
     │
-    └─ plannotator hook: ExitPlanMode → plannotator plan -
-        └─ User reviews in browser UI
+    └─ plannotator hook: ExitPlanMode → JEO plan-gate wrapper
+        └─ skips same reviewed hash, otherwise opens browser UI
 ```
 
 **State file**: `{worktree}/.omc/state/jeo-state.json`
@@ -234,9 +242,11 @@ States: plan → execute → verify → verify_ui? → cleanup → done
 Transitions:
   plan     → execute  (plan approved)
   plan     → plan     (feedback received, re-plan)
+  plan     → plan     (same hash + terminal gate status => skip duplicate review)
   execute  → verify   (tasks complete, browser UI present)
-  verify   → verify_ui (annotate keyword detected — or agentui alias — agentation running)
+  verify   → verify_ui (annotate keyword detected — or agentui alias — submit gate waiting)
   verify   → cleanup  (no annotate/agentui, verification passed)
+  verify_ui → verify_ui (waiting_for_submit until explicit onSubmit/ANNOTATE_READY)
   verify_ui → cleanup (annotations all resolved or timeout)
 
   cleanup  → done     (worktrees removed, prune complete)
@@ -249,6 +259,11 @@ State persisted in: `.omc/state/jeo-state.json`
   "phase": "plan",
   "task": "Implement user authentication",
   "plan_approved": false,
+  "plan_gate_status": "pending",
+  "plan_current_hash": null,
+  "last_reviewed_plan_hash": null,
+  "last_reviewed_plan_at": null,
+  "plan_review_method": null,
   "team_available": true,
   "retry_count": 0,
   "last_error": null,
@@ -259,6 +274,10 @@ State persisted in: `.omc/state/jeo-state.json`
     "active": false,
     "session_id": null,
     "keyword_used": null,
+    "submit_gate_status": "idle",
+    "submit_signal": null,
+    "submit_received_at": null,
+    "submitted_annotation_count": 0,
     "started_at": null,
     "timeout_seconds": 120,
     "annotations": {
@@ -283,6 +302,9 @@ State persisted in: `.omc/state/jeo-state.json`
 - `active`: whether VERIFY_UI watch loop is currently running (used as guard by hooks)
 - `session_id`: agentation session ID for resume via `agentation_get_session`
 - `keyword_used`: `"annotate"` or `"agentui"` (tracks which keyword triggered entry)
+- `submit_gate_status`: `"idle"` | `"waiting_for_submit"` | `"submitted"`; draft annotations stay blocked until submit
+- `submit_signal`: which platform opened the submit gate
+- `submit_received_at` / `submitted_annotation_count`: audit trail for the submitted batch
 - `started_at`: ISO-8601 timestamp when VERIFY_UI watch loop started
 - `timeout_seconds`: poll timeout in seconds (default: 120)
 - `annotations.*`: cumulative counts by lifecycle status (`total`, `acknowledged`, `resolved`, `dismissed`, `pending`)
@@ -295,7 +317,7 @@ State persisted in: `.omc/state/jeo-state.json`
 | Condition | Executor | Notes |
 |-----------|----------|-------|
 | Claude Code + omc + AGENT_TEAMS=1 | **team** | Best option — parallel staged pipeline |
-| Claude Code + omc (no teams) | **ralph** | Single-agent loop with verification |
+| Claude Code + omc (no teams) | **blocked** | Re-run setup and enable experimental teams; JEO should not silently downgrade |
 | Codex CLI | **BMAD** | Structured phases, no native team |
 | Gemini CLI + ohmg | **ohmg** | Multi-agent via oh-my-ag |
 | Gemini CLI (basic) | **BMAD** | Fallback structured workflow |

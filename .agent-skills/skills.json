@@ -1,7 +1,7 @@
 {
   "version": "1.0.0",
   "generated": true,
-  "skill_count": 61,
+  "skill_count": 62,
   "categories": {
     "documentation": [
       "technical-writing",
@@ -54,6 +54,7 @@
       "ralph",
       "ralphmode",
       "skill-standardization",
+      "survey",
       "workflow-automation"
     ],
     "code-quality": [
@@ -2497,7 +2498,7 @@
     },
     {
       "name": "jeo",
-      "description": "JEO — Integrated AI agent orchestration. ralph+plannotator for visual plan review, team/bmad for parallel execution, agent-browser for browser verification, agentation (agentui keyword) for UI annotation watch-loop, auto worktree cleanup. Installs: omc, omx, ohmg, bmad, ralph, plannotator, agent-browser, agentation. Keywords: jeo, agentui.",
+      "description": "JEO — Integrated AI agent orchestration. ralph+plannotator for visual plan review, team/bmad for parallel execution, agent-browser for browser verification, agentation with explicit submit/onSubmit gating for UI annotation handling, auto worktree cleanup. Installs: omc, omx, ohmg, bmad, ralph, plannotator, agent-browser, agentation. Keywords: jeo, annotate, agentui.",
       "category": "utilities",
       "path": "jeo/SKILL.md",
       "tags": [
@@ -2510,7 +2511,10 @@
         "vibe-kanban",
         "agentation",
         "agentui",
+        "annotate",
         "ui-feedback",
+        "submit-gate",
+        "plan-hash",
         "agent-browser",
         "omc",
         "omx",
@@ -2536,7 +2540,7 @@
         "Task"
       ],
       "keyword": "jeo",
-      "version": "1.0.0"
+      "version": "1.3.0"
     },
     {
       "name": "ralphmode",
@@ -2589,6 +2593,17 @@
       "platforms": ["Claude", "Gemini", "ChatGPT", "Codex", "Cursor", "Windsurf", "OpenCode"],
       "allowed_tools": ["Read", "Write", "Bash", "Grep", "Glob"],
       "keyword": "agentation",
+      "version": "1.0.0"
+    },
+    {
+      "name": "survey",
+      "description": "Cross-platform landscape scan before planning or implementation. Researches context, workarounds, existing solutions, and structural gaps, then writes reusable survey artifacts for OMC, OMX, OHMG, and general agent workflows.",
+      "category": "utilities",
+      "path": ".agent-skills/survey/SKILL.md",
+      "tags": ["survey", "landscape-scan", "research", "discovery", "groundwork", "omc", "omx", "ohmg", "claude", "codex", "gemini", "hooks", "rules", "settings"],
+      "platforms": ["Claude Code", "Codex", "Gemini-CLI", "OpenCode"],
+      "allowed_tools": ["Read", "Write", "Bash", "Grep", "Glob", "WebFetch"],
+      "keyword": "survey",
       "version": "1.0.0"
     }
   ],

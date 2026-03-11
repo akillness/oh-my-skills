@@ -61,12 +61,14 @@ Step 3: Return recommendation with explanation
 - Required before transition:
   - Level 0-1: Tech Spec complete
   - Level 2+: PRD complete
+- Gate rule: if the current phase document already has a terminal plannotator result for the same document hash, do not relaunch review until the document changes
 
 **Phase 3 → Phase 4:**
 - Transition when: Architecture complete (if required)
 - Required before transition:
   - Level 0-1: None (skip Phase 3)
   - Level 2+: Architecture complete
+- Gate rule: phase advancement still requires a reviewed artifact; unchanged reviewed architecture should not be re-opened
 
 **Phase 4 completion:**
 - All stories in sprint-status.yaml marked as "done"
@@ -211,6 +213,7 @@ Written by `scripts/phase-gate-review.sh` when a phase document is approved via 
 - **`reviewed_at`** - ISO-8601 timestamp of when the review was approved
 
 These fields are optional — they are only present on workflow entries that have been reviewed. Use them to audit which phase documents were human-reviewed before phase transition.
+If you persist a document hash alongside them, the recommended policy is "same hash, same decision, no re-entry".
 
 ### Updating Status
 

@@ -7,7 +7,7 @@ metadata:
   tags: jeo, orchestration, ralph, plannotator, agentation, annotate, agentui, UI검토, team, bmad, omc, omx, ohmg, agent-browser, multi-agent, workflow, worktree-cleanup, browser-verification, ui-feedback
   platforms: Claude, Codex, Gemini, OpenCode
   keyword: jeo
-  version: 1.2.1
+  version: 1.3.0
   source: supercent-io/skills-template
 ---
 
@@ -18,6 +18,22 @@ metadata:
 >
 > A unified skill providing fully automated orchestration flow:
 > Plan (ralph+plannotator) → Execute (team/bmad) → UI Feedback (agentation/annotate) → Cleanup (worktree cleanup)
+
+## Control Layers
+
+JEO uses one cross-platform abstraction for orchestration:
+
+- `settings`: platform/runtime configuration such as Claude hooks, Codex `config.toml`, Gemini `settings.json`, MCP registration, and prompt parameters
+- `rules`: policy constraints that must hold on every platform
+- `hooks`: event callbacks that enforce those rules on each platform
+
+The key JEO rules are:
+
+- do not reopen the PLAN gate when the current plan hash already has a terminal result
+- only a revised plan resets `plan_gate_status` to `pending`
+- do not process agentation annotations before explicit submit/onSubmit opens the submit gate
+
+The authoritative state is `.omc/state/jeo-state.json`. Hooks may help advance the workflow, but they must obey the state file.
 
 ---
 
@@ -39,8 +55,13 @@ If `.omc/state/jeo-state.json` does not exist, create it:
 ```json
 {
   "phase": "plan",
-  "task": "<detected task>",
+  "task": "<감지된 task>",
   "plan_approved": false,
+  "plan_gate_status": "pending",
+  "plan_current_hash": null,
+  "last_reviewed_plan_hash": null,
+  "last_reviewed_plan_at": null,
+  "plan_review_method": null,
   "team_available": null,
   "retry_count": 0,
   "last_error": null,
@@ -51,6 +72,10 @@ If `.omc/state/jeo-state.json` does not exist, create it:
     "active": false,
     "session_id": null,
     "keyword_used": null,
+    "submit_gate_status": "idle",
+    "submit_signal": null,
+    "submit_received_at": null,
+    "submitted_annotation_count": 0,
     "started_at": null,
     "timeout_seconds": 120,
     "annotations": { "total": 0, "acknowledged": 0, "resolved": 0, "dismissed": 0, "pending": 0 },
@@ -171,20 +196,33 @@ if os.path.exists(f):
 # The ExitPlanMode PermissionRequest hook fires plannotator automatically.
 # The following script is for Codex / Gemini / OpenCode only.
 
-# GUARD: Check if plan was already approved in a previous turn (Gemini/Antigravity hook result).
-# plannotator-plan-loop.sh writes plan_approved=true and phase=execute to jeo-state.json on approval.
-# This prevents repeated plannotator calls across turns in hook-based environments.
-ALREADY_APPROVED=$(python3 -c "
+# GUARD: enforce no-repeat PLAN review by plan hash.
+# same hash + terminal gate status => skip reopening the plan gate
+# revised plan.md content => reset gate to pending and review again
+PLAN_GATE_STATUS=$(python3 -c "
 import json, os
 try:
     s = json.load(open('.omc/state/jeo-state.json'))
-    print('true' if s.get('plan_approved') is True else 'false')
+    print(s.get('plan_gate_status', 'pending'))
 except Exception:
-    print('false')
-" 2>/dev/null || echo "false")
+    print('pending')
+" 2>/dev/null || echo "pending")
 
-if [[ "$ALREADY_APPROVED" == "true" ]]; then
-  echo "✅ Plan already approved (from previous turn). Proceeding to EXECUTE."
+HASH_MATCH=$(python3 -c "
+import hashlib, json, os
+try:
+    s = json.load(open('.omc/state/jeo-state.json'))
+    if not os.path.exists('plan.md'):
+        print('no-match')
+    else:
+        current_hash = hashlib.sha256(open('plan.md', 'rb').read()).hexdigest()
+        print('match' if current_hash == (s.get('last_reviewed_plan_hash') or '') else 'no-match')
+except Exception:
+    print('no-match')
+" 2>/dev/null || echo "no-match")
+
+if [[ "$HASH_MATCH" == "match" && "$PLAN_GATE_STATUS" =~ ^(approved|manual_approved|feedback_required|infrastructure_blocked)$ ]]; then
+  echo "✅ Current plan hash already has gate result: $PLAN_GATE_STATUS. Do not reopen plannotator."
   exit 0
 fi
 
@@ -231,10 +269,11 @@ elif [ "$PLAN_RC" -eq 10 ]; then
   echo "❌ Plan not approved — apply feedback, revise plan.md, and retry"
   exit 1
 elif [ "$PLAN_RC" -eq 32 ]; then
-  echo "⚠️ Cannot open plannotator UI (localhost bind unavailable)."
-  echo "   - TTY environment: proceed with manual PLAN gate (approve/feedback/stop)"
-  echo "   - Non-TTY environment: confirm with user and retry locally (non-sandbox)"
-  exit 1
+  echo "⚠️ plannotator UI unavailable (sandbox/CI). Entering Conversation Approval Mode:"
+  echo "   1. Output plan.md content to user in conversation"
+  echo "   2. Ask user: 'approve' to proceed or provide feedback"
+  echo "   3. DO NOT proceed to EXECUTE until user explicitly approves"
+  exit 32
 elif [ "$PLAN_RC" -eq 30 ] || [ "$PLAN_RC" -eq 31 ]; then
   echo "⛔ PLAN exit decision (or awaiting confirmation). Confirm with user before retrying."
   exit 1
@@ -250,7 +289,8 @@ mkdir -p .omc/plans .omc/logs
    - **Claude Code (hook mode — only supported method)**:
      `plannotator` is a hook-only binary. It cannot be called via MCP tool or CLI directly.
      Call `EnterPlanMode`, write the plan content in plan mode, then call `ExitPlanMode`.
-     The `ExitPlanMode` PermissionRequest hook fires `plannotator` automatically.
+     The `ExitPlanMode` PermissionRequest hook fires the JEO Claude plan-gate wrapper automatically.
+     That wrapper must skip re-entry when the current plan hash already has a terminal review result.
      Wait for the hook to return before proceeding — approved or feedback will arrive via the hook result.
    - **Codex / Gemini / OpenCode**: run blocking CLI (never use `&`):
      ```bash
@@ -265,6 +305,7 @@ mkdir -p .omc/plans .omc/logs
    - Session exited 3 times (`exit 30/31`) → ask user whether to end PLAN and decide to abort or resume
 
 **NEVER: enter EXECUTE without `approved: true`. NEVER: run with `&` background.**
+**NEVER: reopen the same unchanged plan after `approved`, `manual_approved`, `feedback_required`, or `infrastructure_blocked`.**
 
 ---
 
@@ -383,11 +424,18 @@ if os.path.exists(f):
      # Proceed to STEP 4 CLEANUP (no exit 1 — graceful skip)
    fi
    ```
-2. Update `jeo-state.json`: `phase = "verify_ui"`, `agentation.active = true`
-3. **Claude Code (MCP)**: blocking call to `agentation_watch_annotations` (`batchWindowSeconds:10`, `timeoutSeconds:120`)
-4. **Codex / Gemini / OpenCode (HTTP)**: polling loop via `GET http://localhost:4747/pending`
-5. Process each annotation: `acknowledge` → navigate code via `elementPath` → apply fix → `resolve`
-6. `count=0` or timeout → **enter STEP 4**
+2. Update `jeo-state.json`: `phase = "verify_ui"`, `agentation.active = true`, `agentation.submit_gate_status = "waiting_for_submit"`
+3. Wait for explicit human submit:
+   - **Claude Code**: wait for `UserPromptSubmit` after the user presses **Send Annotations** / `onSubmit`
+   - **Codex / Gemini / OpenCode**: wait until the human confirms submission and the agent emits `ANNOTATE_READY` (or compatibility alias `AGENTUI_READY`)
+4. Before that submit signal arrives, do not read `/pending`, do not acknowledge annotations, and do not start the fix loop
+5. After submit arrives, switch `agentation.submit_gate_status = "submitted"` and record `submit_signal`, `submit_received_at`, and `submitted_annotation_count`
+6. **Claude Code (MCP)**: blocking call to `agentation_watch_annotations` (`batchWindowSeconds:10`, `timeoutSeconds:120`)
+7. **Codex / Gemini / OpenCode (HTTP)**: polling loop via `GET http://localhost:4747/pending`
+8. Process each annotation: `acknowledge` → navigate code via `elementPath` → apply fix → `resolve`
+9. `count=0` or timeout → reset the submit gate or finish the sub-phase → **enter STEP 4**
+
+**NEVER: process draft annotations before submit/onSubmit.**
 
 ---
 
@@ -553,6 +601,12 @@ Common flow:
 - Review plan in browser → Approve or Send Feedback
 - Approve (`"approved":true`) → enter [2] EXECUTE step
 - Feedback → read `/tmp/plannotator_feedback.txt` annotations and replan (loop)
+- **exit 32 (sandbox/CI — Conversation Approval Mode)**:
+  1. Output full `plan.md` content to user
+  2. Ask: "⚠️ plannotator UI unavailable. Reply 'approve' to proceed or provide feedback."
+  3. **WAIT for user response — do NOT proceed to EXECUTE**
+  4. On approval → update `jeo-state.json` `plan_approved=true, plan_gate_status="manual_approved"` → EXECUTE
+  5. On feedback → revise `plan.md`, retry loop, repeat
 
 **Claude Code manual run:**
 ```
@@ -641,19 +695,20 @@ else
   SESSIONS=$(curl -sf http://localhost:4747/sessions 2>/dev/null)
   S_COUNT=$(echo "$SESSIONS" | python3 -c "import sys,json; print(len(json.load(sys.stdin)))" 2>/dev/null || echo 0)
   [ "$S_COUNT" -eq 0 ] && echo "⚠️ No active sessions — <Agentation endpoint='http://localhost:4747' /> needs to be mounted"
-
-  # Step 3: Check pending annotations
-  PENDING=$(curl -sf http://localhost:4747/pending 2>/dev/null)
-  P_COUNT=$(echo "$PENDING" | python3 -c "import sys,json; print(json.load(sys.stdin)['count'])" 2>/dev/null || echo 0)
-  echo "✅ agentation ready — server OK, ${S_COUNT} session(s), ${P_COUNT} pending annotation(s)"
+  echo "✅ agentation ready — server OK, ${S_COUNT} session(s)"
 fi
 ```
 
-> After passing pre-flight (`else` branch), update jeo-state.json `phase` to `"verify_ui"` and set `agentation.active` to `true`.
+> After passing pre-flight (`else` branch), update jeo-state.json `phase` to `"verify_ui"`, set `agentation.active` to `true`, and set `agentation.submit_gate_status` to `"waiting_for_submit"`.
+> Do not call `/pending` yet. Draft annotations are not actionable until the user explicitly submits them.
 
 **Claude Code (direct MCP tool call):**
 ```
-# annotate keyword detected (or agentui — backward compatible) → blocking call to agentation_watch_annotations via MCP
+# annotate keyword detected (or agentui — backward compatible)
+# 1. wait for UserPromptSubmit after the user clicks Send Annotations / onSubmit
+# 2. the JEO submit-gate hook records submit_gate_status="submitted"
+# 3. only then run the blocking agentation watch loop
+#
 # batchWindowSeconds:10 — receive annotations in 10-second batches
 # timeoutSeconds:120   — auto-exit after 120 seconds with no annotations
 #
@@ -674,6 +729,8 @@ fi
 START_TIME=$(date +%s)
 TIMEOUT_SECONDS=120
 
+# Required gate: do not enter the loop until the human has clicked Send Annotations
+# and the platform has opened agentation.submit_gate_status="submitted".
 while true; do
   # Timeout check
   NOW=$(date +%s)
@@ -681,6 +738,18 @@ while true; do
   if [ $ELAPSED -ge $TIMEOUT_SECONDS ]; then
     echo "[JEO] agentation polling timeout (${TIMEOUT_SECONDS}s) — some annotations may remain unresolved"
     break
+  fi
+
+  SUBMIT_GATE=$(python3 -c "
+import json
+try:
+    print(json.load(open('.omc/state/jeo-state.json')).get('agentation', {}).get('submit_gate_status', 'idle'))
+except Exception:
+    print('idle')
+" 2>/dev/null || echo "idle")
+  if [ "$SUBMIT_GATE" != "submitted" ]; then
+    sleep 2
+    continue
   fi
 
   COUNT=$(curl -sf --connect-timeout 3 --max-time 5 http://localhost:4747/pending 2>/dev/null | python3 -c "import sys,json; data=sys.stdin.read(); d=json.loads(data) if data.strip() else {}; print(d.get('count', len(d.get('annotations', [])) if isinstance(d, dict) else 0))" 2>/dev/null || echo 0)
@@ -745,7 +814,7 @@ bash .agent-skills/plannotator/scripts/setup-hook.sh
       "matcher": "ExitPlanMode",
       "hooks": [{
         "type": "command",
-        "command": "plannotator",
+        "command": "python3 ~/.claude/skills/jeo/scripts/claude-plan-gate.py",
         "timeout": 1800
       }]
     }]
@@ -764,8 +833,12 @@ bash .agent-skills/plannotator/scripts/setup-hook.sh
   },
   "hooks": {
     "UserPromptSubmit": [{
-      "type": "command",
-      "command": "curl -sf --connect-timeout 1 http://localhost:4747/pending 2>/dev/null | python3 -c \"import sys,json;d=json.load(sys.stdin);c=d['count'];exit(0)if c==0 else print(f'=== AGENTATION: {c} annotations pending ===')\" 2>/dev/null;exit 0"
+      "matcher": "*",
+      "hooks": [{
+        "type": "command",
+        "command": "python3 ~/.claude/skills/jeo/scripts/claude-agentation-submit-hook.py",
+        "timeout": 300
+      }]
     }]
   }
 }
@@ -787,8 +860,7 @@ bash scripts/setup-codex.sh
 
 **agentation MCP config** (`~/.codex/config.toml`):
 ```toml
-[[mcp_servers]]
-name = "agentation"
+[mcp_servers.agentation]
 command = "npx"
 args = ["-y", "agentation-mcp", "server"]
 ```
@@ -796,9 +868,10 @@ args = ["-y", "agentation-mcp", "server"]
 
 **notify hook** (`~/.codex/hooks/jeo-notify.py`):
 - Detects `PLAN_READY` signal in `last-assistant-message` when agent turn completes
-- Confirms `plan.md` exists, then auto-runs plannotator
+- Confirms `plan.md` exists, compares the current hash against `last_reviewed_plan_hash`, and skips the gate when the plan was already reviewed
 - Saves result to `/tmp/plannotator_feedback.txt`
-- Detects `ANNOTATE_READY` signal (or backward-compatible `AGENTUI_READY`) → polls `http://localhost:4747/pending` → processes annotations via HTTP API
+- Detects `ANNOTATE_READY` signal (or backward-compatible `AGENTUI_READY`) only in `verify_ui`
+- Opens `agentation.submit_gate_status="submitted"` first, then polls `http://localhost:4747/pending`
 
 **`~/.codex/config.toml`** config:
 ```toml
@@ -857,9 +930,9 @@ The AfterAgent hook serves only as a safety net (runs after turn ends → inject
 
 **PLAN instructions added to GEMINI.md (mandatory loop)**:
 ```
-1. Write plan.md
-2. Run plannotator blocking (no &) → /tmp/plannotator_feedback.txt
-3. approved=true → EXECUTE / not approved → revise and repeat step 2
+1. plan.md 작성
+2. plannotator blocking 실행 (& 금지) → /tmp/plannotator_feedback.txt
+3. approved=true → EXECUTE / 미승인 → 수정 후 2번 반복
 NEVER proceed to EXECUTE without approved=true.
 ```
 
@@ -948,18 +1021,25 @@ JEO stores state at the following paths:
   "session_id": "<uuid>",
   "task": "current task description",
   "plan_approved": true,
-  "plan_review_method": null,
+  "plan_gate_status": "pending|approved|feedback_required|infrastructure_blocked|manual_approved",
+  "plan_current_hash": "<sha256 or null>",
+  "last_reviewed_plan_hash": "<sha256 or null>",
+  "last_reviewed_plan_at": "2026-02-24T00:00:00Z",
+  "plan_review_method": "plannotator|manual|null",
   "team_available": true,
   "retry_count": 0,
   "last_error": null,
   "checkpoint": "plan|execute|verify|verify_ui|cleanup",
-  "cleanup_completed": false,
   "created_at": "2026-02-24T00:00:00Z",
   "updated_at": "2026-02-24T00:00:00Z",
   "agentation": {
     "active": false,
     "session_id": null,
     "keyword_used": null,
+    "submit_gate_status": "idle|waiting_for_submit|submitted",
+    "submit_signal": "claude-user-prompt-submit|codex-notify|gemini-manual|null",
+    "submit_received_at": "2026-02-24T00:00:00Z",
+    "submitted_annotation_count": 0,
     "started_at": null,
     "timeout_seconds": 120,
     "annotations": {
@@ -972,7 +1052,8 @@ JEO stores state at the following paths:
 ```
 
 > **agentation fields**: `active` — whether the watch loop is running (used as hook guard), `session_id` — for resuming,
-> `exit_reason` — `"all_resolved"` | `"timeout"` | `"user_cancelled"` | `"error"`
+> `submit_gate_status` — prevents processing draft annotations before submit/onSubmit, `submit_signal` — which platform opened the gate,
+> `submit_received_at` / `submitted_annotation_count` — audit trail for the submitted batch, `exit_reason` — `"all_resolved"` | `"timeout"` | `"user_cancelled"` | `"error"`
 >
 > **dismissed annotations**: When a user dismisses an annotation in the agentation UI (status becomes `"dismissed"`),
 > the agent should skip code changes for that annotation, increment `annotations.dismissed`, and continue to the next pending annotation.
@@ -1057,13 +1138,14 @@ bash scripts/worktree-cleanup.sh
 | plannotator not running | JEO first auto-runs `bash scripts/ensure-plannotator.sh`; if it still fails, run `bash .agent-skills/plannotator/scripts/check-status.sh` |
 | plannotator not opening in Claude Code | plannotator is hook-only. Do NOT call it via MCP or CLI. Use `EnterPlanMode` → write plan → `ExitPlanMode`; the hook fires automatically. Verify hook is set: `cat ~/.claude/settings.json \| python3 -c "import sys,json;h=json.load(sys.stdin).get('hooks',{});print(h.get('PermissionRequest','missing'))"` |
 | plannotator feedback not received | Remove `&` background execution → run blocking, then check `/tmp/plannotator_feedback.txt` (Codex/Gemini/OpenCode only) |
+| Codex에서 같은 plan이 반복해서 재검토됨 | `jeo-state.json`의 `last_reviewed_plan_hash`와 현재 `plan.md` hash를 비교. 같고 `plan_gate_status`가 terminal이면 재실행 금지 |
 | Codex startup failure (`invalid type: map, expected a string`) | Re-run `bash scripts/setup-codex.sh` and confirm `developer_instructions` in `~/.codex/config.toml` is a top-level string |
 | Gemini feedback loop missing | Add blocking direct call instruction to `~/.gemini/GEMINI.md` |
 | worktree conflict | `git worktree prune && git worktree list` |
 | team mode not working | JEO requires team mode in Claude Code. Run `bash scripts/setup-claude.sh`, restart Claude Code, and verify `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` before retrying |
 | omc install failed | Run `/omc:omc-doctor` |
 | agent-browser error | Check `agent-browser --version` |
-| annotate (agentation) not opening | Check `curl http://localhost:4747/pending` — verify agentation-mcp server is running |
+| annotate (agentation) not opening | Check `curl http://localhost:4747/health` and `curl http://localhost:4747/sessions`. JEO waits for explicit submit/onSubmit before polling `/pending` |
 | annotation not reflected in code | Confirm `summary` field is present when calling `agentation_resolve_annotation` |
 | `agentui` keyword not activating | Use the `annotate` keyword (new). `agentui` is a deprecated alias but still works. |
 | MCP tool not registered (Codex/Gemini) | Re-run `bash scripts/setup-codex.sh` / `setup-gemini.sh` |

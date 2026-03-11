@@ -148,7 +148,24 @@ approval_policy = "never"
 sandbox_mode = "danger-full-access"
 ```
 
-This is the closest current equivalent to "permission skip" in Codex.
+This is the closest current equivalent to "permission skip" in Codex via config file.
+
+### CLI flag preset (sandbox YOLO)
+
+For a quick sandbox ralph run without touching config files, pass flags directly:
+
+```bash
+codex -c model_reasoning_effort="high" --dangerously-bypass-approvals-and-sandbox -c model_reasoning_summary="detailed" -c model_supports_reasoning_summaries=true
+```
+
+Flags explained:
+
+- `--dangerously-bypass-approvals-and-sandbox`: bypasses all approval prompts and sandbox restrictions
+- `-c model_reasoning_effort="high"`: enables high reasoning effort for complex tasks
+- `-c model_reasoning_summary="detailed"`: produces detailed reasoning summaries
+- `-c model_supports_reasoning_summaries=true`: enables reasoning summary output
+
+Use only in disposable sandbox environments. This is the CLI equivalent of `approval_policy = "never"` + `sandbox_mode = "danger-full-access"`.
 
 ### Compatibility note for older Codex builds
 
@@ -225,8 +242,21 @@ Tier 1 operations (always require checkpoint):
 
 ## Gemini CLI
 
-Gemini CLI is designed around explicit consent and Trusted Folders, not a true global bypass mode.
-The safe pattern is:
+Gemini CLI supports both a Trusted Folders model for normal repo automation and a `--yolo` flag for full sandbox bypass.
+
+### YOLO mode (sandbox preset)
+
+For disposable sandbox ralph runs, use the `--yolo` flag:
+
+```bash
+gemini --yolo
+```
+
+This combines sandbox mode and auto-approve into a single flag (equivalent to the older `-s -y` combination). Use only in disposable environments — never for repos with production credentials or sensitive data.
+
+### Trusted Folders preset (repo automation)
+
+The safe pattern for normal repo work:
 
 1. Trust the current project root.
 2. Avoid trusting broad parent folders.
@@ -307,9 +337,9 @@ Use this table to decide quickly:
 
 | Platform | Normal repo automation | Full skip equivalent | Mid-execution blocking | Notes |
 | --- | --- | --- | --- | --- |
-| Claude Code | `acceptEdits` or `dontAsk` with allow and deny rules | `bypassPermissions` or `--dangerously-skip-permissions` | `PreToolUse` hook (exit 2) | Use full bypass only in disposable sandboxes; `bypassPermissions` may skip hooks |
-| Codex CLI | `approval_policy = "never"` + `sandbox_mode = "workspace-write"` | `approval_policy = "never"` + `sandbox_mode = "danger-full-access"` | `approval_policy = "unless-allow-listed"` + prompt contract | `notify` hook is post-turn; no true pre-execution block |
-| Gemini CLI | Trusted project folder | None | `BeforeTool` hook (non-zero exit) | Strongest mid-execution blocking; stderr forwarded to agent's next turn |
+| Claude Code | `acceptEdits` or `dontAsk` with allow and deny rules | `bypassPermissions` or `claude --dangerously-skip-permissions` | `PreToolUse` hook (exit 2) | Use full bypass only in disposable sandboxes; `bypassPermissions` may skip hooks |
+| Codex CLI | `approval_policy = "never"` + `sandbox_mode = "workspace-write"` | `codex -c model_reasoning_effort="high" --dangerously-bypass-approvals-and-sandbox -c model_reasoning_summary="detailed" -c model_supports_reasoning_summaries=true` | `approval_policy = "unless-allow-listed"` + prompt contract | `notify` hook is post-turn; no true pre-execution block |
+| Gemini CLI | Trusted project folder | `gemini --yolo` | `BeforeTool` hook (non-zero exit) | Strongest mid-execution blocking; stderr forwarded to agent's next turn |
 | OpenCode | Slash commands + `opencode.json` instructions | None | Prompt contract only | No hook-based blocking; rely on agent following instructions |
 
 ## Source notes

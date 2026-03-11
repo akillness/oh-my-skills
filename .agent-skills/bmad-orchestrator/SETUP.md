@@ -30,6 +30,7 @@ Your AI Agent
 ```
 
 **plannotator** opens a visual browser UI after each phase document is created. You annotate, approve, or request changes — then your agent continues to the next phase.
+Use the same cross-platform control model as JEO: `settings` configure the platform, `rules` prevent invalid phase transitions, and `hooks` enforce them.
 
 ---
 
@@ -123,6 +124,7 @@ planno — review the PRD before we proceed to Phase 3
 ### What happens in the review UI
 
 1. plannotator opens in your browser automatically
+   - unless the same document hash already has a terminal review result, in which case the gate is skipped
 2. Read through the document
 3. Annotate specific sections:
    - `delete` — remove a risky or unnecessary element
