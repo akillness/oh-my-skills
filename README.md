@@ -2,15 +2,15 @@
 
 <div align="center">
 
-[![Skills](https://img.shields.io/badge/Skills-72-blue?style=for-the-badge)](https://github.com/akillness/oh-my-skills)
+[![Skills](https://img.shields.io/badge/Skills-70-blue?style=for-the-badge)](https://github.com/akillness/oh-my-skills)
 [![Platform](https://img.shields.io/badge/Platform-Claude%20%7C%20Gemini%20%7C%20Codex%20%7C%20OpenCode-orange?style=for-the-badge)](https://github.com/akillness/oh-my-skills)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 [![BMAD](https://img.shields.io/badge/BMAD-1.1.0-purple?style=for-the-badge)](docs/bmad/README.md)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-orange?style=for-the-badge&logo=buy-me-a-coffee)](https://www.buymeacoffee.com/akillness3q)
 
-**72 AI agent skills · TOON Format · Cross-platform**
+**70 AI agent skills · TOON Format · Cross-platform**
 
-[Quick Start](#-quick-start) · [Skills List](#-skills-list-72-total) · [Installation](#-installation) · [한국어](README.ko.md)
+[Quick Start](#-quick-start) · [Skills List](#-skills-list-70-total) · [Installation](#-installation) · [한국어](README.ko.md)
 
 </div>
 
@@ -18,9 +18,9 @@
 
 ## 💡 What is Agent Skills?
 
-**72 AI agent skills · TOON Format · Cross-platform**
+**70 AI agent skills · TOON Format · Cross-platform**
 
-Agent Skills is a curated collection of 72 AI agent skills for LLM-based development workflows. Built around the `jeo` orchestration protocol, it provides:
+Agent Skills is a curated collection of 70 AI agent skills for LLM-based development workflows. Built around the `jeo` orchestration protocol, it provides:
 - Unified orchestration across Claude Code, Gemini CLI, OpenAI Codex, and OpenCode
 - Plan → Execute → Verify → Cleanup automated pipelines
 - Multi-agent team coordination with parallel execution
@@ -74,6 +74,7 @@ graph TD
 
 | Change | Details |
 |--------|---------|
+| **Removed ai-tool-compliance and llm-monitoring-dashboard** | Removed `ai-tool-compliance` (internal compliance automation) and `llm-monitoring-dashboard`. 72 → **70 skills**. |
 | **Removed deprecated agent-development skills** | Removed `agent-configuration`, `agent-evaluation`, `agentic-development-principles`, `agentic-principles`, `agentic-workflow`. 80 → **72 skills**. |
 | **Removed deprecated image/media skills** | Removed `image-generation`, `image-generation-mcp`, `pollinations-ai`. Use `remotion-video-production` / `video-production` for media. |
 | **autoresearch: Karpathy autonomous ML experiment skill** | AI agent modifies `train.py`, runs 5-min GPU experiments, evaluates with `val_bpb`, ratchets improvements via git. Includes `scripts/` and `references/`. |
@@ -139,7 +140,7 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 
 ---
 
-## 📚 Skills List (72 total)
+## 📚 Skills List (70 total)
 
 > Full manifest: `.agent-skills/skills.json` · each folder's `SKILL.md`
 
@@ -213,7 +214,6 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 
 | Skill | Description | Platforms |
 |-------|-------------|-----------|
-| `ai-tool-compliance` | Internal AI tool compliance automation (P0/P1) | All |
 | `deployment-automation` | CI/CD, Docker/Kubernetes, cloud infrastructure | All |
 | `environment-setup` | Dev/staging/production environment config | All |
 | `firebase-ai-logic` | Firebase AI Logic (Gemini) integration | Claude · Gemini |
@@ -275,7 +275,6 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 | `file-organization` | File and folder organization | All |
 | `git-submodule` | Git submodule management | All |
 | `git-workflow` | Commit, branch, merge, PR workflows | All |
-| `llm-monitoring-dashboard` | LLM usage monitoring dashboard (cost, tokens, latency) | All |
 | `npm-git-install` | Install npm packages from GitHub | All |
 | `opencontext` | Persistent memory and context management for AI agents | All |
 | `workflow-automation` | Automate repetitive development workflows | All |
@@ -361,7 +360,7 @@ npx vibe-kanban
 
 ```text
 .
-├── .agent-skills/          ← 72 skill folders (each with SKILL.md + SKILL.toon)
+├── .agent-skills/          ← 70 skill folders (each with SKILL.md + SKILL.toon)
 ├── docs/                   ← detailed guides (bmad, omc, plannotator, ralph, ...)
 ├── install.sh
 ├── setup-all-skills-prompt.md

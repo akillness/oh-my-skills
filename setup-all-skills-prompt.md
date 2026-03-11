@@ -125,7 +125,7 @@ gemini extensions install https://github.com/akillness/oh-my-skills
 
 ---
 
-### Step 2: Full 72-Skill Installation (Default Execution Step)
+### Step 2: Full 70-Skill Installation (Default Execution Step)
 
 > **Always wipe existing skill directories before running — ensures no stale skills from previous installs or Step 1 partial install remain.**
 
@@ -168,11 +168,9 @@ npx skills add https://github.com/akillness/oh-my-skills \
   --skill task-estimation --skill task-planning \
   --skill codebase-search --skill data-analysis \
   --skill log-analysis --skill pattern-detection \
-  --skill llm-monitoring-dashboard \
   --skill remotion-video-production --skill video-production \
   --skill marketing-automation --skill marketing-skills-collection \
   --skill agent-browser --skill agentation --skill copilot-coding-agent \
-  --skill ai-tool-compliance \
   --skill environment-setup --skill file-organization \
   --skill git-submodule --skill git-workflow --skill jeo \
   --skill npm-git-install --skill ohmg --skill omx \
@@ -355,11 +353,9 @@ gh api --silent --method PUT /user/starred/akillness/oh-my-skills && echo "⭐ S
 | `bmad-orchestrator` | `bmad` | Structured phase-based development |
 | `bmad-gds` | `bmad-gds` | Game Development Studio (Unity/Unreal/Godot) |
 | `bmad-idea` | `bmad-idea` | Creative ideas · design thinking · innovation strategy |
-| `ai-tool-compliance` | `ai-tool-compliance` | Internal AI tool compliance automation (P0/P1) |
 | `agent-browser` | `agent-browser` | Headless browser automation |
 | `survey` | `survey` | Cross-platform landscape scan before planning or implementation |
 | `autoresearch` | `autoresearch`, `autonomous ml experiments`, `val_bpb` | Karpathy autonomous ML experimentation — AI agent runs overnight GPU experiments, ratchets improvements via git |
-| `llm-monitoring-dashboard` | `llm-monitoring-dashboard` | LLM usage monitoring dashboard generation |
 | `agentation` | `annotate`, `UI검토`, `agentui` | UI annotation → agent code modification. Install: `npx add-mcp "npx -y agentation-mcp server"` (Universal) or `npx skills add benjitaylor/agentation` → `/agentation` (Claude Code Official Skill). Local-first architecture, offline operation, session continuity. |
 | `omx` | `omx` | Codex CLI multi-agent orchestration |
 | `ohmg` | `ohmg` | Gemini / Antigravity workflows |
