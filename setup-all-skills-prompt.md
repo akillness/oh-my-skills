@@ -49,7 +49,7 @@ else
 fi
 ```
 
-3. **Declare installation path standardization variables and wipe existing paths**
+3. **Declare installation path standardization variables and ensure directories exist**
 
 ```bash
 # Canonical path (recommended default)
@@ -63,15 +63,13 @@ SKILL_DESTS=(
   "${HOME}/.config/opencode/skills" "${PWD}/.config/opencode/skills"
 )
 
-# Always wipe existing skill paths to guarantee a clean install
-echo "Wiping existing skill paths for clean install..."
-rm -rf "${SKILLS_CANONICAL}"
+# Ensure skill directories exist (preserves existing skills — update/overwrite only)
+mkdir -p "${SKILLS_CANONICAL}"
 for dest in "${SKILL_DESTS[@]}"; do
-  rm -rf "${dest}"
+  mkdir -p "${dest}"
 done
 
-mkdir -p "${SKILLS_CANONICAL}"
-echo "✅ Skill paths cleared"
+echo "✅ Skill paths ready"
 ```
 
 ---
@@ -127,10 +125,10 @@ gemini extensions install https://github.com/akillness/oh-my-skills
 
 ### Step 2: Full 70-Skill Installation (Default Execution Step)
 
-> **Always wipe existing skill directories before running — ensures no stale skills from previous installs or Step 1 partial install remain.**
+> **Installs or updates all 70 skills — existing skills are overwritten with the latest version. Skills not in this list are preserved.**
 
 ```bash
-# Wipe all skill paths before full install (unconditional — always required)
+# Ensure all skill directories exist (no wiping — update/overwrite only)
 _SKILLS_CANONICAL="${HOME}/.agent-skills"
 for _dest in \
   "${_SKILLS_CANONICAL}" \
@@ -139,10 +137,9 @@ for _dest in \
   "${HOME}/.gemini/skills"  "${PWD}/.gemini/skills" \
   "${HOME}/.opencode/skills" "${PWD}/.opencode/skills" \
   "${HOME}/.config/opencode/skills" "${PWD}/.config/opencode/skills"; do
-  rm -rf "${_dest}"
+  mkdir -p "${_dest}"
 done
-mkdir -p "${_SKILLS_CANONICAL}"
-echo "✅ All skill directories wiped — ready for clean install"
+echo "✅ Skill directories ready — installing/updating skills"
 ```
 
 ```bash
@@ -259,29 +256,26 @@ fi
 
 echo "Detected skills dir: ${SKILL_SRC}"
 
-# Sync to canonical path (force mirror)
+# Sync to canonical path (update/overwrite — preserves skills not in source)
 mkdir -p "${HOME}/.agent-skills"
 if command -v rsync >/dev/null 2>&1; then
-  rsync -a --delete "${SKILL_SRC}/" "${HOME}/.agent-skills/"
+  rsync -a "${SKILL_SRC}/" "${HOME}/.agent-skills/"
 else
-  rm -rf "${HOME}/.agent-skills"
-  mkdir -p "${HOME}/.agent-skills"
   cp -R "${SKILL_SRC}/." "${HOME}/.agent-skills/"
 fi
 
-# Remove existing platform-specific skill directories and force copy
+# Update platform-specific skill directories (overwrite only — no deletion)
 for dest in \
     "${HOME}/.claude/skills" "${PWD}/.claude/skills" \
     "${HOME}/.codex/skills" "${PWD}/.codex/skills" \
     "${HOME}/.gemini/skills" "${PWD}/.gemini/skills" \
     "${HOME}/.opencode/skills" "${PWD}/.opencode/skills" \
     "${HOME}/.config/opencode/skills" "${PWD}/.config/opencode/skills"; do
-  rm -rf "${dest}"
   mkdir -p "${dest}"
   if command -v rsync >/dev/null 2>&1; then
-    rsync -a --delete "${HOME}/.agent-skills/" "${dest}/"
+    rsync -a "${HOME}/.agent-skills/" "${dest}/"
   else
-    cp -R "${HOME}/.agent-skills"/. "${dest}/"
+    cp -R "${HOME}/.agent-skills/." "${dest}/"
   fi
 done
 
