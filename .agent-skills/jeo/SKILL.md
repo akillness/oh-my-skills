@@ -1,13 +1,13 @@
 ---
 name: jeo
-description: "JEO — Integrated AI agent orchestration skill. Plan with ralph+plannotator, execute with team/bmad, verify browser behavior with agent-browser, apply UI feedback with agentation(annotate), auto-cleanup worktrees after completion. Supports Claude, Codex, Gemini CLI, and OpenCode. Install: ralph, omc, omx, ohmg, bmad, plannotator, agent-browser, agentation."
+description: "JEO — Integrated AI agent orchestration skill. Plan with plannotator (approval triggers ralphmode), execute with ralphmode/team/bmad, verify browser behavior with agent-browser, apply UI feedback with agentation(annotate), auto-cleanup worktrees after completion. Supports Claude, Codex, Gemini CLI, and OpenCode. Install: ralph, omc, omx, ohmg, bmad, plannotator, agent-browser, agentation."
 compatibility: "Requires git, node>=18, bash. Optional: bun, docker."
 allowed-tools: Read Write Bash Grep Glob Task
 metadata:
   tags: jeo, orchestration, ralph, plannotator, agentation, annotate, agentui, UI-review, team, bmad, omc, omx, ohmg, agent-browser, multi-agent, workflow, worktree-cleanup, browser-verification, ui-feedback
   platforms: Claude, Codex, Gemini, OpenCode
   keyword: jeo
-  version: 1.3.0
+  version: 1.4.0
   source: akillness/oh-my-skills
 ---
 
@@ -367,17 +367,34 @@ if os.path.exists(f):
 ```
 
 1. Update `jeo-state.json` `phase` to `"execute"`
-2. **Team available (Claude Code + omc)**:
+2. **Check `next_mode` in state** (written by `claude-plan-gate.py` on approval):
+   ```python
+   # Read next_mode from jeo-state.json
+   import json, os, subprocess
+   try:
+       root = subprocess.check_output(['git','rev-parse','--show-toplevel'], text=True).strip()
+   except Exception:
+       root = os.getcwd()
+   state = json.load(open(os.path.join(root, '.omc/state/jeo-state.json')))
+   next_mode = state.get('next_mode', '')
    ```
+   - `next_mode == "ralphmode"` → **invoke `/omc:ralphmode "<task>"`** (autonomous execution with ralph loop)
+   - default → `/omc:team 3:executor "<task>"`
+3. **Team available (Claude Code + omc)**:
+   ```
+   # ralphmode (set when plan was approved via plannotator):
+   /omc:ralphmode "<task>"
+
+   # or standard team mode:
    /omc:team 3:executor "<task>"
    ```
-3. **Claude Code but no team**:
+4. **Claude Code but no team**:
    ```
    echo "❌ JEO requires Claude Code team mode. Re-run bash scripts/setup-claude.sh, restart Claude Code, and confirm CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1."
    exit 1
    ```
    Never fall back to single-agent execution in Claude Code.
-4. **No omc (BMAD fallback — Codex / Gemini / OpenCode only)**:
+5. **No omc (BMAD fallback — Codex / Gemini / OpenCode only)**:
    ```
    /workflow-init   # Initialize BMAD
    /workflow-status # Check current step
