@@ -17,10 +17,10 @@
 
 ```bash
 # Install bmad-orchestrator only
-npx skills add https://github.com/supercent-io/skills-template --skill bmad-orchestrator
+npx skills add https://github.com/akillness/oh-my-skills --skill bmad-orchestrator
 
 # Or install all 60 core skills at once
-npx skills add https://github.com/supercent-io/skills-template
+npx skills add https://github.com/akillness/oh-my-skills
 ```
 
 This installs the skill to `~/.agents/skills/bmad-orchestrator/`.
@@ -105,7 +105,7 @@ Phase 4: Implementation
 
 ```bash
 # Reinstall to get latest version
-npx skills add https://github.com/supercent-io/skills-template --skill bmad-orchestrator
+npx skills add https://github.com/akillness/oh-my-skills --skill bmad-orchestrator
 
 # Then re-activate in Claude Code
 bmad 스킬을 설정하고 사용해줘. 기억해.

@@ -4,17 +4,17 @@ description: "JEO — Integrated AI agent orchestration skill. Plan with ralph+p
 compatibility: "Requires git, node>=18, bash. Optional: bun, docker."
 allowed-tools: Read Write Bash Grep Glob Task
 metadata:
-  tags: jeo, orchestration, ralph, plannotator, agentation, annotate, agentui, UI검토, team, bmad, omc, omx, ohmg, agent-browser, multi-agent, workflow, worktree-cleanup, browser-verification, ui-feedback
+  tags: jeo, orchestration, ralph, plannotator, agentation, annotate, agentui, UI-review, team, bmad, omc, omx, ohmg, agent-browser, multi-agent, workflow, worktree-cleanup, browser-verification, ui-feedback
   platforms: Claude, Codex, Gemini, OpenCode
   keyword: jeo
   version: 1.3.0
-  source: supercent-io/skills-template
+  source: akillness/oh-my-skills
 ---
 
 
 # JEO — Integrated Agent Orchestration
 
-> Keyword: `jeo` · `annotate` · `UI검토` · `agentui (deprecated)` | Platforms: Claude Code · Codex CLI · Gemini CLI · OpenCode
+> Keyword: `jeo` · `annotate` · `UI-review` · `agentui (deprecated)` | Platforms: Claude Code · Codex CLI · Gemini CLI · OpenCode
 >
 > A unified skill providing fully automated orchestration flow:
 > Plan (ralph+plannotator) → Execute (team/bmad) → UI Feedback (agentation/annotate) → Cleanup (worktree cleanup)
@@ -55,7 +55,7 @@ If `.omc/state/jeo-state.json` does not exist, create it:
 ```json
 {
   "phase": "plan",
-  "task": "<감지된 task>",
+  "task": "<detected task>",
   "plan_approved": false,
   "plan_gate_status": "pending",
   "plan_current_hash": null,
@@ -481,13 +481,13 @@ fi
 
 ## 1. Quick Start
 
-> **Source of truth**: `https://github.com/supercent-io/skills-template`
+> **Source of truth**: `https://github.com/akillness/oh-my-skills`
 > Local paths like `~/.claude/skills/jeo/` are copies installed via `npx skills add`.
 > To update to the latest version, reinstall using the command below.
 
 ```bash
 # Install JEO (npx skills add — recommended)
-npx skills add https://github.com/supercent-io/skills-template --skill jeo
+npx skills add https://github.com/akillness/oh-my-skills --skill jeo
 
 # Full install (all AI tools + all components)
 bash scripts/install.sh --all
@@ -930,9 +930,9 @@ The AfterAgent hook serves only as a safety net (runs after turn ends → inject
 
 **PLAN instructions added to GEMINI.md (mandatory loop)**:
 ```
-1. plan.md 작성
-2. plannotator blocking 실행 (& 금지) → /tmp/plannotator_feedback.txt
-3. approved=true → EXECUTE / 미승인 → 수정 후 2번 반복
+1. Write plan.md
+2. Run plannotator blocking (no &) → /tmp/plannotator_feedback.txt
+3. approved=true → EXECUTE / Not approved → revise and repeat step 2
 NEVER proceed to EXECUTE without approved=true.
 ```
 
@@ -1138,7 +1138,7 @@ bash scripts/worktree-cleanup.sh
 | plannotator not running | JEO first auto-runs `bash scripts/ensure-plannotator.sh`; if it still fails, run `bash .agent-skills/plannotator/scripts/check-status.sh` |
 | plannotator not opening in Claude Code | plannotator is hook-only. Do NOT call it via MCP or CLI. Use `EnterPlanMode` → write plan → `ExitPlanMode`; the hook fires automatically. Verify hook is set: `cat ~/.claude/settings.json \| python3 -c "import sys,json;h=json.load(sys.stdin).get('hooks',{});print(h.get('PermissionRequest','missing'))"` |
 | plannotator feedback not received | Remove `&` background execution → run blocking, then check `/tmp/plannotator_feedback.txt` (Codex/Gemini/OpenCode only) |
-| Codex에서 같은 plan이 반복해서 재검토됨 | `jeo-state.json`의 `last_reviewed_plan_hash`와 현재 `plan.md` hash를 비교. 같고 `plan_gate_status`가 terminal이면 재실행 금지 |
+| Same plan is repeatedly re-reviewed in Codex | Compare `last_reviewed_plan_hash` in `jeo-state.json` with the current `plan.md` hash. If they match and `plan_gate_status` is terminal, do not re-run |
 | Codex startup failure (`invalid type: map, expected a string`) | Re-run `bash scripts/setup-codex.sh` and confirm `developer_instructions` in `~/.codex/config.toml` is a top-level string |
 | Gemini feedback loop missing | Add blocking direct call instruction to `~/.gemini/GEMINI.md` |
 | worktree conflict | `git worktree prune && git worktree list` |

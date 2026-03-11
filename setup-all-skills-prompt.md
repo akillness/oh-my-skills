@@ -5,7 +5,7 @@
 > Pass this file to an AI agent and it will automatically proceed with installation.
 >
 > ```bash
-> curl -s https://raw.githubusercontent.com/supercent-io/skills-template/main/setup-all-skills-prompt.md
+> curl -s https://raw.githubusercontent.com/akillness/oh-my-skills/main/setup-all-skills-prompt.md
 > ```
 
 ---
@@ -83,13 +83,13 @@ Execute based on Step 0 results:
 **All platforms (recommended starting point):**
 ```bash
 # research-first survey skill
-npx skills add https://github.com/supercent-io/skills-template --skill survey
+npx skills add https://github.com/akillness/oh-my-skills --skill survey
 
 # jeo core skill
-npx skills add https://github.com/supercent-io/skills-template --skill jeo
+npx skills add https://github.com/akillness/oh-my-skills --skill jeo
 
 # jeo dependency skills (recommended to install together)
-npx skills add https://github.com/supercent-io/skills-template --skill plannotator --skill agentation
+npx skills add https://github.com/akillness/oh-my-skills --skill plannotator --skill agentation
 ```
 
 > **jeo Agent Protocol**: When jeo runs, it automatically creates `jeo-state.json` and proceeds sequentially through PLAN → EXECUTE → VERIFY → CLEANUP phases.
@@ -100,7 +100,7 @@ npx skills add https://github.com/supercent-io/skills-template --skill plannotat
 
 **Claude Code only:**
 ```bash
-npx skills add https://github.com/supercent-io/skills-template \
+npx skills add https://github.com/akillness/oh-my-skills \
   --skill omc --skill plannotator --skill ralph --skill ralphmode --skill vibe-kanban
 ```
 
@@ -108,24 +108,24 @@ npx skills add https://github.com/supercent-io/skills-template \
 
 **Gemini CLI only:**
 ```bash
-npx skills add https://github.com/supercent-io/skills-template \
+npx skills add https://github.com/akillness/oh-my-skills \
   --skill ohmg --skill ralph --skill ralphmode --skill vibe-kanban
 ```
 
 **Codex CLI only:**
 ```bash
-npx skills add https://github.com/supercent-io/skills-template \
+npx skills add https://github.com/akillness/oh-my-skills \
   --skill omx --skill ralph --skill ralphmode
 ```
 
 **Gemini CLI (extension install):**
 ```bash
-gemini extensions install https://github.com/supercent-io/skills-template
+gemini extensions install https://github.com/akillness/oh-my-skills
 ```
 
 ---
 
-### Step 2: Full 79-Skill Installation (Default Execution Step)
+### Step 2: Full 72-Skill Installation (Default Execution Step)
 
 > **Always wipe existing skill directories before running — ensures no stale skills from previous installs or Step 1 partial install remain.**
 
@@ -146,13 +146,10 @@ echo "✅ All skill directories wiped — ready for clean install"
 ```
 
 ```bash
-npx skills add https://github.com/supercent-io/skills-template \
-  --skill agent-configuration --skill agent-evaluation \
-  --skill agentic-development-principles --skill agentic-principles \
-  --skill agentic-workflow --skill bmad-orchestrator \
-  --skill bmad-gds --skill bmad-idea \
-  --skill prompt-repetition --skill api-design \
-  --skill api-documentation --skill authentication-setup \
+npx skills add https://github.com/akillness/oh-my-skills \
+  --skill bmad-orchestrator --skill bmad-gds --skill bmad-idea \
+  --skill prompt-repetition --skill skill-standardization \
+  --skill api-design --skill api-documentation --skill authentication-setup \
   --skill backend-testing --skill database-schema-design \
   --skill design-system --skill frontend-design-system \
   --skill react-best-practices --skill vercel-react-best-practices \
@@ -172,7 +169,6 @@ npx skills add https://github.com/supercent-io/skills-template \
   --skill codebase-search --skill data-analysis \
   --skill log-analysis --skill pattern-detection \
   --skill llm-monitoring-dashboard \
-  --skill image-generation --skill image-generation-mcp --skill pollinations-ai \
   --skill remotion-video-production --skill video-production \
   --skill marketing-automation --skill marketing-skills-collection \
   --skill agent-browser --skill agentation --skill copilot-coding-agent \
@@ -181,9 +177,9 @@ npx skills add https://github.com/supercent-io/skills-template \
   --skill git-submodule --skill git-workflow --skill jeo \
   --skill npm-git-install --skill ohmg --skill omx \
   --skill omc --skill opencontext --skill plannotator --skill playwriter \
-  --skill ralph --skill ralphmode --skill skill-standardization --skill survey \
+  --skill ralph --skill ralphmode --skill survey \
   --skill vibe-kanban --skill workflow-automation \
-  --skill fabric
+  --skill fabric --skill autoresearch
 ```
 
 > Skip condition is only allowed when the user explicitly requests (`core only`, `minimal install`, `quick install`).
@@ -207,7 +203,7 @@ configure and use the jeo skill. remember it.
 ```
 
 ```bash
-# jeo v1.3.0 hook setup: plan gate (ExitPlanMode) + agentation submit hook (UserPromptSubmit) + agentation MCP + agent teams
+# jeo ExitPlanMode hook setup (plannotator auto-integration)
 bash ~/.agent-skills/jeo/scripts/setup-claude.sh
 
 # agentation Claude Code Official Skill install (recommended)
@@ -231,7 +227,7 @@ Check the guide for installation flags matching your subscription (Claude Pro/Ma
 
 After installation, add skills:
 ```bash
-npx skills add https://github.com/supercent-io/skills-template
+npx skills add https://github.com/akillness/oh-my-skills
 ```
 
 #### Gemini CLI — jeo hook setup
@@ -320,13 +316,29 @@ After everything is set up and working, ask the user:
 
 > "If you found this helpful, would you like to star the repository? It helps the project grow! ⭐"
 
-If the user agrees, run:
+If the user agrees, execute the following steps **in order**:
 
+**1. Check gh CLI auth status:**
 ```bash
-gh api --silent --method PUT /user/starred/supercent-io/skills-template >/dev/null 2>&1 || true
+gh auth status 2>&1
 ```
 
-> **Important:** Only run the command if the user explicitly says yes. Never run it automatically without consent.
+**2a. If already authenticated** — star immediately:
+```bash
+gh api --silent --method PUT /user/starred/akillness/oh-my-skills && echo "⭐ Starred! Thank you!"
+```
+
+**2b. If NOT authenticated** — log in first, then star:
+```bash
+gh auth login
+```
+After login completes:
+```bash
+gh api --silent --method PUT /user/starred/akillness/oh-my-skills && echo "⭐ Starred! Thank you!"
+```
+
+> **Important:** Only proceed if the user explicitly says yes. Never run it automatically without consent.
+> A successful star produces no output (HTTP 204). The `echo` confirms completion.
 
 ---
 
@@ -346,6 +358,7 @@ gh api --silent --method PUT /user/starred/supercent-io/skills-template >/dev/nu
 | `ai-tool-compliance` | `ai-tool-compliance` | Internal AI tool compliance automation (P0/P1) |
 | `agent-browser` | `agent-browser` | Headless browser automation |
 | `survey` | `survey` | Cross-platform landscape scan before planning or implementation |
+| `autoresearch` | `autoresearch`, `autonomous ml experiments`, `val_bpb` | Karpathy autonomous ML experimentation — AI agent runs overnight GPU experiments, ratchets improvements via git |
 | `llm-monitoring-dashboard` | `llm-monitoring-dashboard` | LLM usage monitoring dashboard generation |
 | `agentation` | `annotate`, `UI검토`, `agentui` | UI annotation → agent code modification. Install: `npx add-mcp "npx -y agentation-mcp server"` (Universal) or `npx skills add benjitaylor/agentation` → `/agentation` (Claude Code Official Skill). Local-first architecture, offline operation, session continuity. |
 | `omx` | `omx` | Codex CLI multi-agent orchestration |

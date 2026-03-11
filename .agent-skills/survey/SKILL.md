@@ -7,7 +7,7 @@ metadata:
   platforms: Claude Code, Codex, Gemini-CLI, OpenCode
   keyword: survey
   version: 1.0.0
-  source: supercent-io/skills-template
+  source: akillness/oh-my-skills
 ---
 
 

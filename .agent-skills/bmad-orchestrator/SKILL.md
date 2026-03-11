@@ -25,7 +25,7 @@ metadata:
 ## Installation
 
 ```bash
-npx skills add https://github.com/supercent-io/skills-template --skill bmad-orchestrator
+npx skills add https://github.com/akillness/oh-my-skills --skill bmad-orchestrator
 ```
 
 ## Notes for Codex Usage

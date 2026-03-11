@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Agent Skills One-Liner Installer v1.3.1
-# Usage: curl -fsSL https://raw.githubusercontent.com/supercent-io/skills-template/main/install.sh | bash
+# Usage: curl -fsSL https://raw.githubusercontent.com/akillness/oh-my-skills/main/install.sh | bash
 #
 # Options (via environment variables):
 #   INSTALL_GLOBAL=true   - Install to ~/.agent-skills (global) instead of current directory
@@ -16,14 +16,14 @@
 #
 # Security Note:
 #   For security-conscious users, download and inspect the script first:
-#     curl -fsSLO https://raw.githubusercontent.com/supercent-io/skills-template/main/install.sh
+#     curl -fsSLO https://raw.githubusercontent.com/akillness/oh-my-skills/main/install.sh
 #     cat install.sh  # Review the script
 #     bash install.sh
 
 set -euo pipefail
 
 # --- Configuration ---
-REPO_URL="https://github.com/supercent-io/skills-template.git"
+REPO_URL="https://github.com/akillness/oh-my-skills.git"
 TEMP_DIR="/tmp/_skills_setup_temp_$$"
 AGENT_SKILLS_DIR_NAME=".agent-skills"
 VERSION="1.3.1"

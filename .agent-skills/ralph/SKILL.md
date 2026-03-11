@@ -453,7 +453,7 @@ Manual state management for Codex:
 # Install via extensions
 gemini extensions install https://github.com/Q00/ouroboros
 # OR install skills-template
-gemini extensions install https://github.com/supercent-io/skills-template
+gemini extensions install https://github.com/akillness/oh-my-skills
 ```
 
 Required in `~/.gemini/settings.json`:
@@ -544,7 +544,7 @@ bash <skills>/ralph/scripts/setup-codex-hook.sh
 gemini extensions install https://github.com/Q00/ouroboros
 
 # All platforms via skills-template
-npx skills add https://github.com/supercent-io/skills-template --skill ralph
+npx skills add https://github.com/akillness/oh-my-skills --skill ralph
 ```
 
 Source: [Q00/ouroboros](https://github.com/Q00/ouroboros) — MIT License

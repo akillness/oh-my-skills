@@ -210,4 +210,4 @@ cat templates/risk-score-report.md
 
 ---
 
-> **Source:** [skills-template](https://github.com/supercent-io/skills-template) | Internal AI Tool Implementation Guide
+> **Source:** [skills-template](https://github.com/akillness/oh-my-skills) | Internal AI Tool Implementation Guide

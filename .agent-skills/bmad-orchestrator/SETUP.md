@@ -330,4 +330,4 @@ bash scripts/validate-config.sh
 
 ---
 
-> **Source:** [BMAD Method](https://github.com/bmad-method/bmad) · [plannotator](https://plannotator.ai) · [skills-template](https://github.com/supercent-io/skills-template)
+> **Source:** [BMAD Method](https://github.com/bmad-method/bmad) · [plannotator](https://plannotator.ai) · [skills-template](https://github.com/akillness/oh-my-skills)

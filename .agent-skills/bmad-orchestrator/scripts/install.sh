@@ -107,7 +107,7 @@ if [ "$PLANNOTATOR_OK" = false ]; then
 elif [ ! -f "$HOOK_SCRIPT" ]; then
   echo -e "  ${YELLOW}plannotator skill not found at expected path.${NC}"
   echo -e "  ${GRAY}  Install plannotator skill first:${NC}"
-  echo -e "  ${GRAY}  npx skills add https://github.com/supercent-io/skills-template --skill plannotator${NC}"
+  echo -e "  ${GRAY}  npx skills add https://github.com/akillness/oh-my-skills --skill plannotator${NC}"
   echo ""
   echo -e "  ${GRAY}  Then run hook setup manually:${NC}"
   echo -e "  ${GRAY}  bash .agent-skills/plannotator/scripts/setup-hook.sh${NC}"
