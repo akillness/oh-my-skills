@@ -365,9 +365,8 @@ if [[ "${JEO_SKIP_LISTEN_PROBE:-0}" != "1" ]]; then
     fi
     exit "$probe_rc"
   elif [[ "$probe_port_rc" -eq 1 ]]; then
-    echo "[JEO][PLAN] port ${PLANNOTATOR_PORT} already in use — another plannotator instance may be running." >&2
-    echo "[JEO][PLAN] override with: PLANNOTATOR_PORT=<free-port> or kill the existing process." >&2
-    exit 32
+    echo "[JEO][PLAN] port ${PLANNOTATOR_PORT} already in use — ExitPlanMode hook already launched plannotator, deferring." >&2
+    exit 0
   fi
   echo "[JEO][PLAN] port ${PLANNOTATOR_PORT} is available — starting plannotator." >&2
 fi
