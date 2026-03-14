@@ -2,15 +2,15 @@
 
 <div align="center">
 
-[![Skills](https://img.shields.io/badge/Skills-70-blue?style=for-the-badge)](https://github.com/akillness/oh-my-skills)
+[![Skills](https://img.shields.io/badge/Skills-71-blue?style=for-the-badge)](https://github.com/akillness/oh-my-skills)
 [![Platform](https://img.shields.io/badge/Platform-Claude%20%7C%20Gemini%20%7C%20Codex%20%7C%20OpenCode-orange?style=for-the-badge)](https://github.com/akillness/oh-my-skills)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 [![BMAD](https://img.shields.io/badge/BMAD-1.1.0-purple?style=for-the-badge)](docs/bmad/README.md)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-orange?style=for-the-badge&logo=buy-me-a-coffee)](https://www.buymeacoffee.com/akillness3q)
 
-**70개 AI 에이전트 스킬 · TOON 포맷 · 멀티플랫폼**
+**71개 AI 에이전트 스킬 · TOON 포맷 · 멀티플랫폼**
 
-[빠른 시작](#-빠른-시작) · [스킬 목록](#-스킬-목록-70개) · [설치](#-설치) · [English](README.md)
+[빠른 시작](#-빠른-시작) · [스킬 목록](#-스킬-목록-71개) · [설치](#-설치) · [English](README.md)
 
 </div>
 
@@ -18,9 +18,9 @@
 
 ## 💡 Agent Skills란?
 
-**70개 AI 에이전트 스킬 · TOON 포맷 · 멀티플랫폼**
+**71개 AI 에이전트 스킬 · TOON 포맷 · 멀티플랫폼**
 
-Agent Skills는 LLM 기반 개발 워크플로우를 위한 70개 AI 에이전트 스킬 컬렉션입니다. `jeo` 오케스트레이션 프로토콜을 중심으로 구축되었으며 다음을 제공합니다:
+Agent Skills는 LLM 기반 개발 워크플로우를 위한 71개 AI 에이전트 스킬 컬렉션입니다. `jeo` 오케스트레이션 프로토콜을 중심으로 구축되었으며 다음을 제공합니다:
 - Claude Code, Gemini CLI, OpenAI Codex, OpenCode 전반에 걸친 통합 오케스트레이션
 - 계획 → 실행 → 검증 → 정리 자동화 파이프라인
 - 병렬 실행이 가능한 멀티 에이전트 팀 조율
@@ -70,10 +70,11 @@ graph TD
 
 ---
 
-## 🆕 v2026-03-11 업데이트
+## 🆕 v2026-03-14 업데이트
 
 | 변경 | 내용 |
 |------|------|
+| **research-paper-writing: ML/CV/NLP 논문 작성 스킬** | Abstract, Introduction, Method, Experiments, Conclusion 섹션별 학술 논문 작성. 문단 흐름, 주장-증거 정합성, 제출 전 셀프 리뷰. Prof. Peng Sida 노트 기반. 70 → **71개** |
 | **ai-tool-compliance 및 llm-monitoring-dashboard 제거** | `ai-tool-compliance` (내부 컴플라이언스 자동화) 및 `llm-monitoring-dashboard` 제거. 72 → **70개** |
 | **에이전트 개발 스킬 일부 제거** | `agent-configuration`, `agent-evaluation`, `agentic-development-principles`, `agentic-principles`, `agentic-workflow` 제거. 80 → **72개** |
 | **이미지/미디어 스킬 일부 제거** | `image-generation`, `image-generation-mcp`, `pollinations-ai` 제거. 미디어는 `remotion-video-production` / `video-production` 사용 |
@@ -140,7 +141,7 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 
 ---
 
-## 📚 스킬 목록 (70개)
+## 📚 스킬 목록 (71개)
 
 > 전체 매니페스트: `.agent-skills/skills.json` · 각 폴더의 `SKILL.md`
 
@@ -224,12 +225,13 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 | `system-environment-setup` | 재현 가능한 환경 구성 | 전체 |
 | `vercel-deploy` | Vercel 배포 자동화 | 전체 |
 
-### 📝 문서화 (4개)
+### 📝 문서화 (5개)
 
 | 스킬 | 설명 | 플랫폼 |
 |------|------|--------|
 | `changelog-maintenance` | 변경 로그 관리 및 버전 관리 | 전체 |
 | `presentation-builder` | slides-grab 기반 HTML 슬라이드, PPTX/PDF 내보내기 | 전체 |
+| `research-paper-writing` | ML/CV/NLP 학술 논문 작성 — Abstract, Introduction, Method, Experiments, Conclusion; 주장-증거 정합성, 제출 전 셀프 리뷰 | 전체 |
 | `technical-writing` | 기술 문서 및 스펙 | 전체 |
 | `user-guide-writing` | 사용자 가이드 및 튜토리얼 | 전체 |
 
@@ -360,7 +362,7 @@ npx vibe-kanban
 
 ```text
 .
-├── .agent-skills/          ← 70개 스킬 폴더 (각각 SKILL.md + SKILL.toon)
+├── .agent-skills/          ← 71개 스킬 폴더 (각각 SKILL.md + SKILL.toon)
 ├── docs/                   ← 상세 가이드 (bmad, omc, plannotator, ralph, ...)
 ├── install.sh
 ├── setup-all-skills-prompt.md
@@ -396,6 +398,7 @@ npx vibe-kanban
 | `agentation` | [benjitaylor/agentation](https://github.com/benjitaylor/agentation) | MIT |
 | `fabric` | [danielmiessler/fabric](https://github.com/danielmiessler/fabric) | MIT |
 | `autoresearch` | Andrej Karpathy methodology | — |
+| `research-paper-writing` | [Master-cai/Research-Paper-Writing-Skills](https://github.com/Master-cai/Research-Paper-Writing-Skills) | — |
 | Agent Skills Spec | [agentskills.io](https://agentskills.io/specification) | — |
 
 ---

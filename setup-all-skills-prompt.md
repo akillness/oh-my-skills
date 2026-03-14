@@ -126,9 +126,9 @@ gemini extensions install https://github.com/akillness/oh-my-skills
 
 ---
 
-### Step 2: Full 70-Skill Installation (Default Execution Step)
+### Step 2: Full 71-Skill Installation (Default Execution Step)
 
-> **Installs or updates all 70 skills — existing skills are overwritten with the latest version. Skills not in this list are preserved.**
+> **Installs or updates all 71 skills — existing skills are overwritten with the latest version. Skills not in this list are preserved.**
 
 ```bash
 # Ensure all skill directories exist (no wiping — update/overwrite only)
@@ -179,6 +179,9 @@ npx skills add https://github.com/akillness/oh-my-skills \
   --skill vibe-kanban --skill workflow-automation \
   --skill fabric --skill autoresearch \
   -g
+
+# External skill: Research Paper Writing (ML/CV/NLP academic paper writing)
+npx skills add https://github.com/Master-cai/Research-Paper-Writing-Skills.git -g
 ```
 
 > Skip condition is only allowed when the user explicitly requests (`core only`, `minimal install`, `quick install`).

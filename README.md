@@ -2,15 +2,15 @@
 
 <div align="center">
 
-[![Skills](https://img.shields.io/badge/Skills-70-blue?style=for-the-badge)](https://github.com/akillness/oh-my-skills)
+[![Skills](https://img.shields.io/badge/Skills-71-blue?style=for-the-badge)](https://github.com/akillness/oh-my-skills)
 [![Platform](https://img.shields.io/badge/Platform-Claude%20%7C%20Gemini%20%7C%20Codex%20%7C%20OpenCode-orange?style=for-the-badge)](https://github.com/akillness/oh-my-skills)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 [![BMAD](https://img.shields.io/badge/BMAD-1.1.0-purple?style=for-the-badge)](docs/bmad/README.md)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-orange?style=for-the-badge&logo=buy-me-a-coffee)](https://www.buymeacoffee.com/akillness3q)
 
-**70 AI agent skills · TOON Format · Cross-platform**
+**71 AI agent skills · TOON Format · Cross-platform**
 
-[Quick Start](#-quick-start) · [Skills List](#-skills-list-70-total) · [Installation](#-installation) · [한국어](README.ko.md)
+[Quick Start](#-quick-start) · [Skills List](#-skills-list-71-total) · [Installation](#-installation) · [한국어](README.ko.md)
 
 </div>
 
@@ -18,9 +18,9 @@
 
 ## 💡 What is Agent Skills?
 
-**70 AI agent skills · TOON Format · Cross-platform**
+**71 AI agent skills · TOON Format · Cross-platform**
 
-Agent Skills is a curated collection of 70 AI agent skills for LLM-based development workflows. Built around the `jeo` orchestration protocol, it provides:
+Agent Skills is a curated collection of 71 AI agent skills for LLM-based development workflows. Built around the `jeo` orchestration protocol, it provides:
 - Unified orchestration across Claude Code, Gemini CLI, OpenAI Codex, and OpenCode
 - Plan → Execute → Verify → Cleanup automated pipelines
 - Multi-agent team coordination with parallel execution
@@ -70,10 +70,11 @@ graph TD
 
 ---
 
-## 🆕 What's New in v2026-03-11
+## 🆕 What's New in v2026-03-14
 
 | Change | Details |
 |--------|---------|
+| **research-paper-writing: ML/CV/NLP paper writing skill** | Academic paper composition for Abstract, Introduction, Method, Experiments, Conclusion. Paragraph flow, claim-evidence alignment, pre-submission review. From Prof. Peng Sida's notes. 70 → **71 skills**. |
 | **Removed ai-tool-compliance and llm-monitoring-dashboard** | Removed `ai-tool-compliance` (internal compliance automation) and `llm-monitoring-dashboard`. 72 → **70 skills**. |
 | **Removed deprecated agent-development skills** | Removed `agent-configuration`, `agent-evaluation`, `agentic-development-principles`, `agentic-principles`, `agentic-workflow`. 80 → **72 skills**. |
 | **Removed deprecated image/media skills** | Removed `image-generation`, `image-generation-mcp`, `pollinations-ai`. Use `remotion-video-production` / `video-production` for media. |
@@ -140,7 +141,7 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 
 ---
 
-## 📚 Skills List (70 total)
+## 📚 Skills List (71 total)
 
 > Full manifest: `.agent-skills/skills.json` · each folder's `SKILL.md`
 
@@ -224,12 +225,13 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 | `system-environment-setup` | Reproducible environment configuration | All |
 | `vercel-deploy` | Vercel deployment automation | All |
 
-### 📝 Documentation (4)
+### 📝 Documentation (5)
 
 | Skill | Description | Platforms |
 |-------|-------------|-----------|
 | `changelog-maintenance` | Changelog management and versioning | All |
 | `presentation-builder` | HTML slides with slides-grab, PPTX/PDF export | All |
+| `research-paper-writing` | ML/CV/NLP academic paper writing — Abstract, Introduction, Method, Experiments, Conclusion; claim-evidence alignment, pre-submission review | All |
 | `technical-writing` | Technical documentation and specs | All |
 | `user-guide-writing` | User guides and tutorials | All |
 
@@ -360,7 +362,7 @@ npx vibe-kanban
 
 ```text
 .
-├── .agent-skills/          ← 70 skill folders (each with SKILL.md + SKILL.toon)
+├── .agent-skills/          ← 71 skill folders (each with SKILL.md + SKILL.toon)
 ├── docs/                   ← detailed guides (bmad, omc, plannotator, ralph, ...)
 ├── install.sh
 ├── setup-all-skills-prompt.md
@@ -396,6 +398,7 @@ npx vibe-kanban
 | `agentation` | [benjitaylor/agentation](https://github.com/benjitaylor/agentation) | MIT |
 | `fabric` | [danielmiessler/fabric](https://github.com/danielmiessler/fabric) | MIT |
 | `autoresearch` | Andrej Karpathy methodology | — |
+| `research-paper-writing` | [Master-cai/Research-Paper-Writing-Skills](https://github.com/Master-cai/Research-Paper-Writing-Skills) | — |
 | Agent Skills Spec | [agentskills.io](https://agentskills.io/specification) | — |
 
 ---
