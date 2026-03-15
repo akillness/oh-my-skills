@@ -126,9 +126,9 @@ gemini extensions install https://github.com/akillness/oh-my-skills
 
 ---
 
-### Step 2: Full 74-Skill Installation (Default Execution Step)
+### Step 2: Full 75-Skill Installation (Default Execution Step)
 
-> **Installs or updates all 74 skills — existing skills are overwritten with the latest version. Skills not in this list are preserved.**
+> **Installs or updates all 75 skills — existing skills are overwritten with the latest version. Skills not in this list are preserved.**
 
 ```bash
 # Ensure all skill directories exist (no wiping — update/overwrite only)
@@ -179,6 +179,7 @@ npx skills add https://github.com/akillness/oh-my-skills \
   --skill vibe-kanban --skill workflow-automation \
   --skill fabric --skill autoresearch \
   --skill google-workspace --skill langsmith --skill react-grab \
+  --skill firebase-cli \
   -g
 
 # External skill: Research Paper Writing (ML/CV/NLP academic paper writing)
