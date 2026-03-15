@@ -353,7 +353,7 @@ gh api --silent --method PUT /user/starred/akillness/oh-my-skills && echo "⭐ S
 | `ralphmode` | `ralphmode` | Ralph automation permission profiles for Claude Code, Codex CLI, Gemini CLI. Repo boundary enforcement, sandbox-first, secret denylist focused |
 | `plannotator` | `plan` | Plan review + feedback loop |
 | `vibe-kanban` | `kanbanview` | Kanban board |
-| `bmad-orchestrator` | `bmad` | Structured phase-based development |
+| `bmad-orchestrator` | `bmad` | Structured phase-based development with SSD — TEA cycles (Task→Execute→Architect) per phase, `/ssd-cycle` command, multi-agent execution via `/team`, automated `fabric -p bmad_ssd_phase_review` validation before plannotator human review |
 | `bmad-gds` | `bmad-gds` | Game Development Studio (Unity/Unreal/Godot) |
 | `bmad-idea` | `bmad-idea` | Creative ideas · design thinking · innovation strategy |
 | `agent-browser` | `agent-browser` | Headless browser automation |

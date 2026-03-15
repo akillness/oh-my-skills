@@ -5,7 +5,7 @@
 [![Skills](https://img.shields.io/badge/Skills-75-blue?style=for-the-badge)](https://github.com/akillness/oh-my-skills)
 [![Platform](https://img.shields.io/badge/Platform-Claude%20%7C%20Gemini%20%7C%20Codex%20%7C%20OpenCode-orange?style=for-the-badge)](https://github.com/akillness/oh-my-skills)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
-[![BMAD](https://img.shields.io/badge/BMAD-1.1.0-purple?style=for-the-badge)](docs/bmad/README.md)
+[![BMAD](https://img.shields.io/badge/BMAD--SSD-1.3.0-purple?style=for-the-badge)](docs/bmad/README.md)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-orange?style=for-the-badge&logo=buy-me-a-coffee)](https://www.buymeacoffee.com/akillness3q)
 
 **75개 AI 에이전트 스킬 · TOON 포맷 · 멀티플랫폼**
@@ -70,10 +70,11 @@ graph TD
 
 ---
 
-## 🆕 v2026-03-15 업데이트
+## 🆕 v2026-03-16 업데이트
 
 | 변경 | 내용 |
 |------|------|
+| **bmad-orchestrator v1.3.0: SSD + TEA 통합** | BMAD에 **구조화 시스템 설계(SSD)** 적용 — 각 단계에 TEA(Task-Execute-Architect) 사이클 내장. `/ssd-cycle`, `/ssd-decompose`, `/ssd-execute`, `/ssd-validate`, `/ssd-advance` 신규 명령 추가. 각 단계별 에이전트 라우팅 태스크 분해 → `/team` 실행 → `fabric -p bmad_ssd_phase_review` 자동 아키텍트 검증 → plannotator 인간 검토 순서로 진행. `patterns/bmad_ssd_phase_review/` fabric 패턴 포함. |
 | **firebase-cli: Firebase CLI 스킬** | Firebase CLI(firebase-tools) 전체 커버리지 — 배포, 에뮬레이터, 데이터 가져오기/내보내기, 사용자 관리, CI/CD. 74 → **75개** |
 | **google-workspace, langsmith, react-grab 추가** | 3개 신규 스킬: Google Workspace REST API 자동화, LangSmith LLM 관측성/평가, react-grab React 엘리먼트 컨텍스트 캡처. 71 → **74개** |
 | **research-paper-writing: ML/CV/NLP 논문 작성 스킬** | Abstract, Introduction, Method, Experiments, Conclusion 섹션별 학술 논문 작성. 문단 흐름, 주장-증거 정합성, 제출 전 셀프 리뷰. Prof. Peng Sida 노트 기반. 70 → **71개** |
@@ -157,7 +158,7 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 | `ohmg` | `ohmg` | Gemini | Antigravity 멀티에이전트 프레임워크 |
 | `ralph` | `ralph`, `ooo` | 전체 | Ouroboros 스펙 우선 + 영구 완료 루프 |
 | `ralphmode` | `ralphmode` | 전체 | 자동화 권한 프로파일 (샌드박스 우선, 저장소 경계) |
-| `bmad-orchestrator` | `bmad` | Claude | 구조화 단계 기반 AI 개발 |
+| `bmad-orchestrator` | `bmad` | Claude | SSD가 적용된 구조화 단계 기반 AI 개발 (각 단계별 TEA 사이클: Decompose → Execute → Validate) |
 | `bmad-gds` | `bmad-gds` | 전체 | BMAD 게임 개발 스튜디오 (Unity · Unreal · Godot) |
 | `bmad-idea` | `bmad-idea` | 전체 | 창의 지능 — 5개 전문 아이디에이션 에이전트 |
 | `survey` | `survey` | 전체 | 사전 구현 문제공간 스캔 |

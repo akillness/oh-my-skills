@@ -567,3 +567,136 @@ Phase 4: Implementation
 3. Validate YAML after changes
 4. Confirm update to user
 5. Update related files if needed (e.g., sprint-status)
+
+---
+
+## SSD (Structured System Design) Reference
+
+SSD embeds TEA (Task-Execute-Architect) cycles within each BMAD phase. This section documents the state schema, TEA transitions, and command reference.
+
+### SSD State File
+
+Location: `.omc/state/ssd-state.json`
+
+```json
+{
+  "version": "1.0.0",
+  "project_name": "string",
+  "project_level": 0,
+  "active": true,
+  "current_phase": 1,
+  "created_at": "ISO-8601",
+  "updated_at": "ISO-8601",
+  "phases": {
+    "1": {
+      "name": "analysis | planning | solutioning | implementation",
+      "tea_step": "null | decompose | execute | validate | complete",
+      "tasks": {
+        "decomposed_at": "ISO-8601 | null",
+        "items": [
+          {
+            "id": "p{N}-t{N}",
+            "name": "string",
+            "agent": "string",
+            "model": "haiku | sonnet | opus",
+            "status": "pending | in_progress | completed | failed",
+            "output_path": "string | null"
+          }
+        ]
+      },
+      "architect_review": {
+        "verdict": "PASS | PASS_WITH_WARNINGS | REVISE | FAIL",
+        "method": "fabric | agent",
+        "pattern": "bmad_ssd_phase_review",
+        "report_path": "string",
+        "reviewed_at": "ISO-8601"
+      },
+      "plannotator_review": {
+        "status": "approved | changes_requested | pending",
+        "reviewed_at": "ISO-8601 | null",
+        "document_hash": "string"
+      }
+    }
+  },
+  "cross_phase_traceability": {
+    "phase_1_to_2": { "validated": false, "coverage": 0.0, "orphaned_items": [] },
+    "phase_2_to_3": { "validated": false },
+    "phase_3_to_4": { "validated": false }
+  }
+}
+```
+
+### TEA Step Values and Transitions
+
+`tea_step` progresses through the following states for each phase:
+
+| Value | Meaning | Transition |
+|-------|---------|------------|
+| `null` | Phase not yet started | → `decompose` on `/ssd-decompose` |
+| `decompose` | Task list being produced | → `execute` after task list written to state |
+| `execute` | Multi-agent Team running tasks | → `validate` after all tasks reach terminal state |
+| `validate` | Architect review in progress | → `complete` on `PASS` or `PASS_WITH_WARNINGS`; → `execute` on `REVISE`; → `execute` on `FAIL` (full reset) |
+| `complete` | TEA cycle done, plannotator gate passed | → phase N+1 `null` on `/ssd-advance` |
+
+**Architect verdict values:**
+
+| Verdict | Meaning | Next action |
+|---------|---------|-------------|
+| `PASS` | Document ready for human review | Open plannotator gate |
+| `PASS_WITH_WARNINGS` | Document ready with noted risks | Open plannotator gate (with warnings surfaced) |
+| `REVISE` | Specific tasks need re-execution | Re-run targeted tasks, then re-validate |
+| `FAIL` | Phase output does not meet minimum bar | Full re-execute, then re-validate (max 3 cycles) |
+
+### `/ssd-*` Command Reference
+
+| Command | TEA Step | What it does |
+|---------|----------|-------------|
+| `/ssd-init` | Setup | Creates `.omc/state/ssd-state.json` with all phases at `tea_step: null`. Called automatically by `/workflow-init --ssd`. |
+| `/ssd-decompose` | T | Invokes `planner`/`analyst` to produce a task list for the current phase. Writes `phases[N].tasks.items` to state. |
+| `/ssd-execute` | E | Reads task list from state, calls `TeamCreate` + `TaskCreate` per task, monitors until terminal, writes outputs to `docs/ssd/phase-{N}/`, updates task statuses. |
+| `/ssd-validate` | A | Pipes current phase document (+ prior artifacts) through `fabric -p bmad_ssd_phase_review`. Falls back to `architect` agent if `fabric` not installed. Writes verdict to `phases[N].architect_review`. |
+| `/ssd-cycle` | T+E+A | Runs `/ssd-decompose` → `/ssd-execute` → `/ssd-validate` in sequence for the current phase. Stops and surfaces issues if any step fails. |
+| `/ssd-advance` | Transition | Requires `architect_review.verdict` of `PASS` or `PASS_WITH_WARNINGS` AND `plannotator_review.status` of `approved`. Increments `current_phase`, sets new phase `tea_step` to `null`. |
+| `/ssd-status` | Status | Displays current phase, `tea_step`, task progress (N/M complete), architect verdict, and plannotator gate status. |
+
+### Agent Routing per Phase (TEA Execute Step)
+
+| Phase | Primary agents | Support agents |
+|-------|---------------|----------------|
+| 1: Analysis | `document-specialist`, `analyst` | `scientist` |
+| 2: Planning | `analyst`, `designer` | `test-engineer` |
+| 3: Solutioning | `architect`, `security-reviewer` | `quality-reviewer`, `document-specialist`, `critic` |
+| 4: Implementation | `executor`, `test-engineer` | `writer`, `build-fixer` |
+
+Architect validation agents:
+- Phases 1–2: `architect` (opus)
+- Phase 3: `architect` (opus) + `critic` (opus)
+- Phase 4: `verifier` (sonnet) + `code-reviewer` (opus)
+
+### Cross-Phase Traceability
+
+The `cross_phase_traceability` object tracks coverage between adjacent phases:
+
+```
+phase_1_to_2: product brief goals → PRD requirements
+phase_2_to_3: PRD requirements → architecture components
+phase_3_to_4: architecture components → implementation stories
+```
+
+`coverage` is a float 0.0–1.0 representing the fraction of upstream items with a downstream mapping. `orphaned_items` lists upstream item IDs with no downstream reference. Populated and validated during `/ssd-validate` for phases 2, 3, and 4.
+
+### Fabric Pattern: `bmad_ssd_phase_review`
+
+The pattern file is bundled at:
+```
+.agent-skills/bmad-orchestrator/patterns/bmad_ssd_phase_review/system.md
+```
+
+To install globally for use with `fabric`:
+```bash
+mkdir -p ~/.config/fabric/patterns/bmad_ssd_phase_review
+cp .agent-skills/bmad-orchestrator/patterns/bmad_ssd_phase_review/system.md \
+   ~/.config/fabric/patterns/bmad_ssd_phase_review/system.md
+```
+
+If `fabric` CLI is not available, `/ssd-validate` falls back to spawning an `architect` agent via `TaskCreate` with the phase document as context.

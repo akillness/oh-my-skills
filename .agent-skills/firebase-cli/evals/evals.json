@@ -1,0 +1,109 @@
+{
+  "skill": "firebase-cli",
+  "version": "1.0",
+  "evals": [
+    {
+      "id": "firebase-cli-01",
+      "description": "Deploy Next.js app to Firebase Hosting",
+      "input": "Firebase Hosting에 Next.js 앱 배포해줘",
+      "expected_actions": ["bash scripts/install.sh", "firebase init hosting", "firebase deploy --only hosting"],
+      "expected_outputs": ["firebase.json", "public directory configured"],
+      "tags": ["deploy", "hosting", "nextjs"]
+    },
+    {
+      "id": "firebase-cli-02",
+      "description": "Set up Firebase Emulator Suite for local development",
+      "input": "Firebase 에뮬레이터 로컬 환경 설정하고 데이터 영속성 있게 실행해줘",
+      "expected_actions": [
+        "firebase init emulators",
+        "bash scripts/emulators.sh --persistent"
+      ],
+      "expected_outputs": ["emulators configured in firebase.json", "emulator-data directory"],
+      "tags": ["emulators", "local-dev"]
+    },
+    {
+      "id": "firebase-cli-03",
+      "description": "Create a preview channel for staging",
+      "input": "스테이징 Hosting 프리뷰 채널 만들고 배포해줘",
+      "expected_actions": [
+        "firebase hosting:channel:create staging --expires 7d",
+        "firebase hosting:channel:deploy staging"
+      ],
+      "expected_outputs": ["preview channel URL (PROJECT_ID--staging-HASH.web.app)"],
+      "tags": ["hosting", "preview-channel", "staging"]
+    },
+    {
+      "id": "firebase-cli-04",
+      "description": "Import users with SCRYPT hash into Firebase Auth",
+      "input": "기존 SCRYPT 해시 사용자 데이터를 Firebase Authentication으로 마이그레이션해줘",
+      "expected_actions": [
+        "firebase auth:import users.json --hash-algo=SCRYPT --hash-key=<key> --salt-separator=<sep> --rounds=8 --mem-cost=8"
+      ],
+      "expected_outputs": ["users imported", "hash parameters configured"],
+      "tags": ["auth", "import", "migration"]
+    },
+    {
+      "id": "firebase-cli-05",
+      "description": "CI/CD setup with service account for GitHub Actions",
+      "input": "GitHub Actions CI/CD에서 Firebase 자동 배포 설정해줘",
+      "expected_actions": [
+        "firebase init hosting:github",
+        "GOOGLE_APPLICATION_CREDENTIALS setup",
+        "firebase deploy --only hosting --non-interactive"
+      ],
+      "expected_outputs": [".github/workflows/firebase-hosting.yml"],
+      "tags": ["ci-cd", "github-actions", "service-account"]
+    },
+    {
+      "id": "firebase-cli-06",
+      "description": "Deploy Cloud Functions only with a specific function",
+      "input": "sendWelcomeEmail Cloud Function만 배포해줘",
+      "expected_actions": [
+        "firebase deploy --only functions:sendWelcomeEmail"
+      ],
+      "expected_outputs": ["function deployed successfully"],
+      "tags": ["functions", "deploy", "selective"]
+    },
+    {
+      "id": "firebase-cli-07",
+      "description": "Run emulators for testing with exec",
+      "input": "Firebase 에뮬레이터 실행하고 통합 테스트 돌려줘",
+      "expected_actions": [
+        "firebase emulators:exec --only firestore,auth \"npm test\""
+      ],
+      "expected_outputs": ["emulators start", "tests run", "emulators shut down"],
+      "tags": ["emulators", "testing", "exec"]
+    },
+    {
+      "id": "firebase-cli-08",
+      "description": "Distribute Android APK to QA team",
+      "input": "Android 빌드 qa-team 테스터들에게 배포해줘",
+      "expected_actions": [
+        "firebase appdistribution:distribute app-release.apk --app APP_ID --release-notes '...' --groups qa-team"
+      ],
+      "expected_outputs": ["APK distributed to qa-team"],
+      "tags": ["app-distribution", "android", "testers"]
+    },
+    {
+      "id": "firebase-cli-09",
+      "description": "Roll back Remote Config to a previous version",
+      "input": "Remote Config를 버전 5로 롤백해줘",
+      "expected_actions": [
+        "firebase remoteconfig:versions:list",
+        "firebase remoteconfig:rollback --version-number 5"
+      ],
+      "expected_outputs": ["remote config rolled back to version 5"],
+      "tags": ["remote-config", "rollback"]
+    },
+    {
+      "id": "firebase-cli-10",
+      "description": "Delete Firestore collection recursively",
+      "input": "users 컬렉션 하위 데이터 포함해서 전부 삭제해줘",
+      "expected_actions": [
+        "firebase firestore:delete users --recursive --force"
+      ],
+      "expected_outputs": ["collection deleted"],
+      "tags": ["firestore", "delete", "recursive"]
+    }
+  ]
+}

@@ -5,7 +5,7 @@
 [![Skills](https://img.shields.io/badge/Skills-75-blue?style=for-the-badge)](https://github.com/akillness/oh-my-skills)
 [![Platform](https://img.shields.io/badge/Platform-Claude%20%7C%20Gemini%20%7C%20Codex%20%7C%20OpenCode-orange?style=for-the-badge)](https://github.com/akillness/oh-my-skills)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
-[![BMAD](https://img.shields.io/badge/BMAD-1.1.0-purple?style=for-the-badge)](docs/bmad/README.md)
+[![BMAD](https://img.shields.io/badge/BMAD--SSD-1.3.0-purple?style=for-the-badge)](docs/bmad/README.md)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-orange?style=for-the-badge&logo=buy-me-a-coffee)](https://www.buymeacoffee.com/akillness3q)
 
 **75 AI agent skills · TOON Format · Cross-platform**
@@ -70,10 +70,11 @@ graph TD
 
 ---
 
-## 🆕 What's New in v2026-03-15
+## 🆕 What's New in v2026-03-16
 
 | Change | Details |
 |--------|---------|
+| **bmad-orchestrator v1.3.0: SSD + TEA integration** | BMAD now ships with **Structured System Design (SSD)** — TEA (Task-Execute-Architect) cycles embedded in each phase. New `/ssd-cycle`, `/ssd-decompose`, `/ssd-execute`, `/ssd-validate`, `/ssd-advance` commands. Each phase decomposes into agent-routed tasks, executes via `/team`, and validates with `fabric -p bmad_ssd_phase_review` before plannotator human review. Includes `patterns/bmad_ssd_phase_review/` fabric pattern. |
 | **firebase-cli: Firebase CLI skill** | Full Firebase CLI (firebase-tools) coverage — deploy, emulate, import/export, manage users, CI/CD. 74 → **75 skills**. |
 | **google-workspace, langsmith, react-grab added** | 3 new skills: Google Workspace REST API automation, LangSmith LLM observability/evaluation, react-grab React element context capture. 71 → **74 skills**. |
 | **research-paper-writing: ML/CV/NLP paper writing skill** | Academic paper composition for Abstract, Introduction, Method, Experiments, Conclusion. Paragraph flow, claim-evidence alignment, pre-submission review. From Prof. Peng Sida's notes. 70 → **71 skills**. |
@@ -157,7 +158,7 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 | `ohmg` | `ohmg` | Gemini | Antigravity multi-agent framework |
 | `ralph` | `ralph`, `ooo` | All | Ouroboros specification-first + persistent completion loop |
 | `ralphmode` | `ralphmode` | All | Automation permission profiles (sandbox-first, repo boundary) |
-| `bmad-orchestrator` | `bmad` | Claude | Structured phase-based AI development |
+| `bmad-orchestrator` | `bmad` | Claude | Structured phase-based AI development with SSD (TEA cycles: Decompose → Execute → Validate per phase) |
 | `bmad-gds` | `bmad-gds` | All | BMAD Game Development Studio (Unity · Unreal · Godot) |
 | `bmad-idea` | `bmad-idea` | All | Creative intelligence — 5 specialist ideation agents |
 | `survey` | `survey` | All | Pre-implementation landscape scan |
