@@ -2,15 +2,15 @@
 
 <div align="center">
 
-[![Skills](https://img.shields.io/badge/Skills-71-blue?style=for-the-badge)](https://github.com/akillness/oh-my-skills)
+[![Skills](https://img.shields.io/badge/Skills-74-blue?style=for-the-badge)](https://github.com/akillness/oh-my-skills)
 [![Platform](https://img.shields.io/badge/Platform-Claude%20%7C%20Gemini%20%7C%20Codex%20%7C%20OpenCode-orange?style=for-the-badge)](https://github.com/akillness/oh-my-skills)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 [![BMAD](https://img.shields.io/badge/BMAD-1.1.0-purple?style=for-the-badge)](docs/bmad/README.md)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-orange?style=for-the-badge&logo=buy-me-a-coffee)](https://www.buymeacoffee.com/akillness3q)
 
-**71 AI agent skills · TOON Format · Cross-platform**
+**74 AI agent skills · TOON Format · Cross-platform**
 
-[Quick Start](#-quick-start) · [Skills List](#-skills-list-71-total) · [Installation](#-installation) · [한국어](README.ko.md)
+[Quick Start](#-quick-start) · [Skills List](#-skills-list-74-total) · [Installation](#-installation) · [한국어](README.ko.md)
 
 </div>
 
@@ -18,9 +18,9 @@
 
 ## 💡 What is Agent Skills?
 
-**71 AI agent skills · TOON Format · Cross-platform**
+**74 AI agent skills · TOON Format · Cross-platform**
 
-Agent Skills is a curated collection of 71 AI agent skills for LLM-based development workflows. Built around the `jeo` orchestration protocol, it provides:
+Agent Skills is a curated collection of 74 AI agent skills for LLM-based development workflows. Built around the `jeo` orchestration protocol, it provides:
 - Unified orchestration across Claude Code, Gemini CLI, OpenAI Codex, and OpenCode
 - Plan → Execute → Verify → Cleanup automated pipelines
 - Multi-agent team coordination with parallel execution
@@ -70,10 +70,11 @@ graph TD
 
 ---
 
-## 🆕 What's New in v2026-03-14
+## 🆕 What's New in v2026-03-15
 
 | Change | Details |
 |--------|---------|
+| **google-workspace, langsmith, react-grab added** | 3 new skills: Google Workspace REST API automation, LangSmith LLM observability/evaluation, react-grab React element context capture. 71 → **74 skills**. |
 | **research-paper-writing: ML/CV/NLP paper writing skill** | Academic paper composition for Abstract, Introduction, Method, Experiments, Conclusion. Paragraph flow, claim-evidence alignment, pre-submission review. From Prof. Peng Sida's notes. 70 → **71 skills**. |
 | **Removed ai-tool-compliance and llm-monitoring-dashboard** | Removed `ai-tool-compliance` (internal compliance automation) and `llm-monitoring-dashboard`. 72 → **70 skills**. |
 | **Removed deprecated agent-development skills** | Removed `agent-configuration`, `agent-evaluation`, `agentic-development-principles`, `agentic-principles`, `agentic-workflow`. 80 → **72 skills**. |
@@ -141,7 +142,7 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 
 ---
 
-## 📚 Skills List (71 total)
+## 📚 Skills List (74 total)
 
 > Full manifest: `.agent-skills/skills.json` · each folder's `SKILL.md`
 
@@ -187,13 +188,14 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 | `backend-testing` | Unit/integration/API test strategies | All |
 | `database-schema-design` | SQL/NoSQL schema design | All |
 
-### 🎨 Frontend (9)
+### 🎨 Frontend (10)
 
 | Skill | Description | Platforms |
 |-------|-------------|-----------|
 | `design-system` | Design tokens, layout rules, motion, accessibility | All |
 | `frontend-design-system` | Production-grade UI with design tokens and accessibility | All |
 | `react-best-practices` | React & Next.js performance optimization | All |
+| `react-grab` | Browser element context capture — point at UI element, copy React component name, file path, HTML to clipboard for AI agents | All |
 | `vercel-react-best-practices` | Vercel Engineering React & Next.js guidelines | Claude · Gemini · Codex |
 | `responsive-design` | Mobile-first layouts and breakpoints | All |
 | `state-management` | Redux, Context, Zustand patterns | All |
@@ -244,13 +246,14 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 | `task-estimation` | Story points, t-shirt sizing, planning poker | All |
 | `task-planning` | Task breakdown and user stories | All |
 
-### 🔭 Search & Analysis (5)
+### 🔭 Search & Analysis (6)
 
 | Skill | Description | Platforms |
 |-------|-------------|-----------|
 | `autoresearch` | Autonomous ML experiments (Karpathy) — AI agent runs overnight GPU experiments, ratchets improvements via git | All |
 | `codebase-search` | Codebase search & navigation | All |
 | `data-analysis` | Dataset analysis, visualizations, statistics | All |
+| `langsmith` | LLM observability, tracing, evaluation, and prompt management via LangSmith | All |
 | `log-analysis` | Log analysis and incident debugging | All |
 | `pattern-detection` | Pattern and anomaly detection | All |
 
@@ -277,6 +280,7 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 | `file-organization` | File and folder organization | All |
 | `git-submodule` | Git submodule management | All |
 | `git-workflow` | Commit, branch, merge, PR workflows | All |
+| `google-workspace` | Google Workspace REST API automation — Docs, Sheets, Slides, Drive, Gmail, Calendar, Chat, Forms, Admin SDK, Apps Script | All |
 | `npm-git-install` | Install npm packages from GitHub | All |
 | `opencontext` | Persistent memory and context management for AI agents | All |
 | `workflow-automation` | Automate repetitive development workflows | All |
@@ -362,7 +366,7 @@ npx vibe-kanban
 
 ```text
 .
-├── .agent-skills/          ← 71 skill folders (each with SKILL.md + SKILL.toon)
+├── .agent-skills/          ← 74 skill folders (each with SKILL.md + SKILL.toon)
 ├── docs/                   ← detailed guides (bmad, omc, plannotator, ralph, ...)
 ├── install.sh
 ├── setup-all-skills-prompt.md

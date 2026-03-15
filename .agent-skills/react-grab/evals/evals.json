@@ -1,0 +1,55 @@
+{
+  "skill_name": "react-grab",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Set up react-grab in my Next.js App Router project so I can copy component context to Claude Code",
+      "expected_output": "Add react-grab Script tag to app/layout.tsx with process.env.NODE_ENV === 'development' guard, or run npx -y grab@latest init to auto-detect",
+      "assertions": [
+        "Provides Next.js App Router specific installation instructions with Script tag",
+        "Shows NODE_ENV development guard to prevent production loading",
+        "Mentions npx -y grab@latest init as the recommended auto-detect method"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Add react-grab to my Claude Code setup so I can feed element context directly to the agent",
+      "expected_output": "Run npx -y grab@latest add claude-code or bash scripts/add-agent.sh claude-code",
+      "assertions": [
+        "Provides grab add claude-code command",
+        "References scripts/add-agent.sh as skill-based helper",
+        "Explains the workflow: hover element → press Cmd+C → paste into Claude Code"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "How do I use react-grab to grab a React component's file path and copy it to my AI agent?",
+      "expected_output": "Hover over element in browser, press Cmd+C (Mac) or Ctrl+C (Windows/Linux), clipboard contains component name + file path + HTML",
+      "assertions": [
+        "Explains keyboard shortcut activation (Cmd+C / Ctrl+C)",
+        "Shows example clipboard output format with component name and file path",
+        "Describes that output is ready to paste into AI agent"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Create a custom react-grab plugin that adds a 'Create Jira Ticket' action when I right-click an element",
+      "expected_output": "Use registerPlugin with actions array containing ContextMenuAction with onAction handler",
+      "assertions": [
+        "Uses registerPlugin function from react-grab",
+        "Creates ContextMenuAction with id, label, shortcut, and onAction",
+        "Shows access to context.filePath and context.componentName in action handler"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Install the react-grab MCP server so my AI agent can programmatically access element context",
+      "expected_output": "Run npx -y grab@latest add mcp to install @react-grab/mcp server, then agent calls get_element_context tool",
+      "assertions": [
+        "Shows grab add mcp command",
+        "Explains get_element_context MCP tool that returns element context",
+        "Notes that user must select element in browser before agent can call the tool"
+      ]
+    }
+  ]
+}

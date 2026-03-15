@@ -1,0 +1,75 @@
+{
+  "skill_name": "google-workspace",
+  "version": "1.0.0",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a Google Doc titled 'Q1 2026 Report' and add a section header 'Executive Summary' with the text 'This report covers Q1 2026 performance.'",
+      "expected_behavior": "Creates a Google Doc, returns documentId and URL, inserts the header and body text using batchUpdate",
+      "assertions": [
+        "Google Doc is created with correct title",
+        "documentId is returned",
+        "URL in format https://docs.google.com/document/d/<id>/edit is returned",
+        "batchUpdate is called to insert text content"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Create a Google Sheet with the name 'Sales Data' and populate it with headers Name, Region, Revenue and add 3 rows of sample data",
+      "expected_behavior": "Creates a new spreadsheet, writes headers and data rows using values().update with USER_ENTERED input option",
+      "assertions": [
+        "Spreadsheet is created with correct title",
+        "spreadsheetId is returned",
+        "Header row contains Name, Region, Revenue",
+        "3 data rows are written",
+        "spreadsheetUrl is returned"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "Send an email to test@example.com with subject 'Weekly Update' and body 'Here is this week's summary.'",
+      "expected_behavior": "Builds MIME message, base64url encodes it, calls gmail.users().messages().send",
+      "assertions": [
+        "MIME message is constructed correctly",
+        "base64url encoding is applied",
+        "gmail messages.send is called with userId='me'",
+        "Message ID is returned on success"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Schedule a Google Calendar event 'Team Meeting' for tomorrow at 10 AM Seoul time for 1 hour and invite alice@example.com",
+      "expected_behavior": "Creates event with correct dateTime (Asia/Seoul timezone), adds attendee, includes conferenceData for Meet link",
+      "assertions": [
+        "Event is created with 'Team Meeting' as summary",
+        "Start time is tomorrow 10:00 Seoul time (UTC+9)",
+        "End time is 1 hour after start",
+        "alice@example.com is in attendees list",
+        "Event ID and htmlLink are returned"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Create a Google Form survey with the title 'Employee Satisfaction' and add a 1-5 scale question 'How satisfied are you with your work environment?' and a text question 'Any suggestions?'",
+      "expected_behavior": "Creates form, adds scaleQuestion (low=1, high=5) and textQuestion via batchUpdate",
+      "assertions": [
+        "Form is created with correct title",
+        "formId is returned",
+        "Scale question with range 1-5 is added",
+        "Text (paragraph) question is added",
+        "Form responderUri is available"
+      ]
+    },
+    {
+      "id": 6,
+      "prompt": "구글 드라이브에 'Project Files' 폴더를 만들고, test.txt 파일을 업로드한 후 bob@example.com과 공유해줘",
+      "expected_behavior": "Creates folder with Korean/English name, uploads file into folder, shares with bob@example.com as writer",
+      "assertions": [
+        "Folder is created with name 'Project Files'",
+        "File is uploaded to the folder",
+        "Permission is created for bob@example.com with role=writer",
+        "Folder and file IDs are returned"
+      ]
+    }
+  ]
+}

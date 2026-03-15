@@ -2,15 +2,15 @@
 
 <div align="center">
 
-[![Skills](https://img.shields.io/badge/Skills-71-blue?style=for-the-badge)](https://github.com/akillness/oh-my-skills)
+[![Skills](https://img.shields.io/badge/Skills-74-blue?style=for-the-badge)](https://github.com/akillness/oh-my-skills)
 [![Platform](https://img.shields.io/badge/Platform-Claude%20%7C%20Gemini%20%7C%20Codex%20%7C%20OpenCode-orange?style=for-the-badge)](https://github.com/akillness/oh-my-skills)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 [![BMAD](https://img.shields.io/badge/BMAD-1.1.0-purple?style=for-the-badge)](docs/bmad/README.md)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-orange?style=for-the-badge&logo=buy-me-a-coffee)](https://www.buymeacoffee.com/akillness3q)
 
-**71개 AI 에이전트 스킬 · TOON 포맷 · 멀티플랫폼**
+**74개 AI 에이전트 스킬 · TOON 포맷 · 멀티플랫폼**
 
-[빠른 시작](#-빠른-시작) · [스킬 목록](#-스킬-목록-71개) · [설치](#-설치) · [English](README.md)
+[빠른 시작](#-빠른-시작) · [스킬 목록](#-스킬-목록-74개) · [설치](#-설치) · [English](README.md)
 
 </div>
 
@@ -18,9 +18,9 @@
 
 ## 💡 Agent Skills란?
 
-**71개 AI 에이전트 스킬 · TOON 포맷 · 멀티플랫폼**
+**74개 AI 에이전트 스킬 · TOON 포맷 · 멀티플랫폼**
 
-Agent Skills는 LLM 기반 개발 워크플로우를 위한 71개 AI 에이전트 스킬 컬렉션입니다. `jeo` 오케스트레이션 프로토콜을 중심으로 구축되었으며 다음을 제공합니다:
+Agent Skills는 LLM 기반 개발 워크플로우를 위한 74개 AI 에이전트 스킬 컬렉션입니다. `jeo` 오케스트레이션 프로토콜을 중심으로 구축되었으며 다음을 제공합니다:
 - Claude Code, Gemini CLI, OpenAI Codex, OpenCode 전반에 걸친 통합 오케스트레이션
 - 계획 → 실행 → 검증 → 정리 자동화 파이프라인
 - 병렬 실행이 가능한 멀티 에이전트 팀 조율
@@ -70,10 +70,11 @@ graph TD
 
 ---
 
-## 🆕 v2026-03-14 업데이트
+## 🆕 v2026-03-15 업데이트
 
 | 변경 | 내용 |
 |------|------|
+| **google-workspace, langsmith, react-grab 추가** | 3개 신규 스킬: Google Workspace REST API 자동화, LangSmith LLM 관측성/평가, react-grab React 엘리먼트 컨텍스트 캡처. 71 → **74개** |
 | **research-paper-writing: ML/CV/NLP 논문 작성 스킬** | Abstract, Introduction, Method, Experiments, Conclusion 섹션별 학술 논문 작성. 문단 흐름, 주장-증거 정합성, 제출 전 셀프 리뷰. Prof. Peng Sida 노트 기반. 70 → **71개** |
 | **ai-tool-compliance 및 llm-monitoring-dashboard 제거** | `ai-tool-compliance` (내부 컴플라이언스 자동화) 및 `llm-monitoring-dashboard` 제거. 72 → **70개** |
 | **에이전트 개발 스킬 일부 제거** | `agent-configuration`, `agent-evaluation`, `agentic-development-principles`, `agentic-principles`, `agentic-workflow` 제거. 80 → **72개** |
@@ -141,7 +142,7 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 
 ---
 
-## 📚 스킬 목록 (71개)
+## 📚 스킬 목록 (74개)
 
 > 전체 매니페스트: `.agent-skills/skills.json` · 각 폴더의 `SKILL.md`
 
@@ -187,13 +188,14 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 | `backend-testing` | 유닛/통합/API 테스트 전략 | 전체 |
 | `database-schema-design` | SQL/NoSQL 스키마 설계 | 전체 |
 
-### 🎨 프론트엔드 (9개)
+### 🎨 프론트엔드 (10개)
 
 | 스킬 | 설명 | 플랫폼 |
 |------|------|--------|
 | `design-system` | 디자인 토큰, 레이아웃 규칙, 모션, 접근성 | 전체 |
 | `frontend-design-system` | 디자인 토큰과 접근성 기반 프로덕션 UI | 전체 |
 | `react-best-practices` | React & Next.js 성능 최적화 | 전체 |
+| `react-grab` | 브라우저 UI 엘리먼트에서 React 컴포넌트명·파일경로·HTML을 클립보드로 복사해 AI 에이전트에 전달 | 전체 |
 | `vercel-react-best-practices` | Vercel Engineering React & Next.js 가이드 | Claude · Gemini · Codex |
 | `responsive-design` | 모바일 우선 레이아웃과 브레이크포인트 | 전체 |
 | `state-management` | Redux, Context, Zustand 패턴 | 전체 |
@@ -244,13 +246,14 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 | `task-estimation` | 스토리 포인트, T셔츠 사이징, 플래닝 포커 | 전체 |
 | `task-planning` | 작업 분해 및 사용자 스토리 | 전체 |
 
-### 🔭 검색 및 분석 (5개)
+### 🔭 검색 및 분석 (6개)
 
 | 스킬 | 설명 | 플랫폼 |
 |------|------|--------|
 | `autoresearch` | 자율 ML 실험 (Karpathy) — AI 에이전트가 야간 GPU 실험 실행, git ratcheting으로 개선 커밋 | 전체 |
 | `codebase-search` | 코드베이스 검색 및 탐색 | 전체 |
 | `data-analysis` | 데이터셋 분석, 시각화, 통계 | 전체 |
+| `langsmith` | LangSmith를 통한 LLM 관측성, 트레이싱, 평가, 프롬프트 관리 | 전체 |
 | `log-analysis` | 로그 분석 및 인시던트 디버깅 | 전체 |
 | `pattern-detection` | 패턴 및 이상 탐지 | 전체 |
 
@@ -277,6 +280,7 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 | `file-organization` | 파일 및 폴더 구성 | 전체 |
 | `git-submodule` | Git 서브모듈 관리 | 전체 |
 | `git-workflow` | 커밋, 브랜치, 머지, PR 워크플로우 | 전체 |
+| `google-workspace` | Google Workspace REST API 자동화 — Docs, Sheets, Slides, Drive, Gmail, Calendar, Chat, Forms, Admin SDK, Apps Script | 전체 |
 | `npm-git-install` | GitHub에서 npm 패키지 설치 | 전체 |
 | `opencontext` | AI 에이전트용 영구 메모리 및 컨텍스트 관리 | 전체 |
 | `workflow-automation` | 반복 개발 워크플로우 자동화 | 전체 |
@@ -362,7 +366,7 @@ npx vibe-kanban
 
 ```text
 .
-├── .agent-skills/          ← 71개 스킬 폴더 (각각 SKILL.md + SKILL.toon)
+├── .agent-skills/          ← 74개 스킬 폴더 (각각 SKILL.md + SKILL.toon)
 ├── docs/                   ← 상세 가이드 (bmad, omc, plannotator, ralph, ...)
 ├── install.sh
 ├── setup-all-skills-prompt.md

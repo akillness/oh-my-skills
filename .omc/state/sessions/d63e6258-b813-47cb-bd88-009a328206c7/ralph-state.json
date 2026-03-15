@@ -1,0 +1,10 @@
+{
+  "active": false,
+  "started_at": "2026-03-11T13:34:17.203Z",
+  "original_prompt": "/ralph",
+  "session_id": "d63e6258-b813-47cb-bd88-009a328206c7",
+  "reinforcement_count": 0,
+  "last_checked_at": "2026-03-11T13:34:35.857Z",
+  "iteration": 4,
+  "status": "complete"
+}

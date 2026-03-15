@@ -1,0 +1,74 @@
+{
+  "version": "1.0.0",
+  "lastScanned": 1773471422741,
+  "projectRoot": "/Users/jangyoung/.superset/projects/oh-my-skills",
+  "techStack": {
+    "languages": [],
+    "frameworks": [],
+    "packageManager": null,
+    "runtime": null
+  },
+  "build": {
+    "buildCommand": null,
+    "testCommand": null,
+    "lintCommand": null,
+    "devCommand": null,
+    "scripts": {}
+  },
+  "conventions": {
+    "namingStyle": null,
+    "importStyle": null,
+    "testPattern": null,
+    "fileOrganization": null
+  },
+  "structure": {
+    "isMonorepo": false,
+    "workspaces": [],
+    "mainDirectories": [
+      "docs"
+    ],
+    "gitBranches": {
+      "defaultBranch": "main",
+      "branchingStrategy": null
+    }
+  },
+  "customNotes": [],
+  "directoryMap": {
+    "docs": {
+      "path": "docs",
+      "purpose": "Documentation",
+      "fileCount": 2,
+      "lastAccessed": 1773471422736,
+      "keyFiles": [
+        "bmm-workflow-status.yaml"
+      ]
+    }
+  },
+  "hotPaths": [
+    {
+      "path": "README.md",
+      "accessCount": 17,
+      "lastAccessed": 1773471720575,
+      "type": "file"
+    },
+    {
+      "path": "README.ko.md",
+      "accessCount": 14,
+      "lastAccessed": 1773471700635,
+      "type": "file"
+    },
+    {
+      "path": "setup-all-skills-prompt.md",
+      "accessCount": 8,
+      "lastAccessed": 1773471701305,
+      "type": "file"
+    },
+    {
+      "path": "",
+      "accessCount": 1,
+      "lastAccessed": 1773471496813,
+      "type": "directory"
+    }
+  ],
+  "userDirectives": []
+}

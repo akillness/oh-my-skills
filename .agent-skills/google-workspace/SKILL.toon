@@ -1,0 +1,9 @@
+@skill google-workspace v1.0.0
+@desc Create, read, update, and manage all Google Workspace documents and services via REST APIs. Use when working with Google Docs, Sheets, Slides, Drive, Gmail, Calendar, Chat, Forms, Admin SDK, or Apps Script.
+@tags google-workspace,google-docs,google-sheets,google-slides,google-drive,gmail,google-calendar,google-chat,google-forms,admin-sdk,apps-script,automation
+@platforms Claude,Gemini,Codex,OpenCode
+@triggers "Google Doc","Google Sheet","spreadsheet","Google Slides","presentation","Google Drive","Drive folder","Gmail","send email","Google Calendar","calendar event","schedule meeting","Google Chat","Google Forms","survey form","Workspace user","Apps Script","구글 문서","구글 시트","스프레드시트","구글 슬라이드","프레젠테이션","구글 드라이브","지메일","이메일 보내기","구글 캘린더","일정 추가","회의 예약","구글 챗","구글 폼","설문지","워크스페이스 사용자"
+@setup pip install google-api-python-client google-auth-httplib2 google-auth-oauthlib
+@apis docs:v1,sheets:v4,slides:v1,drive:v3,gmail:v1,calendar:v3,chat:v1,forms:v1,admin:directory_v1,script:v1
+@auth oauth2|service-account|domain-wide-delegation
+@scripts auth-setup.sh,gws-helper.py
