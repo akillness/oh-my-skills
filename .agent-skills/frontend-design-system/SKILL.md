@@ -1,13 +1,13 @@
 ---
 name: frontend-design-system
 description: Produce production-grade UI designs using clear design tokens, layout rules, motion guidance, and accessibility checks for consistent, scalable frontend development.
-tags: [frontend, design, ui, ux, typography, animation, design-tokens, accessibility]
-platforms: [Claude, ChatGPT, Gemini, Codex]
-allowed-tools:
-  - Write
-  - Read
-  - Task
+allowed-tools: Write Read Task
+metadata:
+  tags: frontend, design, ui, ux, typography, animation, design-tokens, accessibility
+  platforms: Claude, ChatGPT, Gemini, Codex
 ---
+
+> **Note:** This skill is a platform-specific variant of `design-system`. Prefer `design-system` for general use; use `frontend-design-system` when targeting platform-specific configurations.
 
 # Frontend Design System
 

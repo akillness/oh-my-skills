@@ -4,6 +4,7 @@ description: Simplify and refactor code while preserving behavior, improving cla
 metadata:
   tags: refactoring, code-quality, DRY, SOLID, design-patterns, clean-code, simplification, behavior-preservation
   platforms: Claude, ChatGPT, Gemini, Codex
+allowed-tools: Read Edit Write Bash
 ---
 
 

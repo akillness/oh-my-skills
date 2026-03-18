@@ -4,6 +4,7 @@ description: Design comprehensive testing strategies for software quality assura
 metadata:
   tags: testing, test-strategy, TDD, unit-test, integration-test, E2E, test-pyramid
   platforms: Claude, ChatGPT, Gemini
+allowed-tools: Read Write Bash
 ---
 
 
