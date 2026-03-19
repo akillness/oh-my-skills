@@ -4,6 +4,7 @@ description: Automate application deployment to cloud platforms and servers. Use
 metadata:
   tags: deployment, CI/CD, Docker, Kubernetes, AWS, GitHub-Actions, automation
   platforms: Claude, ChatGPT, Gemini
+allowed-tools: Bash Read Write
 ---
 
 

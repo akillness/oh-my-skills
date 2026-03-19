@@ -4,6 +4,7 @@ description: Optimize application performance for speed, efficiency, and scalabi
 metadata:
   tags: performance, optimization, React, lazy-loading, caching, profiling, web-vitals
   platforms: Claude, ChatGPT, Gemini
+allowed-tools: Read Edit Bash Write
 ---
 
 

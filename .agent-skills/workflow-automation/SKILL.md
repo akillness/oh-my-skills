@@ -4,6 +4,7 @@ description: Automate repetitive development tasks and workflows. Use when creat
 metadata:
   tags: automation, scripts, workflow, npm-scripts, Makefile, task-runner
   platforms: Claude, ChatGPT, Gemini
+allowed-tools: Bash Read Write Edit
 ---
 
 

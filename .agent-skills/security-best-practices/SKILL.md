@@ -4,6 +4,7 @@ description: Implement security best practices for web applications and infrastr
 metadata:
   tags: security, HTTPS, CORS, XSS, SQL-injection, CSRF, OWASP, rate-limiting
   platforms: Claude, ChatGPT, Gemini
+allowed-tools: Read Write Edit
 ---
 
 

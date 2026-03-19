@@ -4,6 +4,7 @@ description: Set up monitoring, logging, and observability for applications and 
 metadata:
   tags: monitoring, observability, logging, metrics, Prometheus, Grafana, alerts
   platforms: Claude, ChatGPT, Gemini
+allowed-tools: Bash Read Write
 ---
 
 
