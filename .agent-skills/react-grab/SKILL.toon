@@ -1,0 +1,29 @@
+N:react-grab
+D:[react-grab] Point at any browser UI element, press Cmd/Ctrl+C, copy React component name + source file path + HTML markup to clipboard for AI coding agents. Dev-only overlay, MCP server for programmatic access, plugin system for custom workflows. Works with Claude Code, Cursor, Copilot, Codex, Gemini.
+G:react-grab grab element-context ai-agent clipboard component-inspector dev-tools react browser mcp cursor claude-code copilot codex gemini freeze primitives plugin
+
+U[6]:
+  Set up react-grab in a React project (Next.js, Vite, Webpack) for AI-assisted development
+  Point at UI elements and copy precise component context to Claude Code / Cursor / Copilot / Gemini
+  Add react-grab MCP server so AI agent receives element context programmatically
+  Configure react-grab with a custom plugin for project-specific workflows (Jira, Figma, etc.)
+  Use the programmatic API (getElementContext, freeze) for automation or test tooling
+  Remove react-grab from a project or disconnect a specific agent integration
+
+S[3]{n,action,details}:
+  1,Install,npx -y grab@latest init (auto-detects framework: Next.js/Vite/Webpack and package manager: npm/pnpm/yarn/bun)
+  2,Capture,hover over element in browser -> Cmd+C (Mac) / Ctrl+C (Win/Linux) -> paste context into AI agent prompt
+  3,MCP,npx -y grab@latest add mcp -> AI agent calls get_element_context tool to receive selected element context
+
+R[5]:
+  Dev-only: always wrap in NODE_ENV=development or import.meta.env.DEV — never ships to production
+  Use npx -y grab@latest init for auto-detection; avoid manual script tag insertion unless necessary
+  Add MCP server (grab add mcp) for AI-driven workflows that don't depend on clipboard
+  react-grab script must load before React renders: use strategy=beforeInteractive in Next.js
+  Use freeze() from primitives API when inspecting dynamic elements that disappear on hover
+
+E[4]{type,command}:
+  Install project,npx -y grab@latest init
+  Add MCP server,npx -y grab@latest add mcp
+  Add Claude Code,npx -y grab@latest add claude-code
+  Custom plugin,registerPlugin({ name: "my-plugin", actions: [{ id: "...", label: "...", onAction: (ctx) => {} }] })

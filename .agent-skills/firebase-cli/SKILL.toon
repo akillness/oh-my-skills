@@ -1,0 +1,39 @@
+N:firebase-cli
+D:[firebase-cli] Install, configure, and operate Firebase CLI for all Firebase services. Covers deploy, emulators, hosting preview channels, auth import/export, app distribution, extensions, app hosting, CI/CD. Installation: npm install -g firebase-tools.
+G:firebase firebase-cli firebase-tools deploy hosting functions firestore database emulators auth remote-config app-distribution extensions apphosting ci-cd service-account preview-channel
+
+U[9]:
+  Deploy Firebase Hosting, Cloud Functions, Firestore rules/indexes, Realtime Database rules
+  Set up a new Firebase project with firebase init
+  Run the Firebase Emulator Suite locally for development and testing
+  Manage preview/staging channels for Hosting before production deploy
+  Import or export Firebase Authentication users in bulk
+  Distribute app builds to testers via App Distribution
+  Manage Firebase Extensions (install, configure, update, uninstall)
+  Deploy Next.js / Angular apps via Firebase App Hosting
+  Use Firebase CLI in CI/CD pipelines with service account credentials
+
+S[5]{n,action,details}:
+  1,Install,npm install -g firebase-tools OR curl -sL firebase.tools | bash (standalone binary)
+  2,Auth,firebase login (browser OAuth) OR export GOOGLE_APPLICATION_CREDENTIALS=/path/to/key.json for CI
+  3,Init,firebase init (interactive: creates firebase.json and .firebaserc with project aliases)
+  4,Deploy,firebase deploy OR firebase deploy --only hosting,functions (scope with --only in prod)
+  5,Emulate,firebase emulators:start --import ./emulator-data --export-on-exit
+
+R[8]:
+  Use service accounts for CI/CD: set GOOGLE_APPLICATION_CREDENTIALS instead of deprecated --token
+  Always scope deploys with --only in production — never blindly deploy everything
+  Run emulators:start locally before deploying; use --import/--export-on-exit for persistence
+  Use hosting:channel:deploy for staging previews before firebase deploy --only hosting
+  For Cloud Functions 2nd gen use functions:secrets:set (Secret Manager) not deprecated functions:config:set
+  Always add --non-interactive in automated scripts to avoid hanging on prompts
+  Commit .firebaserc (project aliases) but gitignore service account key files
+  Run failing commands with --debug flag for verbose diagnostic output
+
+E[6]{type,command}:
+  Deploy all,firebase deploy
+  Deploy scoped,firebase deploy --only hosting,functions
+  Emulators with persistence,firebase emulators:start --import ./emulator-data --export-on-exit
+  Preview channel,firebase hosting:channel:create staging --expires 7d && firebase hosting:channel:deploy staging
+  Import auth users,firebase auth:import users.json --hash-algo=BCRYPT
+  Distribute build,firebase appdistribution:distribute app.apk --app APP_ID --groups qa-team
