@@ -55,6 +55,20 @@
       "required_by": ["jeo"],
       "description": "시각적 계획/diff 리뷰 UI. jeo PLAN 단계 blocking 실행에 필수."
     },
+    "ralph": {
+      "version": "latest",
+      "source": "akillness/oh-my-skills",
+      "installCommand": "bash scripts/install.sh --with-ralph",
+      "required_by": ["jeo"],
+      "description": "completion-loop 엔진. jeo PLAN 단계 AfterAgent hook 기반 반복 실행에 필수."
+    },
+    "omc": {
+      "version": "latest",
+      "source": "akillness/oh-my-skills",
+      "installCommand": "bash scripts/install.sh --with-omc",
+      "required_by": ["jeo"],
+      "description": "Claude Code 네이티브 팀 오케스트레이션. jeo EXECUTE 단계 Claude 플랫폼 primary 실행에 필수."
+    },
     "agent-browser": {
       "version": "latest",
       "source": "npm:agent-browser",
@@ -68,6 +82,13 @@
       "installCommand": "bash scripts/install.sh --with-agentation",
       "optional_for": ["jeo"],
       "description": "UI 어노테이션 → 에이전트 코드 수정 연동. jeo `annotate` 키워드 감지 시에만 VERIFY_UI 단계 활성화."
+    },
+    "survey": {
+      "version": "latest",
+      "source": "akillness/oh-my-skills",
+      "installCommand": "npx skills add https://github.com/akillness/oh-my-skills --skill survey",
+      "optional_for": ["jeo"],
+      "description": "계획/구현 전 문제공간 리서치 스킬. 신규 스킬 발굴 및 landscape 분석 시 권장."
     }
   }
 }

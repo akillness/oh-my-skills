@@ -1,0 +1,33 @@
+N:langsmith
+D:[langsmith] Instrument, trace, evaluate, and monitor LLM applications with LangSmith. Framework-agnostic: @traceable decorator, wrap_openai/wrap_anthropic wrappers, offline evaluate(), Prompt Hub versioning, feedback attachment, LLM-as-judge with openevals. Supports Python and TypeScript.
+G:langsmith langchain tracing observability evaluation llm-monitoring prompt-hub datasets openevals traceable wrap_openai evaluate feedback judge experiment distributed-tracing project
+
+U[8]:
+  Add tracing to any LLM pipeline (OpenAI, Anthropic, LangChain, custom models)
+  Run offline evaluations with evaluate() against a curated dataset
+  Set up production monitoring and online evaluation with real traffic
+  Manage and version prompts in the Prompt Hub
+  Create datasets for regression testing and benchmarking
+  Attach human or automated feedback to traces for quality tracking
+  Use LLM-as-judge scoring with openevals (CORRECTNESS_PROMPT, etc.)
+  Debug agent failures with end-to-end trace inspection
+
+S[5]{n,action,details}:
+  1,Install,pip install -U langsmith (Python) OR npm install langsmith (TypeScript)
+  2,Configure,export LANGSMITH_TRACING=true && export LANGSMITH_API_KEY=lsv2_... && export LANGSMITH_PROJECT=my-project
+  3,Instrument,@traceable decorator on functions OR wrap_openai(OpenAI()) / wrap_anthropic(Anthropic()) for zero-code-change tracing
+  4,Evaluate,results = client.evaluate(target_fn, data="dataset-name", evaluators=[fn], experiment_prefix="v1", max_concurrency=4)
+  5,Monitor,view traces at smith.langchain.com; attach feedback with client.create_feedback(key="correctness", score=1, run_id=id)
+
+R[5]:
+  Always set LANGSMITH_PROJECT to group related traces by feature/environment
+  Use wrap_openai/wrap_anthropic for zero-code-change tracing of provider clients
+  For distributed tracing across microservices pass run_tree.to_headers() between services
+  For LLM-as-judge use openevals create_llm_as_judge with CORRECTNESS_PROMPT or custom prompts
+  Use tracing_context(enabled=False) block to selectively disable tracing for specific sections
+
+E[4]{type,code}:
+  Trace Python function,@traceable(run_type="chain", tags=["prod"]) def fn(): ...
+  Wrap OpenAI client,client = wrap_openai(OpenAI())  # all calls auto-traced
+  Run evaluation,results = client.evaluate(target, data="Geography QA", evaluators=[exact_match])
+  LLM-as-judge,judge = create_llm_as_judge(prompt=CORRECTNESS_PROMPT, model="openai:o3-mini", feedback_key="correctness")
