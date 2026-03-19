@@ -2,13 +2,13 @@
 
 <div align="center">
 
-[![Skills](https://img.shields.io/badge/Skills-75-blue?style=for-the-badge)](https://github.com/akillness/oh-my-skills)
+[![Skills](https://img.shields.io/badge/Skills-76-blue?style=for-the-badge)](https://github.com/akillness/oh-my-skills)
 [![Platform](https://img.shields.io/badge/Platform-Claude%20%7C%20Gemini%20%7C%20Codex%20%7C%20OpenCode-orange?style=for-the-badge)](https://github.com/akillness/oh-my-skills)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 [![BMAD](https://img.shields.io/badge/BMAD--SSD-1.3.0-purple?style=for-the-badge)](docs/bmad/README.md)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-orange?style=for-the-badge&logo=buy-me-a-coffee)](https://www.buymeacoffee.com/akillness3q)
 
-**75개 AI 에이전트 스킬 · TOON 포맷 · 멀티플랫폼**
+**76개 AI 에이전트 스킬 · TOON 포맷 · 멀티플랫폼**
 
 [빠른 시작](#-빠른-시작) · [스킬 목록](#-스킬-목록-75개) · [설치](#-설치) · [English](README.md)
 
@@ -18,9 +18,9 @@
 
 ## 💡 Agent Skills란?
 
-**75개 AI 에이전트 스킬 · TOON 포맷 · 멀티플랫폼**
+**76개 AI 에이전트 스킬 · TOON 포맷 · 멀티플랫폼**
 
-Agent Skills는 LLM 기반 개발 워크플로우를 위한 75개 AI 에이전트 스킬 컬렉션입니다. `jeo` 오케스트레이션 프로토콜을 중심으로 구축되었으며 다음을 제공합니다:
+Agent Skills는 LLM 기반 개발 워크플로우를 위한 76개 AI 에이전트 스킬 컬렉션입니다. `jeo` 오케스트레이션 프로토콜을 중심으로 구축되었으며 다음을 제공합니다:
 - Claude Code, Gemini CLI, OpenAI Codex, OpenCode 전반에 걸친 통합 오케스트레이션
 - 계획 → 실행 → 검증 → 정리 자동화 파이프라인
 - 병렬 실행이 가능한 멀티 에이전트 팀 조율
@@ -70,10 +70,11 @@ graph TD
 
 ---
 
-## 🆕 v2026-03-16 업데이트
+## 🆕 v2026-03-19 업데이트
 
 | 변경 | 내용 |
 |------|------|
+| **obsidian-plugin: Obsidian 플러그인 개발 스킬** | Obsidian 플러그인 빌드, 검증, 커뮤니티 디렉토리 제출. `eslint-plugin-obsidianmd` 27개 규칙 전체 커버, 대화형 보일러플레이트 생성기(`create-plugin.js`), 메모리 관리, 타입 안전성, 접근성(MANDATORY), CSS 변수, Vault API, 제출 검증. 75 → **76개** |
 | **bmad-orchestrator v1.3.0: SSD + TEA 통합** | BMAD에 **구조화 시스템 설계(SSD)** 적용 — 각 단계에 TEA(Task-Execute-Architect) 사이클 내장. `/ssd-cycle`, `/ssd-decompose`, `/ssd-execute`, `/ssd-validate`, `/ssd-advance` 신규 명령 추가. 각 단계별 에이전트 라우팅 태스크 분해 → `/team` 실행 → `fabric -p bmad_ssd_phase_review` 자동 아키텍트 검증 → plannotator 인간 검토 순서로 진행. `patterns/bmad_ssd_phase_review/` fabric 패턴 포함. |
 | **firebase-cli: Firebase CLI 스킬** | Firebase CLI(firebase-tools) 전체 커버리지 — 배포, 에뮬레이터, 데이터 가져오기/내보내기, 사용자 관리, CI/CD. 74 → **75개** |
 | **google-workspace, langsmith, react-grab 추가** | 3개 신규 스킬: Google Workspace REST API 자동화, LangSmith LLM 관측성/평가, react-grab React 엘리먼트 컨텍스트 캡처. 71 → **74개** |
@@ -274,7 +275,7 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 | `marketing-automation` | 23개 서브스킬: CRO, 카피라이팅, SEO, 애널리틱스, 그로스 | 전체 |
 | `marketing-skills-collection` | 23개 서브스킬: CRO, 카피라이팅, SEO, 애널리틱스, 그로스 | 전체 |
 
-### 🔧 유틸리티 (9개)
+### 🔧 유틸리티 (10개)
 
 | 스킬 | 설명 | 플랫폼 |
 |------|------|--------|
@@ -285,6 +286,7 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 | `git-workflow` | 커밋, 브랜치, 머지, PR 워크플로우 | 전체 |
 | `google-workspace` | Google Workspace REST API 자동화 — Docs, Sheets, Slides, Drive, Gmail, Calendar, Chat, Forms, Admin SDK, Apps Script | 전체 |
 | `npm-git-install` | GitHub에서 npm 패키지 설치 | 전체 |
+| `obsidian-plugin` | Obsidian 플러그인 개발 — 27개 ESLint 규칙, 보일러플레이트 생성기, 접근성, 커뮤니티 제출 검증 | 전체 |
 | `opencontext` | AI 에이전트용 영구 메모리 및 컨텍스트 관리 | 전체 |
 | `workflow-automation` | 반복 개발 워크플로우 자동화 | 전체 |
 
@@ -369,7 +371,7 @@ npx vibe-kanban
 
 ```text
 .
-├── .agent-skills/          ← 75개 스킬 폴더 (각각 SKILL.md + SKILL.toon)
+├── .agent-skills/          ← 76개 스킬 폴더 (각각 SKILL.md + SKILL.toon)
 ├── docs/                   ← 상세 가이드 (bmad, omc, plannotator, ralph, ...)
 ├── install.sh
 ├── setup-all-skills-prompt.md

@@ -2,13 +2,13 @@
 
 <div align="center">
 
-[![Skills](https://img.shields.io/badge/Skills-75-blue?style=for-the-badge)](https://github.com/akillness/oh-my-skills)
+[![Skills](https://img.shields.io/badge/Skills-76-blue?style=for-the-badge)](https://github.com/akillness/oh-my-skills)
 [![Platform](https://img.shields.io/badge/Platform-Claude%20%7C%20Gemini%20%7C%20Codex%20%7C%20OpenCode-orange?style=for-the-badge)](https://github.com/akillness/oh-my-skills)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 [![BMAD](https://img.shields.io/badge/BMAD--SSD-1.3.0-purple?style=for-the-badge)](docs/bmad/README.md)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-orange?style=for-the-badge&logo=buy-me-a-coffee)](https://www.buymeacoffee.com/akillness3q)
 
-**75 AI agent skills · TOON Format · Cross-platform**
+**76 AI agent skills · TOON Format · Cross-platform**
 
 [Quick Start](#-quick-start) · [Skills List](#-skills-list-75-total) · [Installation](#-installation) · [한국어](README.ko.md)
 
@@ -18,9 +18,9 @@
 
 ## 💡 What is Agent Skills?
 
-**75 AI agent skills · TOON Format · Cross-platform**
+**76 AI agent skills · TOON Format · Cross-platform**
 
-Agent Skills is a curated collection of 75 AI agent skills for LLM-based development workflows. Built around the `jeo` orchestration protocol, it provides:
+Agent Skills is a curated collection of 76 AI agent skills for LLM-based development workflows. Built around the `jeo` orchestration protocol, it provides:
 - Unified orchestration across Claude Code, Gemini CLI, OpenAI Codex, and OpenCode
 - Plan → Execute → Verify → Cleanup automated pipelines
 - Multi-agent team coordination with parallel execution
@@ -70,10 +70,11 @@ graph TD
 
 ---
 
-## 🆕 What's New in v2026-03-16
+## 🆕 What's New in v2026-03-19
 
 | Change | Details |
 |--------|---------|
+| **obsidian-plugin: Obsidian plugin development skill** | Build, validate, and publish Obsidian plugins. Covers all 27 `eslint-plugin-obsidianmd` rules, interactive boilerplate generator (`create-plugin.js`), memory management, type safety, accessibility (MANDATORY), CSS variables, vault API, and community submission validation. 75 → **76 skills**. |
 | **bmad-orchestrator v1.3.0: SSD + TEA integration** | BMAD now ships with **Structured System Design (SSD)** — TEA (Task-Execute-Architect) cycles embedded in each phase. New `/ssd-cycle`, `/ssd-decompose`, `/ssd-execute`, `/ssd-validate`, `/ssd-advance` commands. Each phase decomposes into agent-routed tasks, executes via `/team`, and validates with `fabric -p bmad_ssd_phase_review` before plannotator human review. Includes `patterns/bmad_ssd_phase_review/` fabric pattern. |
 | **firebase-cli: Firebase CLI skill** | Full Firebase CLI (firebase-tools) coverage — deploy, emulate, import/export, manage users, CI/CD. 74 → **75 skills**. |
 | **google-workspace, langsmith, react-grab added** | 3 new skills: Google Workspace REST API automation, LangSmith LLM observability/evaluation, react-grab React element context capture. 71 → **74 skills**. |
@@ -274,7 +275,7 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 | `marketing-automation` | 23 sub-skills: CRO, copywriting, SEO, analytics, growth | All |
 | `marketing-skills-collection` | 23 sub-skills: CRO, copywriting, SEO, analytics, growth | All |
 
-### 🔧 Utilities (9)
+### 🔧 Utilities (10)
 
 | Skill | Description | Platforms |
 |-------|-------------|-----------|
@@ -285,6 +286,7 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 | `git-workflow` | Commit, branch, merge, PR workflows | All |
 | `google-workspace` | Google Workspace REST API automation — Docs, Sheets, Slides, Drive, Gmail, Calendar, Chat, Forms, Admin SDK, Apps Script | All |
 | `npm-git-install` | Install npm packages from GitHub | All |
+| `obsidian-plugin` | Obsidian plugin development — 27 ESLint rules, boilerplate generator, accessibility, submission validation | All |
 | `opencontext` | Persistent memory and context management for AI agents | All |
 | `workflow-automation` | Automate repetitive development workflows | All |
 
@@ -369,7 +371,7 @@ npx vibe-kanban
 
 ```text
 .
-├── .agent-skills/          ← 75 skill folders (each with SKILL.md + SKILL.toon)
+├── .agent-skills/          ← 76 skill folders (each with SKILL.md + SKILL.toon)
 ├── docs/                   ← detailed guides (bmad, omc, plannotator, ralph, ...)
 ├── install.sh
 ├── setup-all-skills-prompt.md

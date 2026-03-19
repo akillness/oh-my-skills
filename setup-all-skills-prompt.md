@@ -126,9 +126,9 @@ gemini extensions install https://github.com/akillness/oh-my-skills
 
 ---
 
-### Step 2: Full 75-Skill Installation (Default Execution Step)
+### Step 2: Full 76-Skill Installation (Default Execution Step)
 
-> **Installs or updates all 75 skills — existing skills are overwritten with the latest version. Skills not in this list are preserved.**
+> **Installs or updates all 76 skills — existing skills are overwritten with the latest version. Skills not in this list are preserved.**
 
 ```bash
 # Ensure all skill directories exist (no wiping — update/overwrite only)
@@ -179,7 +179,7 @@ npx skills add https://github.com/akillness/oh-my-skills \
   --skill vibe-kanban --skill workflow-automation \
   --skill fabric --skill autoresearch \
   --skill google-workspace --skill langsmith --skill react-grab \
-  --skill firebase-cli \
+  --skill firebase-cli --skill obsidian-plugin \
   -g
 
 # External skill: Research Paper Writing (ML/CV/NLP academic paper writing)
@@ -353,6 +353,7 @@ gh api --silent --method PUT /user/starred/akillness/oh-my-skills && echo "⭐ S
 | `ralphmode` | `ralphmode` | Ralph automation permission profiles for Claude Code, Codex CLI, Gemini CLI. Repo boundary enforcement, sandbox-first, secret denylist focused |
 | `plannotator` | `plan` | Plan review + feedback loop |
 | `vibe-kanban` | `kanbanview` | Kanban board |
+| `obsidian-plugin` | `obsidian plugin`, `create obsidian plugin` | Build, validate, and publish Obsidian plugins — 27 eslint-plugin-obsidianmd rules, interactive boilerplate generator, memory management, accessibility (MANDATORY), CSS variables, community submission validation |
 | `bmad-orchestrator` | `bmad` | Structured phase-based development with SSD — TEA cycles (Task→Execute→Architect) per phase, `/ssd-cycle` command, multi-agent execution via `/team`, automated `fabric -p bmad_ssd_phase_review` validation before plannotator human review |
 | `bmad-gds` | `bmad-gds` | Game Development Studio (Unity/Unreal/Godot) |
 | `bmad-idea` | `bmad-idea` | Creative ideas · design thinking · innovation strategy |

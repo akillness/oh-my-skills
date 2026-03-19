@@ -1,0 +1,57 @@
+{
+  "skill_name": "obsidian-plugin",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Create a new Obsidian plugin called 'Note Timer' that tracks time spent on notes",
+      "expected_output": "Uses create-plugin.js boilerplate generator or creates proper file structure with src/main.ts, manifest.json, package.json, tsconfig.json, esbuild.config.mjs",
+      "assertions": [
+        "manifest.json does not contain 'obsidian' in plugin ID",
+        "Plugin name does not end with 'Plugin'",
+        "Event listeners use this.registerEvent()",
+        "No direct view references stored as class properties"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "Fix the ESLint error: 'prefer-register-event' in my Obsidian plugin",
+      "expected_output": "Wraps event subscription with this.registerEvent() for automatic cleanup on plugin unload",
+      "assertions": [
+        "this.registerEvent() wrapper is applied",
+        "Original event callback logic is preserved",
+        "No manual removeEventListener needed"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "My Obsidian plugin icon button has no accessible label",
+      "expected_output": "Adds aria-label attribute to the button element with descriptive action text",
+      "assertions": [
+        "btn.setAttribute('aria-label', ...) is added",
+        "Label describes the action (not the icon name)",
+        "setIcon() call is preserved"
+      ]
+    },
+    {
+      "id": 4,
+      "prompt": "Prepare my Obsidian plugin for community submission",
+      "expected_output": "Validates manifest.json naming rules, runs ESLint, checks accessibility, provides submission checklist",
+      "assertions": [
+        "Plugin ID checked for 'obsidian' and 'plugin' suffix",
+        "Plugin name checked for 'Obsidian' word and 'Plugin' suffix",
+        "Description checked for proper termination and forbidden phrases",
+        "ESLint run command provided"
+      ]
+    },
+    {
+      "id": 5,
+      "prompt": "Style my Obsidian plugin modal to match the current theme",
+      "expected_output": "Uses Obsidian CSS variables instead of hardcoded colors, scoped to plugin class",
+      "assertions": [
+        "var(--background-primary) or similar CSS variables used",
+        "No hardcoded hex colors",
+        "CSS selectors scoped to plugin-specific class"
+      ]
+    }
+  ]
+}
