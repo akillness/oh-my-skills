@@ -126,9 +126,9 @@ gemini extensions install https://github.com/akillness/oh-my-skills
 
 ---
 
-### Step 2: Full Installation (76 repo skills = 76 total)
+### Step 2: Full Installation (77 repo skills = 77 total)
 
-> **Installs or updates all 76 in-repo skills = 76 total. Existing skills are overwritten with the latest version. Skills not in this list are preserved.**
+> **Installs or updates all 77 in-repo skills = 77 total. Existing skills are overwritten with the latest version. Skills not in this list are preserved.**
 
 ```bash
 # Ensure all skill directories exist (no wiping — update/overwrite only)
@@ -177,7 +177,7 @@ npx skills add https://github.com/akillness/oh-my-skills \
   --skill omc --skill opencontext --skill plannotator --skill playwriter \
   --skill ralph --skill ralphmode --skill survey \
   --skill vibe-kanban --skill workflow-automation \
-  --skill fabric --skill autoresearch \
+  --skill fabric --skill autoresearch --skill skill-autoresearch \
   --skill google-workspace --skill langsmith --skill react-grab \
   --skill firebase-cli --skill obsidian-plugin \
   -g
@@ -360,6 +360,7 @@ gh api --silent --method PUT /user/starred/akillness/oh-my-skills && echo "⭐ S
 | `agent-browser` | `agent-browser` | Headless browser automation |
 | `survey` | `survey` | Cross-platform landscape scan before planning or implementation |
 | `autoresearch` | `autoresearch`, `autonomous ml experiments`, `val_bpb` | Karpathy autonomous ML experimentation — AI agent runs overnight GPU experiments, ratchets improvements via git |
+| `skill-autoresearch` | `skill-autoresearch`, `optimize this skill`, `eval my skill` | Eval-driven SKILL.md optimization loop — benchmark a skill, mutate one instruction at a time, keep only score-improving changes |
 | `agentation` | `annotate`, `UI검토`, `agentui` | UI annotation → agent code modification. Install: `npx add-mcp "npx -y agentation-mcp server"` (Universal) or `npx skills add benjitaylor/agentation -g` → `/agentation` (Claude Code Official Skill). Local-first architecture, offline operation, session continuity. |
 | `omx` | `omx` | Codex CLI multi-agent orchestration |
 | `ohmg` | `ohmg` | Gemini / Antigravity workflows |

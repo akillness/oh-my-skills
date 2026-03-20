@@ -1,6 +1,11 @@
 ---
 name: jeo
-description: "JEO — Integrated AI agent orchestration skill. Plan with plannotator (approval triggers ralphmode), execute with ralphmode/team/bmad, verify browser behavior with agent-browser, apply UI feedback with agentation(annotate), auto-cleanup worktrees after completion. Supports Claude, Codex, Gemini CLI, and OpenCode. Install: ralph, omc, omx, ohmg, bmad, plannotator, agent-browser, agentation."
+description: >
+  Integrated AI agent orchestration skill that combines plannotator, ralphmode,
+  team or bmad execution, agent-browser verification, and agentation feedback
+  loops. Use when the user wants an end-to-end multi-agent workflow with plan
+  approval, implementation, UI review, and cleanup. Triggers on: jeo,
+  annotate, ui-review, multi-agent orchestration.
 compatibility: "Requires git, node>=18, bash. Optional: bun, docker."
 allowed-tools: Read Write Bash Grep Glob Task
 metadata:
@@ -18,6 +23,12 @@ metadata:
 >
 > A unified skill providing fully automated orchestration flow:
 > Plan (ralph+plannotator) → Execute (team/bmad) → UI Feedback (agentation/annotate) → Cleanup (worktree cleanup)
+
+## When to use this skill
+
+- Run an end-to-end multi-agent workflow with an explicit planning gate
+- Add a browser-backed UI feedback loop with `annotate` or `ui-review`
+- Coordinate plan approval, execution, verification, and cleanup in one skill
 
 ## Control Layers
 
@@ -37,7 +48,9 @@ The authoritative state is `.omc/state/jeo-state.json`. Hooks may help advance t
 
 ---
 
-## 0. Agent Execution Protocol (follow immediately upon `jeo` keyword detection)
+## Instructions
+
+### 0. Agent Execution Protocol (follow immediately upon `jeo` keyword detection)
 
 > The following are commands, not descriptions. Execute them in order. Each step only proceeds after the previous one completes.
 
@@ -1114,7 +1127,7 @@ bash scripts/check-status.sh --resume
 
 ---
 
-## 6. Recommended Workflow
+## Examples
 
 ```
 # Step 1: Install (once)
@@ -1137,7 +1150,7 @@ bash scripts/worktree-cleanup.sh
 
 ---
 
-## 7. Best Practices
+## Best practices
 
 1. **Plan first**: always review the plan with ralph+plannotator before executing (catches wrong approaches early)
 2. **Team first**: omc team mode is most efficient in Claude Code
