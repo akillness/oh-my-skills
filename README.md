@@ -2,15 +2,15 @@
 
 <div align="center">
 
-[![Skills](https://img.shields.io/badge/Skills-76-blue?style=for-the-badge)](https://github.com/akillness/oh-my-skills)
+[![Skills](https://img.shields.io/badge/Skills-77-blue?style=for-the-badge)](https://github.com/akillness/oh-my-skills)
 [![Platform](https://img.shields.io/badge/Platform-Claude%20%7C%20Gemini%20%7C%20Codex%20%7C%20OpenCode-orange?style=for-the-badge)](https://github.com/akillness/oh-my-skills)
 [![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](LICENSE)
 [![BMAD](https://img.shields.io/badge/BMAD--SSD-1.3.0-purple?style=for-the-badge)](docs/bmad/README.md)
 [![Buy Me a Coffee](https://img.shields.io/badge/Buy%20Me%20a%20Coffee-orange?style=for-the-badge&logo=buy-me-a-coffee)](https://www.buymeacoffee.com/akillness3q)
 
-**76 AI agent skills · TOON Format · Cross-platform**
+**77 AI agent skills · TOON Format · Cross-platform**
 
-[Quick Start](#-quick-start) · [Skills List](#-skills-list-75-total) · [Installation](#-installation) · [한국어](README.ko.md)
+[Quick Start](#-quick-start) · [Skills List](#-skills-list-76-total) · [Installation](#-installation) · [한국어](README.ko.md)
 
 </div>
 
@@ -18,9 +18,9 @@
 
 ## 💡 What is Agent Skills?
 
-**76 AI agent skills · TOON Format · Cross-platform**
+**77 AI agent skills · TOON Format · Cross-platform**
 
-Agent Skills is a curated collection of 76 AI agent skills for LLM-based development workflows. Built around the `jeo` orchestration protocol, it provides:
+Agent Skills is a curated collection of 77 AI agent skills for LLM-based development workflows. Built around the `jeo` orchestration protocol, it provides:
 - Unified orchestration across Claude Code, Gemini CLI, OpenAI Codex, and OpenCode
 - Plan → Execute → Verify → Cleanup automated pipelines
 - Multi-agent team coordination with parallel execution
@@ -75,6 +75,7 @@ graph TD
 | Change | Details |
 |--------|---------|
 | **obsidian-plugin: Obsidian plugin development skill** | Build, validate, and publish Obsidian plugins. Covers all 27 `eslint-plugin-obsidianmd` rules, interactive boilerplate generator (`create-plugin.js`), memory management, type safety, accessibility (MANDATORY), CSS variables, vault API, and community submission validation. 75 → **76 skills**. |
+| **skill-autoresearch: eval-driven skill optimization** | New skill for improving an existing `SKILL.md` with binary evals, mutation loops, baseline scoring, and dashboard/changelog artifacts. Keeps the original `autoresearch` ML workflow separate. 76 → **77 skills**. |
 | **bmad-orchestrator v1.3.0: SSD + TEA integration** | BMAD now ships with **Structured System Design (SSD)** — TEA (Task-Execute-Architect) cycles embedded in each phase. New `/ssd-cycle`, `/ssd-decompose`, `/ssd-execute`, `/ssd-validate`, `/ssd-advance` commands. Each phase decomposes into agent-routed tasks, executes via `/team`, and validates with `fabric -p bmad_ssd_phase_review` before plannotator human review. Includes `patterns/bmad_ssd_phase_review/` fabric pattern. |
 | **firebase-cli: Firebase CLI skill** | Full Firebase CLI (firebase-tools) coverage — deploy, emulate, import/export, manage users, CI/CD. 74 → **75 skills**. |
 | **google-workspace, langsmith, react-grab added** | 3 new skills: Google Workspace REST API automation, LangSmith LLM observability/evaluation, react-grab React element context capture. 71 → **74 skills**. |
@@ -145,7 +146,7 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 
 ---
 
-## 📚 Skills List (75 total)
+## 📚 Skills List (76 total)
 
 > Full manifest: `.agent-skills/skills.json` · each folder's `SKILL.md`
 
@@ -250,11 +251,12 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 | `task-estimation` | Story points, t-shirt sizing, planning poker | All |
 | `task-planning` | Task breakdown and user stories | All |
 
-### 🔭 Search & Analysis (6)
+### 🔭 Search & Analysis (7)
 
 | Skill | Description | Platforms |
 |-------|-------------|-----------|
 | `autoresearch` | Autonomous ML experiments (Karpathy) — AI agent runs overnight GPU experiments, ratchets improvements via git | All |
+| `skill-autoresearch` | Eval-driven optimization loop for improving an existing SKILL.md without replacing the ML-focused `autoresearch` workflow | All |
 | `codebase-search` | Codebase search & navigation | All |
 | `data-analysis` | Dataset analysis, visualizations, statistics | All |
 | `langsmith` | LLM observability, tracing, evaluation, and prompt management via LangSmith | All |
