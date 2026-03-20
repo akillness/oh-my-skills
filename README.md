@@ -147,7 +147,7 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 
 ## 📚 Skills List
 
-> Full manifest: `.agent-skills/skills.json` · each folder's `SKILL.md` · 75 local folders + external `research-paper-writing` = 76 total installable skills
+> Full manifest: `.agent-skills/skills.json` · each folder's `SKILL.md` · 76 local skill folders = 76 total installable skills
 
 ### 🎯 Core Orchestration (10)
 

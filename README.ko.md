@@ -147,7 +147,7 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 
 ## 📚 스킬 목록
 
-> 전체 매니페스트: `.agent-skills/skills.json` · 각 폴더의 `SKILL.md` · 로컬 75개 폴더 + 외부 `research-paper-writing` = 총 76개 설치 가능 스킬
+> 전체 매니페스트: `.agent-skills/skills.json` · 각 폴더의 `SKILL.md` · 76개 로컬 스킬 폴더 = 총 76개 설치 가능 스킬
 
 ### 🎯 핵심 오케스트레이션 (10개)
 

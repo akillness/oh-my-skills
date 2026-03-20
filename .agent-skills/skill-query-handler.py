@@ -2,229 +2,83 @@
 """
 Skill Query Handler for MCP Integration (gemini-cli, codex-cli)
 
-This script matches user queries to appropriate skills and executes them
-using gemini-cli or codex-cli MCP tools with token optimization.
+This script discovers skills from the shipped manifest/filesystem, matches user
+queries to skills, and emits prompts optimized for the requested format.
 
 Modes:
-    full    - Full SKILL.md (~2000 tokens) - Maximum detail
-    compact - SKILL.compact.md (~500 tokens) - 75% reduction
-    toon    - SKILL.toon (~100 tokens) - 95% reduction
+    full    - Full SKILL.md
+    compact - SKILL.compact.md
+    toon    - SKILL.toon
 
 Usage:
     python skill-query-handler.py query "Design a REST API" --mode compact
     python skill-query-handler.py query "Review this code" --tool gemini --mode toon
     python skill-query-handler.py list --mode compact
     python skill-query-handler.py match "database schema"
-    python skill-query-handler.py stats  # Show token statistics
+    python skill-query-handler.py stats
 """
 
-import os
-import sys
-import json
+from __future__ import annotations
+
 import argparse
+import json
 import re
+import sys
 from pathlib import Path
-from typing import Optional, List, Dict, Tuple
+from typing import Dict, List, Optional, Tuple
 
-# Skill keywords mapping for automatic matching
-SKILL_KEYWORDS = {
-    "api-design": [
-        "api",
-        "rest",
-        "restful",
-        "endpoint",
-        "openapi",
-        "swagger",
-        "api design",
-        "api 설계",
-        "엔드포인트",
-        "rest api",
-    ],
-    "database-schema-design": [
-        "database",
-        "schema",
-        "db",
-        "table",
-        "sql",
-        "postgresql",
-        "mysql",
-        "데이터베이스",
-        "스키마",
-        "테이블",
-        "db 설계",
-    ],
-    "authentication-setup": [
-        "auth",
-        "authentication",
-        "login",
-        "jwt",
-        "oauth",
-        "session",
-        "인증",
-        "로그인",
-        "세션",
-    ],
-    "backend-testing": [
-        "backend test",
-        "unit test",
-        "integration test",
-        "pytest",
-        "백엔드 테스트",
-        "단위 테스트",
-    ],
-    "ui-component-patterns": ["ui", "component pattern", "design pattern", "ui 패턴"],
-    "state-management": ["state", "redux", "zustand", "context", "상태 관리", "상태"],
-    "responsive-design": ["responsive", "mobile", "반응형", "모바일"],
-    "web-accessibility": ["accessibility", "a11y", "wcag", "접근성"],
-    "code-review": ["review", "code review", "리뷰", "코드 리뷰", "코드리뷰"],
-    "code-refactoring": ["refactor", "리팩토링", "리팩터링", "개선"],
-    "debugging": [
-        "debug",
-        "error",
-        "bug",
-        "exception",
-        "traceback",
-        "디버그",
-        "디버깅",
-        "에러",
-        "버그",
-        "오류",
-    ],
-    "testing-strategies": ["test strategy", "testing", "tdd", "테스트 전략", "테스팅"],
-    "performance-optimization": [
-        "performance",
-        "optimize",
-        "slow",
-        "memory",
-        "성능",
-        "최적화",
-        "느림",
-    ],
-    "deployment-automation": ["deploy", "ci/cd", "pipeline", "배포", "파이프라인"],
-    "monitoring-observability": [
-        "monitor",
-        "log",
-        "metric",
-        "alert",
-        "모니터링",
-        "로그",
-    ],
-    "security-best-practices": [
-        "security",
-        "vulnerability",
-        "xss",
-        "sql injection",
-        "csrf",
-        "보안",
-        "취약점",
-        "인젝션",
-    ],
-    "technical-writing": [
-        "document",
-        "documentation",
-        "technical doc",
-        "문서",
-        "기술 문서",
-    ],
-    "api-documentation": ["api doc", "api documentation", "api 문서"],
-    "changelog-maintenance": ["changelog", "release note", "변경 로그", "릴리즈 노트"],
-    "task-estimation": [
-        "estimate",
-        "estimation",
-        "story point",
-        "추정",
-        "스토리 포인트",
-    ],
-    "task-planning": ["plan", "planning", "task", "계획", "태스크"],
-    "plannotator": [
-        "plannotator",
-        "plannotator",
-        "plan review",
-        "review plan",
-        "diff review",
-        "/plannotator-review",
-        "annotate plan",
-        "visual plan",
-        "계획 검토",
-        "플랜뷰",
-    ],
-    "sprint-retrospective": ["retrospective", "retro", "sprint", "회고"],
-    "log-analysis": ["log analysis", "log", "로그 분석"],
-    "data-analysis": ["data analysis", "analyze data", "데이터 분석"],
-    "pattern-detection": ["pattern", "detect", "패턴"],
-    "git-workflow": ["git", "commit", "branch", "merge", "깃", "커밋", "브랜치"],
-    "skill-standardization": ["skill", "standardize", "convert skill", "스킬 변환"],
-    "bmad": [
-        "bmad",
-        "bmad-method",
-        "agile ai",
-        "multi-agent orchestration",
-        "vibe coding",
-        "spec-driven development",
-        "sdd",
-        "phase based development",
-    ],
-    "ohmg": [
-        "ohmg",
-        "multi-agent",
-        "orchestration",
-        "antigravity",
-        "spawn agent",
-        "PM agent",
-        "frontend agent",
-        "backend agent",
-        "serena",
-    ],
-    "jeo": [
-        "jeo",
-        "integrated orchestration",
-        "통합 오케스트레이션",
-        "jeo workflow",
-        "jeo 워크플로우",
-        "plan execute track cleanup",
-        "계획 실행 추적 정리",
-        "worktree cleanup",
-        "워크트리 정리",
-        "kanban orchestration",
-        "칸반 오케스트레이션",
-        "multi-tool orchestration",
-        "전체 플로우",
-    ],
-    "agent-browser": [
-        "browser",
-        "headless browser",
-        "automation",
-        "playwright",
-        "accessibility tree",
-        "refs",
-        "screenshot",
-        "web automation",
-    ],
-}
 
-# File extensions for each mode
 MODE_FILES = {
     "full": "SKILL.md",
     "compact": "SKILL.compact.md",
     "toon": "SKILL.toon",
 }
 
-# Fallback order when preferred mode file doesn't exist
 MODE_FALLBACK = {
     "toon": ["SKILL.toon", "SKILL.compact.md", "SKILL.md"],
     "compact": ["SKILL.compact.md", "SKILL.md"],
     "full": ["SKILL.md"],
 }
 
+STOPWORDS = {
+    "a",
+    "all",
+    "an",
+    "and",
+    "app",
+    "application",
+    "for",
+    "from",
+    "how",
+    "in",
+    "is",
+    "it",
+    "of",
+    "on",
+    "or",
+    "the",
+    "this",
+    "to",
+    "use",
+    "when",
+    "with",
+}
+
+
+def normalize_text(text: str) -> str:
+    return re.sub(r"\s+", " ", text.lower().replace("_", " ").strip())
+
+
+def tokenize(text: str) -> List[str]:
+    normalized = normalize_text(text).replace("-", " ")
+    return [tok for tok in re.split(r"[^a-z0-9가-힣+.#]+", normalized) if tok]
+
 
 class SkillQueryHandler:
     def __init__(self, skills_dir: Optional[str] = None):
-        if skills_dir:
-            self.skills_dir = Path(skills_dir).expanduser()
-        else:
-            self.skills_dir = Path(__file__).parent
-
+        self.skills_dir = Path(skills_dir).expanduser() if skills_dir else Path(__file__).parent
         self.global_skills_dir = Path.home() / ".agent-skills"
+        self.skill_catalog = self._load_skill_catalog()
 
     def _resolve_skill_base_path(self, skill_path: str) -> List[Path]:
         input_path = Path(skill_path).expanduser()
@@ -239,21 +93,171 @@ class SkillQueryHandler:
             self.global_skills_dir / input_path,
         ]
 
+    def _candidate_manifest_paths(self) -> List[Path]:
+        return [
+            self.skills_dir / "skills.json",
+            self.global_skills_dir / "skills.json",
+        ]
+
+    def _load_skill_catalog(self) -> Dict[str, Dict]:
+        for manifest_path in self._candidate_manifest_paths():
+            if not manifest_path.exists():
+                continue
+            try:
+                data = json.loads(manifest_path.read_text(encoding="utf-8"))
+            except json.JSONDecodeError:
+                continue
+            catalog = self._catalog_from_manifest(data)
+            if catalog:
+                return catalog
+        return self._catalog_from_filesystem()
+
+    def _catalog_from_manifest(self, data: Dict) -> Dict[str, Dict]:
+        catalog: Dict[str, Dict] = {}
+        for entry in data.get("skills", []):
+            name = str(entry.get("name", "")).strip()
+            if not name:
+                continue
+            skill_dir = self.skills_dir / name
+            if not skill_dir.exists():
+                continue
+
+            description = str(entry.get("description", "")).strip()
+            tags = [str(tag).strip() for tag in entry.get("tags", []) if str(tag).strip()]
+            search_terms = self._build_search_terms(name, description, tags, entry)
+            catalog[name] = {
+                "name": name,
+                "description": description,
+                "tags": tags,
+                "search_terms": search_terms,
+                "description_tokens": set(
+                    tok for tok in tokenize(description) if tok not in STOPWORDS
+                ),
+            }
+        return catalog
+
+    def _catalog_from_filesystem(self) -> Dict[str, Dict]:
+        catalog: Dict[str, Dict] = {}
+        for skill_md in sorted(self.skills_dir.glob("*/SKILL.md")):
+            frontmatter = self._parse_frontmatter(skill_md.read_text(encoding="utf-8"))
+            if not frontmatter:
+                continue
+            name = frontmatter.get("name") or skill_md.parent.name
+            description = frontmatter.get("description", "")
+            tags = frontmatter.get("tags", [])
+            search_terms = self._build_search_terms(name, description, tags, {})
+            catalog[name] = {
+                "name": name,
+                "description": description,
+                "tags": tags,
+                "search_terms": search_terms,
+                "description_tokens": set(
+                    tok for tok in tokenize(description) if tok not in STOPWORDS
+                ),
+            }
+        return catalog
+
+    def _parse_frontmatter(self, content: str) -> Dict[str, object]:
+        if not content.startswith("---"):
+            return {}
+        parts = content.split("---", 2)
+        if len(parts) < 3:
+            return {}
+
+        frontmatter: Dict[str, object] = {}
+        current_key: Optional[str] = None
+        for raw_line in parts[1].splitlines():
+            line = raw_line.rstrip()
+            match = re.match(r"^([A-Za-z0-9_-]+):\s*(.*)$", line)
+            if match:
+                current_key = match.group(1)
+                value = match.group(2).strip()
+                if current_key == "description" and value in {">", "|"}:
+                    frontmatter[current_key] = ""
+                    continue
+                if current_key == "metadata":
+                    frontmatter[current_key] = {}
+                    continue
+                if current_key == "allowed-tools":
+                    frontmatter["allowed-tools"] = value.split() if value else []
+                    continue
+                frontmatter[current_key] = value.strip('"').strip("'")
+                continue
+
+            if current_key == "description" and line.startswith("  "):
+                existing = str(frontmatter.get("description", "")).strip()
+                frontmatter["description"] = (existing + " " + line.strip()).strip()
+                continue
+
+            if current_key == "metadata" and line.startswith("  "):
+                meta_match = re.match(r"^\s+([A-Za-z0-9_-]+):\s*(.*)$", line)
+                if not meta_match:
+                    continue
+                meta = frontmatter.setdefault("metadata", {})
+                if not isinstance(meta, dict):
+                    continue
+                raw_value = meta_match.group(2).strip()
+                if meta_match.group(1) == "tags":
+                    meta["tags"] = [
+                        part.strip()
+                        for part in raw_value.strip("[]").split(",")
+                        if part.strip()
+                    ]
+                else:
+                    meta[meta_match.group(1)] = raw_value.strip('"').strip("'")
+
+        metadata = frontmatter.get("metadata")
+        if isinstance(metadata, dict):
+            frontmatter["tags"] = metadata.get("tags", [])
+        return frontmatter
+
+    def _build_search_terms(
+        self,
+        name: str,
+        description: str,
+        tags: List[str],
+        entry: Dict,
+    ) -> List[str]:
+        candidates = {name, name.replace("-", " ")}
+        candidates.update(part for part in name.split("-") if len(part) > 2)
+        candidates.update(tags)
+
+        keyword = entry.get("keyword")
+        if keyword:
+            candidates.add(str(keyword))
+
+        keywords = entry.get("keywords", [])
+        if isinstance(keywords, list):
+            candidates.update(str(item) for item in keywords if str(item).strip())
+
+        for command in entry.get("commands", []):
+            if not isinstance(command, dict):
+                continue
+            for field in ("name", "command", "description"):
+                value = command.get(field)
+                if value:
+                    candidates.add(str(value))
+
+        # Pull a few meaningful tokens from the description to improve fallback matching.
+        candidates.update(
+            tok
+            for tok in tokenize(description)
+            if len(tok) > 3 and tok not in STOPWORDS
+        )
+
+        return sorted({normalize_text(term) for term in candidates if str(term).strip()})
+
     def estimate_tokens(self, text: str) -> int:
-        """Estimate token count (~4 chars = 1 token)"""
         return max(1, len(text) // 4)
 
     def find_skill_file(self, skill_path: str, mode: str = "compact") -> Optional[Path]:
-        """Find skill file with fallback for the given mode."""
         fallback_files = MODE_FALLBACK.get(mode, ["SKILL.md"])
         base_paths = self._resolve_skill_base_path(skill_path)
 
         input_path = Path(skill_path).expanduser()
         if input_path.is_absolute() and input_path.suffix:
-            input_file = input_path
-            if input_file.exists():
-                if input_file.name in set(fallback_files) | set(MODE_FILES.values()):
-                    return input_file
+            if input_path.exists() and input_path.name in set(fallback_files) | set(MODE_FILES.values()):
+                return input_path
 
         for base_path in base_paths:
             for filename in fallback_files:
@@ -263,155 +267,123 @@ class SkillQueryHandler:
 
         return None
 
-    def find_skill(self, skill_path: str) -> Optional[Path]:
-        """Find a skill by path (backward compatibility)."""
-        return self.find_skill_file(skill_path, "full")
-
     def load_skill(self, skill_path: str, mode: str = "compact") -> Optional[str]:
-        """Load skill content with the specified mode."""
         skill_file = self.find_skill_file(skill_path, mode)
         if skill_file:
             return skill_file.read_text(encoding="utf-8")
         return None
 
+    def _score_skill(self, query: str, query_tokens: set[str], skill: Dict) -> int:
+        query_norm = normalize_text(query)
+        score = 0
+        name = skill["name"].lower()
+        name_phrase = name.replace("-", " ")
+
+        if re.search(
+            rf"(?<![A-Za-z0-9_-]){re.escape(name)}(?![A-Za-z0-9_-])",
+            query_norm,
+        ):
+            score += 120
+        if name_phrase in query_norm:
+            score += 100
+
+        name_tokens = {tok for tok in tokenize(name_phrase) if tok not in STOPWORDS}
+        if name_tokens and name_tokens.issubset(query_tokens):
+            score += 40
+
+        for term in skill["search_terms"]:
+            if not term:
+                continue
+            term_tokens = {tok for tok in tokenize(term) if tok not in STOPWORDS}
+            if not term_tokens:
+                continue
+            if len(term_tokens) == 1:
+                token = next(iter(term_tokens))
+                if token in query_tokens:
+                    score += 5
+            elif term in query_norm:
+                score += 8 + len(term_tokens)
+            else:
+                overlap = len(term_tokens & query_tokens)
+                if overlap:
+                    score += overlap
+
+        score += min(8, len(skill["description_tokens"] & query_tokens))
+        return score
+
     def match_query_to_skills(self, query: str) -> List[Tuple[str, int]]:
-        """Match a query to skills based on keywords. Returns list of (skill_path, score)."""
-        query_lower = query.lower()
+        query_tokens = {tok for tok in tokenize(query) if tok not in STOPWORDS}
         matches = []
 
-        for skill_path, keywords in SKILL_KEYWORDS.items():
-            score = 0
-
-            # Strongly prefer explicit skill-name invocation (e.g. "plannotator ...")
-            if re.search(
-                rf"(?<![A-Za-z0-9_-]){re.escape(skill_path.lower())}(?![A-Za-z0-9_-])",
-                query_lower,
-            ):
-                score += 100
-
-            for keyword in keywords:
-                keyword_lower = keyword.lower()
-
-                # Single-token keywords should match as whole words only
-                if " " not in keyword_lower and "/" not in keyword_lower:
-                    if re.search(
-                        rf"(?<![A-Za-z0-9_-]){re.escape(keyword_lower)}(?![A-Za-z0-9_-])",
-                        query_lower,
-                    ):
-                        score += len(keyword.split())
-                else:
-                    if keyword_lower in query_lower:
-                        # Longer keywords get higher scores
-                        score += len(keyword.split())
-
+        for skill_name, skill in self.skill_catalog.items():
+            score = self._score_skill(query, query_tokens, skill)
             if score > 0:
-                matches.append((skill_path, score))
+                matches.append((skill_name, score))
 
-        # Sort by score descending
-        matches.sort(key=lambda x: x[1], reverse=True)
+        matches.sort(key=lambda item: (-item[1], item[0]))
         return matches
 
     def get_best_skill(self, query: str) -> Optional[str]:
-        """Get the best matching skill for a query."""
         matches = self.match_query_to_skills(query)
-        if matches:
-            return matches[0][0]
-        return None
+        return matches[0][0] if matches else None
 
     def list_all_skills(self, mode: str = "compact") -> List[Dict]:
-        """List all available skills with token info."""
         skills = []
-        for skill_path in SKILL_KEYWORDS.keys():
-            skill_file = self.find_skill_file(skill_path, mode)
-            if skill_file:
-                content = skill_file.read_text(encoding="utf-8")
-                description = self._extract_description(content)
-                tokens = self.estimate_tokens(content)
-                skills.append(
-                    {
-                        "path": skill_path,
-                        "description": description,
-                        "keywords": SKILL_KEYWORDS[skill_path][:3],
-                        "mode": skill_file.suffix.replace(".", "").replace(
-                            "md",
-                            "full" if "compact" not in skill_file.name else "compact",
-                        ),
-                        "tokens": tokens,
-                        "file": skill_file.name,
-                    }
-                )
+        for skill_name, metadata in sorted(self.skill_catalog.items()):
+            skill_file = self.find_skill_file(skill_name, mode)
+            if not skill_file:
+                continue
+            content = skill_file.read_text(encoding="utf-8")
+            skills.append(
+                {
+                    "path": skill_name,
+                    "description": metadata["description"] or self._extract_description(content),
+                    "keywords": metadata["tags"][:3] or metadata["search_terms"][:3],
+                    "mode": skill_file.suffix.replace(
+                        ".md", "full" if "compact" not in skill_file.name else "compact"
+                    ).replace(".", ""),
+                    "tokens": self.estimate_tokens(content),
+                    "file": skill_file.name,
+                }
+            )
         return skills
 
     def _extract_description(self, content: str) -> str:
-        """Extract description from SKILL.md frontmatter or TOON format."""
-        lines = content.split("\n")
+        lines = content.splitlines()
 
-        # Check for TOON format (starts with N:)
-        for line in lines[:5]:
+        for line in lines[:8]:
             if line.startswith("D:"):
-                return line[2:].strip()
+                return line[2:].strip().strip('"')
+            if line.startswith("@desc"):
+                return line.replace("@desc", "", 1).strip()
 
-        # Check YAML frontmatter
         in_frontmatter = False
         for line in lines:
             if line.strip() == "---":
                 in_frontmatter = not in_frontmatter
                 continue
             if in_frontmatter and line.startswith("description:"):
-                return line.replace("description:", "").strip()
+                return line.replace("description:", "", 1).strip()
 
-        # Check for > blockquote (compact format)
         for line in lines[:10]:
             if line.startswith("> "):
                 return line[2:].strip()
 
         return ""
 
-    def generate_prompt(
-        self, query: str, tool: str = "gemini", mode: str = "compact"
-    ) -> Tuple[str, int]:
-        """Generate a prompt for the given query with matched skill.
-        Returns (prompt, estimated_tokens)."""
-        best_skill = self.get_best_skill(query)
-
-        if not best_skill:
-            return (f"No matching skill found for: {query}", 0)
-
-        skill_file = self.find_skill_file(best_skill, mode)
-        if not skill_file:
-            # Try fallback to full
-            skill_file = self.find_skill_file(best_skill, "full")
-
-        if not skill_file:
-            return (f"Skill file not found: {best_skill}", 0)
-
-        skill_content = skill_file.read_text(encoding="utf-8")
-        tokens = self.estimate_tokens(skill_content + query)
-
-        if tool == "gemini":
-            prompt = f"@{skill_file}\n\n{query}"
-        elif tool == "codex":
-            prompt = f"{skill_content}\n\n---\n\n{query}"
-        else:
-            prompt = f"Unknown tool: {tool}"
-
-        return (prompt, tokens)
-
     def get_token_stats(self) -> Dict:
-        """Get token statistics for all skills in different modes."""
         stats = {
             "full": {"total": 0, "count": 0},
             "compact": {"total": 0, "count": 0},
             "toon": {"total": 0, "count": 0},
         }
 
-        for skill_path in SKILL_KEYWORDS.keys():
-            for mode in ["full", "compact", "toon"]:
-                skill_file = self.find_skill_file(skill_path, mode)
-                if skill_file and skill_file.name == MODE_FILES.get(mode):
+        for skill_name in self.skill_catalog.keys():
+            for mode, expected_file in MODE_FILES.items():
+                skill_file = self.find_skill_file(skill_name, mode)
+                if skill_file and skill_file.name == expected_file:
                     content = skill_file.read_text(encoding="utf-8")
-                    tokens = self.estimate_tokens(content)
-                    stats[mode]["total"] += tokens
+                    stats[mode]["total"] += self.estimate_tokens(content)
                     stats[mode]["count"] += 1
 
         return stats
@@ -423,9 +395,9 @@ def main():
         formatter_class=argparse.RawDescriptionHelpFormatter,
         epilog="""
 Modes:
-  full    - Full SKILL.md (~2000 tokens) - Maximum detail
-  compact - SKILL.compact.md (~500 tokens) - 75% reduction
-  toon    - SKILL.toon (~100 tokens) - 95% reduction
+  full    - Full SKILL.md
+  compact - SKILL.compact.md
+  toon    - SKILL.toon
 
 Examples:
   python skill-query-handler.py query "Design a REST API" --mode compact
@@ -438,7 +410,6 @@ Examples:
 
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
 
-    # query command
     query_parser = subparsers.add_parser("query", help="Generate prompt for a query")
     query_parser.add_argument("text", help="User query text")
     query_parser.add_argument(
@@ -458,7 +429,6 @@ Examples:
         "--show-tokens", action="store_true", help="Show token estimate"
     )
 
-    # list command
     list_parser = subparsers.add_parser("list", help="List all available skills")
     list_parser.add_argument("--json", action="store_true", help="Output as JSON")
     list_parser.add_argument(
@@ -468,16 +438,10 @@ Examples:
         help="Token optimization mode (default: compact)",
     )
 
-    # match command
-    match_parser = subparsers.add_parser(
-        "match", help="Find matching skills for a query"
-    )
+    match_parser = subparsers.add_parser("match", help="Find matching skills for a query")
     match_parser.add_argument("text", help="Query text to match")
 
-    # prompt command
-    prompt_parser = subparsers.add_parser(
-        "prompt", help="Generate prompt with specific skill"
-    )
+    prompt_parser = subparsers.add_parser("prompt", help="Generate prompt with specific skill")
     prompt_parser.add_argument("text", help="User query text")
     prompt_parser.add_argument("--skill", required=True, help="Skill path to use")
     prompt_parser.add_argument("--tool", choices=["gemini", "codex"], default="gemini")
@@ -488,11 +452,9 @@ Examples:
         help="Token optimization mode (default: compact)",
     )
 
-    # stats command
-    stats_parser = subparsers.add_parser("stats", help="Show token statistics")
+    subparsers.add_parser("stats", help="Show token statistics")
 
     args = parser.parse_args()
-
     if not args.command:
         parser.print_help()
         return
@@ -500,11 +462,7 @@ Examples:
     handler = SkillQueryHandler()
 
     if args.command == "query":
-        if args.skill:
-            skill_path = args.skill
-        else:
-            skill_path = handler.get_best_skill(args.text)
-
+        skill_path = args.skill or handler.get_best_skill(args.text)
         if not skill_path:
             print(f"No matching skill found for: {args.text}", file=sys.stderr)
             print("\nAvailable skills:")
@@ -512,26 +470,22 @@ Examples:
                 print(f"  - {skill['path']}: {skill['description'][:50]}...")
             sys.exit(1)
 
-        # Generate prompt with mode
-        skill_file = handler.find_skill_file(skill_path, args.mode)
-        if not skill_file:
-            skill_file = handler.find_skill_file(skill_path, "full")
-
+        skill_file = handler.find_skill_file(skill_path, args.mode) or handler.find_skill_file(skill_path, "full")
         if not skill_file:
             print(f"Skill file not found: {skill_path}", file=sys.stderr)
             sys.exit(1)
 
+        content = skill_file.read_text(encoding="utf-8")
         if args.tool == "gemini":
             prompt = f"@{skill_file}\n\n{args.text}"
         else:
-            content = skill_file.read_text(encoding="utf-8")
             prompt = f"{content}\n\n---\n\n{args.text}"
 
         if args.show_tokens:
-            content = skill_file.read_text(encoding="utf-8")
-            tokens = handler.estimate_tokens(content + args.text)
-            print(f"# Mode: {args.mode}, Tokens: ~{tokens}", file=sys.stderr)
-
+            print(
+                f"# Mode: {args.mode}, Tokens: ~{handler.estimate_tokens(content + args.text)}",
+                file=sys.stderr,
+            )
         print(prompt)
 
     elif args.command == "list":
@@ -550,9 +504,8 @@ Examples:
                     f"  Keywords: {', '.join(skill['keywords'])} | Tokens: ~{skill['tokens']}"
                 )
             print(f"\n{'=' * 70}")
-            print(
-                f"Total: {len(skills)} skills, ~{total_tokens} tokens (avg: {total_tokens // len(skills) if skills else 0})"
-            )
+            avg = total_tokens // len(skills) if skills else 0
+            print(f"Total: {len(skills)} skills, ~{total_tokens} tokens (avg: {avg})")
 
     elif args.command == "match":
         matches = handler.match_query_to_skills(args.text)
@@ -565,18 +518,16 @@ Examples:
             print(f"No matching skills found for: {args.text}")
 
     elif args.command == "prompt":
-        skill_file = handler.find_skill_file(args.skill, args.mode)
-        if not skill_file:
-            skill_file = handler.find_skill_file(args.skill, "full")
-
+        skill_file = handler.find_skill_file(args.skill, args.mode) or handler.find_skill_file(args.skill, "full")
         if not skill_file:
             print(f"Skill not found: {args.skill}", file=sys.stderr)
             sys.exit(1)
 
         content = skill_file.read_text(encoding="utf-8")
-        tokens = handler.estimate_tokens(content + args.text)
-
-        print(f"# Mode: {args.mode}, Tokens: ~{tokens}", file=sys.stderr)
+        print(
+            f"# Mode: {args.mode}, Tokens: ~{handler.estimate_tokens(content + args.text)}",
+            file=sys.stderr,
+        )
 
         if args.tool == "gemini":
             print(f"@{skill_file}\n\n{args.text}")
@@ -585,21 +536,18 @@ Examples:
 
     elif args.command == "stats":
         stats = handler.get_token_stats()
-
         print("TOKEN OPTIMIZATION STATISTICS")
         print("=" * 50)
         print(f"\n{'Mode':<12} {'Skills':<10} {'Total Tokens':<15} {'Avg/Skill':<10}")
         print("-" * 50)
 
         for mode in ["full", "compact", "toon"]:
-            s = stats[mode]
-            avg = s["total"] // s["count"] if s["count"] > 0 else 0
-            print(f"{mode:<12} {s['count']:<10} {s['total']:<15,} {avg:<10,}")
+            mode_stats = stats[mode]
+            avg = mode_stats["total"] // mode_stats["count"] if mode_stats["count"] else 0
+            print(f"{mode:<12} {mode_stats['count']:<10} {mode_stats['total']:<15,} {avg:<10,}")
 
         if stats["full"]["total"] > 0 and stats["compact"]["total"] > 0:
-            compact_reduction = (
-                1 - stats["compact"]["total"] / stats["full"]["total"]
-            ) * 100
+            compact_reduction = (1 - stats["compact"]["total"] / stats["full"]["total"]) * 100
             print(f"\nCompact reduction: {compact_reduction:.1f}%")
 
         if stats["full"]["total"] > 0 and stats["toon"]["total"] > 0:

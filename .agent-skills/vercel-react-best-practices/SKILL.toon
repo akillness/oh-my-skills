@@ -1,29 +1,24 @@
-# react-best-practices
+N:vercel-react-best-practices
+D:React and Next.js performance optimization guidelines from Vercel Engineering. Use when writing, reviewing, or refactoring React and Next.js code for waterfalls, bundle size, caching, rendering, and re-render performance.
+G:react next.js nextjs vercel performance optimization waterfalls bundle-size rsc suspense dynamic-import cache rendering
+F:Claude|ChatGPT|Gemini
+T:Read|Write|Edit
 
-React/Next.js 성능 최적화 45규칙
+U[5]:
+  Review React or Next.js code for performance regressions
+  Eliminate data-fetch waterfalls with Promise.all and Suspense
+  Reduce bundle size with direct imports and dynamic loading
+  Improve server and client caching patterns for repeated requests
+  Refactor rendering and state updates to reduce unnecessary re-renders
 
-## CRITICAL
-1. Promise.all → 병렬 fetch
-2. barrel imports 금지 → 직접 import
-3. dynamic imports → 무거운 컴포넌트
-4. Suspense boundaries → 스트리밍
-5. RSC 직렬화 최소화
+S[4]{n,action,details}:
+  1,Inspect,Read the target components or routes and identify the slow path category first
+  2,Prioritize,Fix CRITICAL waterfall and bundle issues before lower-priority rendering cleanups
+  3,Refactor,Apply the Vercel guideline that matches the concrete bottleneck
+  4,Verify,Check loading behavior, bundle impact, and rendering results after the change
 
-## HIGH
-6. React.cache() → 요청 내 중복 제거
-7. LRU cache → 요청 간 캐시
-8. 컴포넌트 구성 → 병렬 fetch
-
-## MEDIUM
-9. functional setState → 안정적 콜백
-10. lazy state init → 초기화 한번만
-11. content-visibility → 긴 리스트
-12. toSorted() → 불변성
-
-## 예시
-```tsx
-// ❌ const a = await f1(); const b = await f2()
-// ✅ const [a,b] = await Promise.all([f1(),f2()])
-```
-
-Full: AGENTS.md (2500줄)
+R[4]:
+  Prefer parallel fetching over sequential await chains for independent work
+  Avoid barrel imports when direct imports reduce bundle size
+  Keep server-to-client serialization minimal across RSC boundaries
+  Use transitions, caching, and dynamic imports only where they solve a real bottleneck

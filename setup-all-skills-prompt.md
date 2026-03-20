@@ -126,9 +126,9 @@ gemini extensions install https://github.com/akillness/oh-my-skills
 
 ---
 
-### Step 2: Full Installation (75 repo skills + 1 external = 76 total)
+### Step 2: Full Installation (76 repo skills = 76 total)
 
-> **Installs or updates 75 in-repo skills plus the external `research-paper-writing` skill = 76 total. Existing skills are overwritten with the latest version. Skills not in this list are preserved.**
+> **Installs or updates all 76 in-repo skills = 76 total. Existing skills are overwritten with the latest version. Skills not in this list are preserved.**
 
 ```bash
 # Ensure all skill directories exist (no wiping — update/overwrite only)
