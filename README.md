@@ -10,7 +10,7 @@
 
 **76 AI agent skills · TOON Format · Cross-platform**
 
-[Quick Start](#-quick-start) · [Skills List](#-skills-list-75-total) · [Installation](#-installation) · [한국어](README.ko.md)
+[Quick Start](#-quick-start) · [Skills List](#-skills-list-76-total) · [Installation](#-installation) · [한국어](README.ko.md)
 
 </div>
 
@@ -145,7 +145,7 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 
 ---
 
-## 📚 Skills List (75 total)
+## 📚 Skills List (76 total)
 
 > Full manifest: `.agent-skills/skills.json` · each folder's `SKILL.md`
 

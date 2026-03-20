@@ -9,13 +9,18 @@ Now supports TOON (Token-Oriented Object Notation) for optimized token usage.
 
 import os
 import sys
-import yaml
 import argparse
 import re
 import csv
 import io
+import json
 from pathlib import Path
 from typing import Dict, List, Optional, Any, Tuple
+
+try:
+    import yaml
+except ModuleNotFoundError:
+    yaml = None
 
 
 class ToonParser:
@@ -232,6 +237,101 @@ class SkillLoader:
         else:
             return self._parse_md_skill(skill_path)
 
+    @staticmethod
+    def _normalize_scalar(value: str) -> Any:
+        stripped = value.strip()
+        if stripped.startswith('"') and stripped.endswith('"'):
+            return stripped[1:-1]
+        if stripped.startswith("'") and stripped.endswith("'"):
+            return stripped[1:-1]
+        if stripped.lower() == "true":
+            return True
+        if stripped.lower() == "false":
+            return False
+        if stripped.startswith("[") and stripped.endswith("]"):
+            inner = stripped[1:-1].strip()
+            if not inner:
+                return []
+            return [
+                item.strip().strip('"').strip("'")
+                for item in inner.split(",")
+                if item.strip()
+            ]
+        return stripped
+
+    def _parse_frontmatter(self, frontmatter_text: str) -> Optional[Dict[str, Any]]:
+        if yaml is not None:
+            try:
+                return yaml.safe_load(frontmatter_text)
+            except yaml.YAMLError as e:
+                print(f"Error parsing YAML frontmatter: {e}", file=sys.stderr)
+                return None
+
+        frontmatter: Dict[str, Any] = {}
+        lines = frontmatter_text.splitlines()
+        i = 0
+
+        while i < len(lines):
+            line = lines[i]
+            if not line.strip():
+                i += 1
+                continue
+
+            match = re.match(r"^([A-Za-z0-9_-]+):\s*(.*)$", line)
+            if not match:
+                i += 1
+                continue
+
+            key = match.group(1)
+            raw_value = match.group(2).rstrip()
+
+            if raw_value in {">", "|"}:
+                block = []
+                i += 1
+                while i < len(lines):
+                    nested = lines[i]
+                    if nested.startswith("  "):
+                        block.append(nested.strip())
+                        i += 1
+                        continue
+                    if not nested.strip():
+                        i += 1
+                        continue
+                    break
+                frontmatter[key] = (
+                    " ".join(part for part in block if part)
+                    if raw_value == ">"
+                    else "\n".join(block)
+                )
+                continue
+
+            if raw_value == "":
+                nested_map: Dict[str, Any] = {}
+                i += 1
+                while i < len(lines):
+                    nested = lines[i]
+                    if nested.startswith("  "):
+                        nested_match = re.match(
+                            r"^\s+([A-Za-z0-9_-]+):\s*(.*)$", nested
+                        )
+                        if nested_match:
+                            nested_map[nested_match.group(1)] = self._normalize_scalar(
+                                nested_match.group(2)
+                            )
+                        i += 1
+                        continue
+                    if not nested.strip():
+                        i += 1
+                        continue
+                    break
+                frontmatter[key] = nested_map
+                continue
+
+            frontmatter[key] = self._normalize_scalar(raw_value)
+            i += 1
+
+        return frontmatter
+
     def _parse_toon_skill(self, skill_path: Path) -> Optional[Dict]:
         try:
             with open(skill_path, "r", encoding="utf-8") as f:
@@ -283,10 +383,9 @@ class SkillLoader:
             print(f"Warning: {skill_path} invalid frontmatter format", file=sys.stderr)
             return None
 
-        try:
-            frontmatter = yaml.safe_load(parts[1])
-        except yaml.YAMLError as e:
-            print(f"Error parsing YAML in {skill_path}: {e}", file=sys.stderr)
+        frontmatter = self._parse_frontmatter(parts[1])
+        if frontmatter is None:
+            print(f"Error parsing YAML in {skill_path}", file=sys.stderr)
             return None
 
         if (
@@ -302,10 +401,14 @@ class SkillLoader:
 
         body = parts[2].strip()
 
+        allowed_tools = frontmatter.get("allowed-tools", [])
+        if isinstance(allowed_tools, str):
+            allowed_tools = [tool for tool in allowed_tools.split() if tool]
+
         return {
             "name": frontmatter.get("name"),
             "description": frontmatter.get("description"),
-            "allowed_tools": frontmatter.get("allowed-tools", []),
+            "allowed_tools": allowed_tools,
             "path": skill_path.parent,
             "body": body,
             "full_content": content,
@@ -423,8 +526,6 @@ class SkillLoader:
         return output
 
     def _format_json(self, skill_names: List[str]) -> str:
-        import json
-
         skills_data = []
         for name in skill_names:
             skill = self.skills.get(name)
