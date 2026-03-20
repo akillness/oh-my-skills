@@ -10,7 +10,7 @@
 
 **76개 AI 에이전트 스킬 · TOON 포맷 · 멀티플랫폼**
 
-[빠른 시작](#-빠른-시작) · [스킬 목록](#-스킬-목록-75개) · [설치](#-설치) · [English](README.md)
+[빠른 시작](#-빠른-시작) · [스킬 목록](#-스킬-목록-76개) · [설치](#-설치) · [English](README.md)
 
 </div>
 
@@ -145,7 +145,7 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 
 ---
 
-## 📚 스킬 목록 (75개)
+## 📚 스킬 목록 (76개)
 
 > 전체 매니페스트: `.agent-skills/skills.json` · 각 폴더의 `SKILL.md`
 

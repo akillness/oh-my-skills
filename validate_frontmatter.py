@@ -1,11 +1,20 @@
 #!/usr/bin/env python3
 """Validate SKILL.md files against AgentSkills.io specification."""
 
+import os
 import re
 import sys
 from pathlib import Path
 
-SKILLS_DIR = Path("/Users/supercent/Documents/Github/skills-template/.agent-skills")
+
+def resolve_skills_dir() -> Path:
+    env_dir = os.environ.get("SKILLS_DIR")
+    if env_dir:
+        return Path(env_dir).expanduser()
+    return Path(__file__).resolve().parent / ".agent-skills"
+
+
+SKILLS_DIR = resolve_skills_dir()
 
 ALLOWED_TOP_KEYS = {'name', 'description', 'license', 'compatibility', 'metadata', 'allowed-tools'}
 NAME_RE = re.compile(r'^[a-z0-9][a-z0-9-]*[a-z0-9]$|^[a-z0-9]$')
