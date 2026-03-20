@@ -9,13 +9,18 @@ Now supports TOON (Token-Oriented Object Notation) for optimized token usage.
 
 import os
 import sys
-import yaml
 import argparse
 import re
 import csv
 import io
+import json
 from pathlib import Path
 from typing import Dict, List, Optional, Any, Tuple
+
+try:
+    import yaml
+except ModuleNotFoundError:
+    yaml = None
 
 
 class ToonParser:
@@ -187,15 +192,18 @@ class ToonParser:
 class SkillLoader:
     """Load and manage Agent Skills."""
 
-    def __init__(self, skills_dir: str = ".agent-skills"):
+    def __init__(self, skills_dir: str = ".agent-skills", lock_file: Optional[str] = None):
         """
         Initialize the skill loader.
 
         Args:
             skills_dir: Path to the agent skills directory
+            lock_file: Optional path to a skills lock file with dependency metadata
         """
         self.skills_dir = Path(skills_dir)
         self.skills: Dict[str, Dict] = {}
+        self.lock_file = Path(lock_file) if lock_file else None
+        self.lock_data: Dict[str, Any] = {"skills": {}, "dependencies": {}}
 
         if not self.skills_dir.exists():
             # Try to find it relative to current working directory if not absolute
@@ -204,8 +212,19 @@ class SkillLoader:
             else:
                 pass  # Will fail later or empty
 
+        self.repo_root = self.skills_dir.parent if self.skills_dir.exists() else Path(os.getcwd())
+        if self.lock_file is None:
+            candidate = self.repo_root / "skills-lock.json"
+            if candidate.exists():
+                self.lock_file = candidate
+        elif not self.lock_file.is_absolute():
+            self.lock_file = Path(os.getcwd()).joinpath(self.lock_file)
+
         if self.skills_dir.exists():
             self.load_all_skills()
+
+        self._load_lock_data()
+        self._enrich_skills_with_lock_data()
 
     def load_all_skills(self) -> None:
         """Discover and load all skills from the skills directory (MD and TOON)."""
@@ -216,6 +235,86 @@ class SkillLoader:
         # Load .toon skills
         for skill_file in self.skills_dir.rglob("SKILL.toon"):
             self._load_skill_file(skill_file)
+
+    def _load_lock_data(self) -> None:
+        """Load optional skills-lock metadata."""
+        if not self.lock_file or not self.lock_file.exists():
+            return
+
+        try:
+            with open(self.lock_file, "r", encoding="utf-8") as f:
+                raw = json.load(f)
+        except (OSError, json.JSONDecodeError) as e:
+            print(f"Warning: Failed to parse {self.lock_file}: {e}", file=sys.stderr)
+            return
+
+        if isinstance(raw, dict):
+            self.lock_data["skills"] = raw.get("skills", {}) or {}
+            self.lock_data["dependencies"] = raw.get("dependencies", {}) or {}
+
+    def _dependency_record(self, name: str, record: Dict[str, Any]) -> Dict[str, Any]:
+        normalized = {
+            "name": name,
+            "source": record.get("source"),
+            "version": record.get("version"),
+            "description": record.get("description"),
+        }
+        if record.get("installCommand"):
+            normalized["install_command"] = record["installCommand"]
+        return {k: v for k, v in normalized.items() if v}
+
+    def _collect_relationships(self, skill_name: str) -> Dict[str, List[Dict[str, Any]]]:
+        relationships: Dict[str, List[Dict[str, Any]]] = {
+            "required": [],
+            "optional": [],
+            "extensions": [],
+        }
+
+        for dep_name, record in self.lock_data.get("dependencies", {}).items():
+            if skill_name in record.get("required_by", []):
+                relationships["required"].append(self._dependency_record(dep_name, record))
+            if skill_name in record.get("optional_for", []):
+                relationships["optional"].append(self._dependency_record(dep_name, record))
+
+        skill_lock = self.lock_data.get("skills", {}).get(skill_name, {})
+        for ext in skill_lock.get("extensions", []) or []:
+            if isinstance(ext, str):
+                relationships["extensions"].append({"name": ext})
+                continue
+            if isinstance(ext, dict) and ext.get("skill"):
+                normalized = {
+                    "name": ext["skill"],
+                    "status": ext.get("status"),
+                    "reason": ext.get("reason"),
+                }
+                relationships["extensions"].append(
+                    {k: v for k, v in normalized.items() if v}
+                )
+
+        for key in relationships:
+            relationships[key].sort(key=lambda item: item.get("name", ""))
+
+        return {k: v for k, v in relationships.items() if v}
+
+    def _enrich_skills_with_lock_data(self) -> None:
+        for name, skill in self.skills.items():
+            skill_lock = self.lock_data.get("skills", {}).get(name)
+            if skill_lock:
+                if skill_lock.get("installCommand"):
+                    skill["install_command"] = skill_lock["installCommand"]
+                skill["lock"] = {
+                    "source": skill_lock.get("source"),
+                    "source_type": skill_lock.get("sourceType"),
+                    "added_at": skill_lock.get("addedAt"),
+                    "updated_at": skill_lock.get("updatedAt"),
+                }
+                if skill_lock.get("changelog"):
+                    skill["lock"]["changelog"] = skill_lock["changelog"]
+                skill["lock"] = {k: v for k, v in skill["lock"].items() if v}
+
+            relationships = self._collect_relationships(name)
+            if relationships:
+                skill["relationships"] = relationships
 
     def _load_skill_file(self, skill_path: Path):
         try:
@@ -231,6 +330,101 @@ class SkillLoader:
             return self._parse_toon_skill(skill_path)
         else:
             return self._parse_md_skill(skill_path)
+
+    @staticmethod
+    def _normalize_scalar(value: str) -> Any:
+        stripped = value.strip()
+        if stripped.startswith('"') and stripped.endswith('"'):
+            return stripped[1:-1]
+        if stripped.startswith("'") and stripped.endswith("'"):
+            return stripped[1:-1]
+        if stripped.lower() == "true":
+            return True
+        if stripped.lower() == "false":
+            return False
+        if stripped.startswith("[") and stripped.endswith("]"):
+            inner = stripped[1:-1].strip()
+            if not inner:
+                return []
+            return [
+                item.strip().strip('"').strip("'")
+                for item in inner.split(",")
+                if item.strip()
+            ]
+        return stripped
+
+    def _parse_frontmatter(self, frontmatter_text: str) -> Optional[Dict[str, Any]]:
+        if yaml is not None:
+            try:
+                return yaml.safe_load(frontmatter_text)
+            except yaml.YAMLError as e:
+                print(f"Error parsing YAML frontmatter: {e}", file=sys.stderr)
+                return None
+
+        frontmatter: Dict[str, Any] = {}
+        lines = frontmatter_text.splitlines()
+        i = 0
+
+        while i < len(lines):
+            line = lines[i]
+            if not line.strip():
+                i += 1
+                continue
+
+            match = re.match(r"^([A-Za-z0-9_-]+):\s*(.*)$", line)
+            if not match:
+                i += 1
+                continue
+
+            key = match.group(1)
+            raw_value = match.group(2).rstrip()
+
+            if raw_value in {">", "|"}:
+                block = []
+                i += 1
+                while i < len(lines):
+                    nested = lines[i]
+                    if nested.startswith("  "):
+                        block.append(nested.strip())
+                        i += 1
+                        continue
+                    if not nested.strip():
+                        i += 1
+                        continue
+                    break
+                frontmatter[key] = (
+                    " ".join(part for part in block if part)
+                    if raw_value == ">"
+                    else "\n".join(block)
+                )
+                continue
+
+            if raw_value == "":
+                nested_map: Dict[str, Any] = {}
+                i += 1
+                while i < len(lines):
+                    nested = lines[i]
+                    if nested.startswith("  "):
+                        nested_match = re.match(
+                            r"^\s+([A-Za-z0-9_-]+):\s*(.*)$", nested
+                        )
+                        if nested_match:
+                            nested_map[nested_match.group(1)] = self._normalize_scalar(
+                                nested_match.group(2)
+                            )
+                        i += 1
+                        continue
+                    if not nested.strip():
+                        i += 1
+                        continue
+                    break
+                frontmatter[key] = nested_map
+                continue
+
+            frontmatter[key] = self._normalize_scalar(raw_value)
+            i += 1
+
+        return frontmatter
 
     def _parse_toon_skill(self, skill_path: Path) -> Optional[Dict]:
         try:
@@ -283,10 +477,9 @@ class SkillLoader:
             print(f"Warning: {skill_path} invalid frontmatter format", file=sys.stderr)
             return None
 
-        try:
-            frontmatter = yaml.safe_load(parts[1])
-        except yaml.YAMLError as e:
-            print(f"Error parsing YAML in {skill_path}: {e}", file=sys.stderr)
+        frontmatter = self._parse_frontmatter(parts[1])
+        if frontmatter is None:
+            print(f"Error parsing YAML in {skill_path}", file=sys.stderr)
             return None
 
         if (
@@ -301,11 +494,14 @@ class SkillLoader:
             return None
 
         body = parts[2].strip()
+        allowed_tools = frontmatter.get("allowed-tools", [])
+        if isinstance(allowed_tools, str):
+            allowed_tools = [tool for tool in allowed_tools.split() if tool]
 
         return {
             "name": frontmatter.get("name"),
             "description": frontmatter.get("description"),
-            "allowed_tools": frontmatter.get("allowed-tools", []),
+            "allowed_tools": allowed_tools,
             "path": skill_path.parent,
             "body": body,
             "full_content": content,
@@ -389,6 +585,21 @@ class SkillLoader:
             output += f"**Description**: {skill['description']}\n\n"
             if skill.get("allowed_tools"):
                 output += f"**Allowed Tools**: {', '.join(skill['allowed_tools'])}\n\n"
+            if skill.get("install_command"):
+                output += f"**Install Command**: `{skill['install_command']}`\n\n"
+            relationships = skill.get("relationships", {})
+            if relationships.get("required"):
+                output += (
+                    f"**Required Dependencies**: {', '.join(dep['name'] for dep in relationships['required'])}\n\n"
+                )
+            if relationships.get("optional"):
+                output += (
+                    f"**Optional Dependencies**: {', '.join(dep['name'] for dep in relationships['optional'])}\n\n"
+                )
+            if relationships.get("extensions"):
+                output += (
+                    f"**Suggested Extensions**: {', '.join(dep['name'] for dep in relationships['extensions'])}\n\n"
+                )
             output += f"**Location**: `{skill['path']}`\n\n"
 
             if skill["type"] == "markdown":
@@ -436,6 +647,8 @@ class SkillLoader:
                     "description": skill["description"],
                     "allowed_tools": skill.get("allowed_tools", []),
                     "location": str(skill["path"]),
+                    "install_command": skill.get("install_command"),
+                    "relationships": skill.get("relationships", {}),
                 }
             )
         return json.dumps({"skills": skills_data}, indent=2)
@@ -493,6 +706,11 @@ def main():
     )
     prompt_parser.add_argument("--output", help="Output file")
 
+    deps_parser = subparsers.add_parser(
+        "deps", help="Show dependency and extension metadata for a skill"
+    )
+    deps_parser.add_argument("name", help="Skill name")
+
     # New command: validate
     validate_parser = subparsers.add_parser(
         "validate", help="Validate skills against strict standards"
@@ -549,6 +767,22 @@ def main():
             print(f"Prompt written to {args.output}")
         else:
             print(output)
+
+    elif args.command == "deps":
+        skill = loader.get_skill(args.name)
+        if not skill:
+            print(f"Error: Skill '{args.name}' not found", file=sys.stderr)
+            sys.exit(1)
+        print(
+            json.dumps(
+                {
+                    "name": skill["name"],
+                    "install_command": skill.get("install_command"),
+                    "relationships": skill.get("relationships", {}),
+                },
+                indent=2,
+            )
+        )
 
     elif args.command == "validate":
         skills_to_validate = []
