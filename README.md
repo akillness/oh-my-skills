@@ -10,7 +10,7 @@
 
 **76 AI agent skills · TOON Format · Cross-platform**
 
-[Quick Start](#-quick-start) · [Skills List](#-skills-list-76-total) · [Installation](#-installation) · [한국어](README.ko.md)
+[Quick Start](#-quick-start) · [Skills List](#-skills-list) · [Installation](#-installation) · [한국어](README.ko.md)
 
 </div>
 
@@ -145,9 +145,9 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 
 ---
 
-## 📚 Skills List (76 total)
+## 📚 Skills List
 
-> Full manifest: `.agent-skills/skills.json` · each folder's `SKILL.md`
+> Full manifest: `.agent-skills/skills.json` · each folder's `SKILL.md` · 75 local folders + external `research-paper-writing` = 76 total installable skills
 
 ### 🎯 Core Orchestration (10)
 
