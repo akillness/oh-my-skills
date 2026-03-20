@@ -1,0 +1,30 @@
+N:skill-autoresearch
+D:Autonomously optimize an existing AI skill by running repeatable eval-driven experiments, mutating one instruction at a time, and keeping only changes that improve binary pass rate.
+G:skill-autoresearch skill-optimization evals prompt-iteration benchmark mutation-loop autoresearch
+
+U[5]:
+  Improve an underperforming SKILL.md with measured iterations
+  Build binary evals for prompt or skill quality
+  Compare baseline vs mutation scores before keeping changes
+  Generate dashboard, results log, and changelog artifacts for a skill
+  Continue improving a skill from prior experiment history
+
+S[6]{n,action,details}:
+  1,ConfirmInputs,Collect target skill path; 3-5 test inputs; 3-6 binary evals; runs per experiment; interval; budget cap
+  2,ReadSkill,Read SKILL.md and linked references; identify job, output format, and failure modes
+  3,CreateWorkspace,Create skill-autoresearch-[skill-name] with dashboard.html; results.json; results.tsv; changelog.md; SKILL.md.baseline
+  4,Baseline,Run the target skill as-is N times; score all outputs; record experiment 0
+  5,MutateLoop,Change one instruction at a time; rerun; keep only score improvements; log keep and discard outcomes
+  6,Deliver,Report baseline-to-final improvement; keep rate; top fixes; remaining failures; artifact paths
+
+R[6]:
+  Do not start without target skill, test inputs, and binary evals
+  Use yes-no evals only; never use scales
+  Change one thing at a time so results stay attributable
+  Keep or discard by measured score, not intuition
+  Log every experiment, including discarded mutations
+  Stop only on manual stop, budget cap, or clear score plateau
+
+E[2]{desc,in,out}:
+  "Baseline benchmark","Run the target skill 5 times on the fixed test set and score each output","results.tsv baseline row; results.json baseline state; dashboard bootstrapped"
+  "Mutation experiment","Edit one instruction; rerun the same eval suite","keep or discard decision with changelog entry and updated pass-rate history"
