@@ -192,15 +192,18 @@ class ToonParser:
 class SkillLoader:
     """Load and manage Agent Skills."""
 
-    def __init__(self, skills_dir: str = ".agent-skills"):
+    def __init__(self, skills_dir: str = ".agent-skills", lock_file: Optional[str] = None):
         """
         Initialize the skill loader.
 
         Args:
             skills_dir: Path to the agent skills directory
+            lock_file: Optional path to a skills lock file with dependency metadata
         """
         self.skills_dir = Path(skills_dir)
         self.skills: Dict[str, Dict] = {}
+        self.lock_file = Path(lock_file) if lock_file else None
+        self.lock_data: Dict[str, Any] = {"skills": {}, "dependencies": {}}
 
         if not self.skills_dir.exists():
             # Try to find it relative to current working directory if not absolute
@@ -209,8 +212,19 @@ class SkillLoader:
             else:
                 pass  # Will fail later or empty
 
+        self.repo_root = self.skills_dir.parent if self.skills_dir.exists() else Path(os.getcwd())
+        if self.lock_file is None:
+            candidate = self.repo_root / "skills-lock.json"
+            if candidate.exists():
+                self.lock_file = candidate
+        elif not self.lock_file.is_absolute():
+            self.lock_file = Path(os.getcwd()).joinpath(self.lock_file)
+
         if self.skills_dir.exists():
             self.load_all_skills()
+
+        self._load_lock_data()
+        self._enrich_skills_with_lock_data()
 
     def load_all_skills(self) -> None:
         """Discover and load all skills from the skills directory (MD and TOON)."""
@@ -221,6 +235,86 @@ class SkillLoader:
         # Load .toon skills
         for skill_file in self.skills_dir.rglob("SKILL.toon"):
             self._load_skill_file(skill_file)
+
+    def _load_lock_data(self) -> None:
+        """Load optional skills-lock metadata."""
+        if not self.lock_file or not self.lock_file.exists():
+            return
+
+        try:
+            with open(self.lock_file, "r", encoding="utf-8") as f:
+                raw = json.load(f)
+        except (OSError, json.JSONDecodeError) as e:
+            print(f"Warning: Failed to parse {self.lock_file}: {e}", file=sys.stderr)
+            return
+
+        if isinstance(raw, dict):
+            self.lock_data["skills"] = raw.get("skills", {}) or {}
+            self.lock_data["dependencies"] = raw.get("dependencies", {}) or {}
+
+    def _dependency_record(self, name: str, record: Dict[str, Any]) -> Dict[str, Any]:
+        normalized = {
+            "name": name,
+            "source": record.get("source"),
+            "version": record.get("version"),
+            "description": record.get("description"),
+        }
+        if record.get("installCommand"):
+            normalized["install_command"] = record["installCommand"]
+        return {k: v for k, v in normalized.items() if v}
+
+    def _collect_relationships(self, skill_name: str) -> Dict[str, List[Dict[str, Any]]]:
+        relationships: Dict[str, List[Dict[str, Any]]] = {
+            "required": [],
+            "optional": [],
+            "extensions": [],
+        }
+
+        for dep_name, record in self.lock_data.get("dependencies", {}).items():
+            if skill_name in record.get("required_by", []):
+                relationships["required"].append(self._dependency_record(dep_name, record))
+            if skill_name in record.get("optional_for", []):
+                relationships["optional"].append(self._dependency_record(dep_name, record))
+
+        skill_lock = self.lock_data.get("skills", {}).get(skill_name, {})
+        for ext in skill_lock.get("extensions", []) or []:
+            if isinstance(ext, str):
+                relationships["extensions"].append({"name": ext})
+                continue
+            if isinstance(ext, dict) and ext.get("skill"):
+                normalized = {
+                    "name": ext["skill"],
+                    "status": ext.get("status"),
+                    "reason": ext.get("reason"),
+                }
+                relationships["extensions"].append(
+                    {k: v for k, v in normalized.items() if v}
+                )
+
+        for key in relationships:
+            relationships[key].sort(key=lambda item: item.get("name", ""))
+
+        return {k: v for k, v in relationships.items() if v}
+
+    def _enrich_skills_with_lock_data(self) -> None:
+        for name, skill in self.skills.items():
+            skill_lock = self.lock_data.get("skills", {}).get(name)
+            if skill_lock:
+                if skill_lock.get("installCommand"):
+                    skill["install_command"] = skill_lock["installCommand"]
+                skill["lock"] = {
+                    "source": skill_lock.get("source"),
+                    "source_type": skill_lock.get("sourceType"),
+                    "added_at": skill_lock.get("addedAt"),
+                    "updated_at": skill_lock.get("updatedAt"),
+                }
+                if skill_lock.get("changelog"):
+                    skill["lock"]["changelog"] = skill_lock["changelog"]
+                skill["lock"] = {k: v for k, v in skill["lock"].items() if v}
+
+            relationships = self._collect_relationships(name)
+            if relationships:
+                skill["relationships"] = relationships
 
     def _load_skill_file(self, skill_path: Path):
         try:
@@ -400,6 +494,9 @@ class SkillLoader:
             return None
 
         body = parts[2].strip()
+        allowed_tools = frontmatter.get("allowed-tools", [])
+        if isinstance(allowed_tools, str):
+            allowed_tools = [tool for tool in allowed_tools.split() if tool]
 
         allowed_tools = frontmatter.get("allowed-tools", [])
         if isinstance(allowed_tools, str):
@@ -492,6 +589,21 @@ class SkillLoader:
             output += f"**Description**: {skill['description']}\n\n"
             if skill.get("allowed_tools"):
                 output += f"**Allowed Tools**: {', '.join(skill['allowed_tools'])}\n\n"
+            if skill.get("install_command"):
+                output += f"**Install Command**: `{skill['install_command']}`\n\n"
+            relationships = skill.get("relationships", {})
+            if relationships.get("required"):
+                output += (
+                    f"**Required Dependencies**: {', '.join(dep['name'] for dep in relationships['required'])}\n\n"
+                )
+            if relationships.get("optional"):
+                output += (
+                    f"**Optional Dependencies**: {', '.join(dep['name'] for dep in relationships['optional'])}\n\n"
+                )
+            if relationships.get("extensions"):
+                output += (
+                    f"**Suggested Extensions**: {', '.join(dep['name'] for dep in relationships['extensions'])}\n\n"
+                )
             output += f"**Location**: `{skill['path']}`\n\n"
 
             if skill["type"] == "markdown":
@@ -537,6 +649,8 @@ class SkillLoader:
                     "description": skill["description"],
                     "allowed_tools": skill.get("allowed_tools", []),
                     "location": str(skill["path"]),
+                    "install_command": skill.get("install_command"),
+                    "relationships": skill.get("relationships", {}),
                 }
             )
         return json.dumps({"skills": skills_data}, indent=2)
@@ -594,6 +708,11 @@ def main():
     )
     prompt_parser.add_argument("--output", help="Output file")
 
+    deps_parser = subparsers.add_parser(
+        "deps", help="Show dependency and extension metadata for a skill"
+    )
+    deps_parser.add_argument("name", help="Skill name")
+
     # New command: validate
     validate_parser = subparsers.add_parser(
         "validate", help="Validate skills against strict standards"
@@ -650,6 +769,22 @@ def main():
             print(f"Prompt written to {args.output}")
         else:
             print(output)
+
+    elif args.command == "deps":
+        skill = loader.get_skill(args.name)
+        if not skill:
+            print(f"Error: Skill '{args.name}' not found", file=sys.stderr)
+            sys.exit(1)
+        print(
+            json.dumps(
+                {
+                    "name": skill["name"],
+                    "install_command": skill.get("install_command"),
+                    "relationships": skill.get("relationships", {}),
+                },
+                indent=2,
+            )
+        )
 
     elif args.command == "validate":
         skills_to_validate = []
