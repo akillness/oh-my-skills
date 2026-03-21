@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>skill-autoresearch - agentation</title>
+  <style>
+    :root {
+      color-scheme: light dark;
+      --bg: #0b1020;
+      --panel: #131a2f;
+      --line: #2a3354;
+      --text: #ecf0ff;
+      --muted: #9aa5c4;
+      --good: #42d392;
+      --base: #f6c445;
+    }
+    body {
+      margin: 0;
+      font: 15px/1.5 ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #1a2448, var(--bg) 60%);
+      color: var(--text);
+    }
+    .wrap {
+      max-width: 980px;
+      margin: 0 auto;
+      padding: 32px 20px 48px;
+    }
+    .card {
+      background: rgba(19, 26, 47, 0.88);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      padding: 20px;
+      margin-bottom: 16px;
+      backdrop-filter: blur(8px);
+    }
+    h1, h2, p { margin: 0 0 12px; }
+    .meta, .small { color: var(--muted); }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap: 12px;
+    }
+    .stat {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 14px;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 12px;
+    }
+    th, td {
+      text-align: left;
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--line);
+      vertical-align: top;
+    }
+    .pill {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+    .baseline { background: rgba(246, 196, 69, 0.18); color: var(--base); }
+    .keep { background: rgba(66, 211, 146, 0.18); color: var(--good); }
+    code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      font-size: 13px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>skill-autoresearch - agentation</h1>
+      <p class="meta">Loads <code>results.json</code> from this folder. Refresh the page after new experiments.</p>
+      <p id="status" class="small">Loading...</p>
+    </div>
+    <div id="summary" class="grid"></div>
+    <div class="card">
+      <h2>Experiments</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>ID</th>
+            <th>Status</th>
+            <th>Score</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody id="experiments"></tbody>
+      </table>
+    </div>
+    <div class="card">
+      <h2>Failure Hotspots</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Eval</th>
+            <th>Baseline</th>
+            <th>Final</th>
+          </tr>
+        </thead>
+        <tbody id="hotspots"></tbody>
+      </table>
+    </div>
+  </div>
+  <script>
+    async function load() {
+      const status = document.getElementById("status");
+      try {
+        const res = await fetch("./results.json", { cache: "no-store" });
+        const data = await res.json();
+        status.textContent = "State: " + data.status + " | Updated: " + data.updated_at;
+        document.getElementById("summary").innerHTML = [
+          ["Baseline", data.summary.baseline_score + "/" + data.summary.baseline_max_score],
+          ["Final", data.summary.final_score + "/" + data.summary.final_max_score],
+          ["Keep", String(data.summary.keep_count)],
+          ["Discard", String(data.summary.discard_count)],
+          ["Runs / experiment", String(data.runs_per_experiment)],
+          ["Stop reason", data.summary.stop_reason]
+        ].map(([label, value]) => `<div class="card stat"><div class="small">${label}</div><div>${value}</div></div>`).join("");
+
+        document.getElementById("experiments").innerHTML = data.experiments.map((exp) => `
+          <tr>
+            <td>${exp.id}</td>
+            <td><span class="pill ${exp.status}">${exp.status}</span></td>
+            <td>${exp.score}/${exp.max_score}</td>
+            <td>${exp.description}</td>
+          </tr>
+        `).join("");
+
+        const baseline = data.experiments[0].per_eval;
+        const final = data.experiments[data.experiments.length - 1].per_eval;
+        document.getElementById("hotspots").innerHTML = data.evals.map((ev) => `
+          <tr>
+            <td>${ev.name}</td>
+            <td>${baseline[ev.id] ? "pass" : "fail"}</td>
+            <td>${final[ev.id] ? "pass" : "fail"}</td>
+          </tr>
+        `).join("");
+      } catch (err) {
+        status.textContent = "Could not load results.json: " + err.message;
+      }
+    }
+    load();
+    setInterval(load, 10000);
+  </script>
+</body>
+</html>

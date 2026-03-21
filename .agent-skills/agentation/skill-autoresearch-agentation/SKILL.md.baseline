@@ -31,17 +31,6 @@ metadata:
 
 ---
 
-## Scripts (Automated Patterns)
-
-Prefer the bundled scripts in this skill before copying long config blocks by hand.
-
-| Script | Pattern | Usage |
-|--------|---------|-------|
-| `scripts/setup-agentation-mcp.sh` | MCP registration | Register `agentation-mcp` for Claude Code, Codex, Gemini CLI, and OpenCode |
-| `scripts/verify-loop.sh` | Watch-loop verification | Validate health, annotation CRUD, and ACK → RESOLVE flow before starting watch mode |
-
----
-
 ## 1. Architecture
 
 ```

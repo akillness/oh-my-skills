@@ -1,0 +1,3 @@
+experiment	score	max_score	pass_rate	status	description
+0	2	5	0.40	baseline	Fixed 3-scenario baseline; manual review caveats, git requirement, and stale-port recovery were not explicit enough
+1	5	5	1.00	keep	Added a dedicated limitations and workaround block covering manual review feedback loss, temp git repos, and fixed-port recovery

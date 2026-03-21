@@ -144,30 +144,6 @@ What it does:
 
 ---
 
-## Pattern 4.1: Known Limitations & Verified Workarounds
-
-- Manual `plannotator review` or `bash scripts/review.sh` opens the review UI, but **Send Feedback does not automatically reach the active agent session**. Use hook-driven plan review when you need a live feedback loop, or export/copy the annotations and paste them back into the agent chat manually.
-- Code Review requires a git repo. For a one-off markdown or text file, create a temp repo first:
-
-```bash
-cd /tmp && mkdir -p planno-tmp && cd planno-tmp
-git init -q && git config user.email "x@x" && git config user.name "x"
-git commit --allow-empty -m "init" -q
-cp /path/to/file-to-review.md .
-git add . && git commit -m "review" -q
-plannotator review HEAD
-```
-
-- If multiple local runs leave you on the wrong browser tab or stale port, reset the old process and pin a fixed port before retrying:
-
-```bash
-pkill plannotator 2>/dev/null; sleep 1
-export PLANNOTATOR_PORT=19432
-plannotator review
-```
-
----
-
 ## Pattern 5: Remote / Devcontainer Mode
 
 ```bash
