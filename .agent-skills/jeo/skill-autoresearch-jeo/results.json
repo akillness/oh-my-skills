@@ -1,0 +1,35 @@
+{
+  "skill": "jeo",
+  "evals": [
+    {"id": 1, "name": "Token Budget", "question": "Is the skill under 6000 tokens?"},
+    {"id": 2, "name": "No Code Duplication", "question": "Are checkpoint/error-recovery snippets deduplicated?"},
+    {"id": 3, "name": "Execution Steps Clear", "question": "Can an agent identify all STEPs and sequence quickly?"},
+    {"id": 4, "name": "Platform Paths Separated", "question": "Are platform paths clearly branched?"},
+    {"id": 5, "name": "NEVER Rules Visible", "question": "Are NEVER rules within 3 lines of where they apply?"},
+    {"id": 6, "name": "Self-Contained", "question": "Can agent execute without reading FLOW.md?"}
+  ],
+  "experiments": [
+    {
+      "id": 0,
+      "score": 1,
+      "max_score": 6,
+      "pass_rate": "17%",
+      "status": "baseline",
+      "description": "Original SKILL.md — 1178 lines, 14746 tokens, massive duplication",
+      "evals": {"1": false, "2": false, "3": false, "4": true, "5": false, "6": false},
+      "lines": 1178,
+      "tokens_approx": 14746
+    },
+    {
+      "id": 1,
+      "score": 6,
+      "max_score": 6,
+      "pass_rate": "100%",
+      "status": "keep",
+      "description": "Comprehensive restructure: extract checkpoint code to jeo-state-update.py, remove duplication, trim installation/config/troubleshooting to essentials, tighten step boundaries, move NEVER rules near context",
+      "evals": {"1": true, "2": true, "3": true, "4": true, "5": true, "6": true},
+      "lines": 329,
+      "tokens_approx": 3000
+    }
+  ]
+}

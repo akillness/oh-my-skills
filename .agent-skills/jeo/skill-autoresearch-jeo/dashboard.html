@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>JEO Skill Autoresearch Dashboard</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+body{font-family:system-ui,-apple-system,sans-serif;background:#0d1117;color:#c9d1d9;padding:2rem}
+h1{color:#58a6ff;margin-bottom:.5rem}
+.subtitle{color:#8b949e;margin-bottom:2rem}
+.stats{display:flex;gap:1.5rem;margin-bottom:2rem}
+.stat{background:#161b22;border:1px solid #30363d;border-radius:8px;padding:1rem 1.5rem}
+.stat-value{font-size:2rem;font-weight:700;color:#58a6ff}
+.stat-label{color:#8b949e;font-size:.85rem}
+.stat.green .stat-value{color:#3fb950}
+.stat.red .stat-value{color:#f85149}
+table{width:100%;border-collapse:collapse;background:#161b22;border:1px solid #30363d;border-radius:8px;overflow:hidden;margin-bottom:2rem}
+th{background:#21262d;text-align:left;padding:.75rem 1rem;color:#8b949e;font-weight:600;font-size:.85rem;text-transform:uppercase}
+td{padding:.75rem 1rem;border-top:1px solid #30363d}
+.pass{color:#3fb950}.fail{color:#f85149}
+.keep{background:#1a2e1a}.discard{background:#2e1a1a}.baseline{background:#1a1a2e}
+.bar{height:8px;border-radius:4px;background:#21262d;overflow:hidden;width:100%}
+.bar-fill{height:100%;border-radius:4px;transition:width .3s}
+.bar-fill.green{background:#3fb950}.bar-fill.red{background:#f85149}.bar-fill.blue{background:#58a6ff}
+.status-badge{display:inline-block;padding:2px 8px;border-radius:12px;font-size:.75rem;font-weight:600}
+.status-badge.keep{background:#1a3a1a;color:#3fb950;border:1px solid #3fb950}
+.status-badge.baseline{background:#1a1a3a;color:#58a6ff;border:1px solid #58a6ff}
+.status-badge.discard{background:#3a1a1a;color:#f85149;border:1px solid #f85149}
+.complete{text-align:center;padding:2rem;color:#3fb950;font-size:1.2rem}
+</style>
+</head>
+<body>
+<h1>JEO Skill Autoresearch</h1>
+<p class="subtitle">Measured iteration on .agent-skills/jeo/SKILL.md</p>
+
+<div class="stats">
+  <div class="stat green"><div class="stat-value">6/6</div><div class="stat-label">Final Score</div></div>
+  <div class="stat"><div class="stat-value">2</div><div class="stat-label">Experiments</div></div>
+  <div class="stat green"><div class="stat-value">1</div><div class="stat-label">Kept</div></div>
+  <div class="stat"><div class="stat-value">0</div><div class="stat-label">Discarded</div></div>
+  <div class="stat green"><div class="stat-value">80%</div><div class="stat-label">Token Reduction</div></div>
+</div>
+
+<h2 style="color:#c9d1d9;margin-bottom:1rem">Experiments</h2>
+<table>
+<thead><tr><th>#</th><th>Score</th><th>Pass Rate</th><th>Status</th><th>Description</th><th>Lines</th><th>Tokens</th></tr></thead>
+<tbody>
+<tr class="baseline">
+  <td>0</td><td>1/6</td>
+  <td><div class="bar"><div class="bar-fill red" style="width:17%"></div></div> 17%</td>
+  <td><span class="status-badge baseline">baseline</span></td>
+  <td>Original SKILL.md — massive duplication, buried steps</td>
+  <td>1178</td><td>~14746</td>
+</tr>
+<tr class="keep">
+  <td>1</td><td>6/6</td>
+  <td><div class="bar"><div class="bar-fill green" style="width:100%"></div></div> 100%</td>
+  <td><span class="status-badge keep">keep</span></td>
+  <td>Comprehensive restructure: deduplicate, trim, tighten steps</td>
+  <td>329</td><td>~3000</td>
+</tr>
+</tbody>
+</table>
+
+<h2 style="color:#c9d1d9;margin-bottom:1rem">Eval Breakdown</h2>
+<table>
+<thead><tr><th>Eval</th><th>Baseline</th><th>Exp 1</th></tr></thead>
+<tbody>
+<tr><td>1. Token Budget (&lt;6000)</td><td class="fail">FAIL (14746)</td><td class="pass">PASS (3000)</td></tr>
+<tr><td>2. No Code Duplication</td><td class="fail">FAIL (4x copies)</td><td class="pass">PASS (1 script)</td></tr>
+<tr><td>3. Execution Steps Clear</td><td class="fail">FAIL (buried)</td><td class="pass">PASS (scannable)</td></tr>
+<tr><td>4. Platform Paths Separated</td><td class="pass">PASS</td><td class="pass">PASS</td></tr>
+<tr><td>5. NEVER Rules Visible</td><td class="fail">FAIL (distant)</td><td class="pass">PASS (top + inline)</td></tr>
+<tr><td>6. Self-Contained</td><td class="fail">FAIL (needs FLOW.md)</td><td class="pass">PASS</td></tr>
+</tbody>
+</table>
+
+<div class="complete">Score plateau reached at 100% — autoresearch complete</div>
+</body>
+</html>
