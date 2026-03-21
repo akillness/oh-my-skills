@@ -78,16 +78,12 @@ echo "✅ Skill paths ready"
 
 Execute based on Step 0 results:
 
-**All platforms (recommended starting point):**
+**All platforms (common core — installed once, shared by all):**
 ```bash
-# research-first survey skill
-npx skills add https://github.com/akillness/oh-my-skills --skill survey -g
-
-# jeo core skill
-npx skills add https://github.com/akillness/oh-my-skills --skill jeo -g
-
-# jeo dependency skills (recommended to install together)
-npx skills add https://github.com/akillness/oh-my-skills --skill plannotator --skill agentation -g
+npx skills add https://github.com/akillness/oh-my-skills \
+  --skill jeo --skill survey --skill plannotator --skill agentation \
+  --skill ralph --skill ralphmode --skill vibe-kanban \
+  -g
 ```
 
 > **jeo Agent Protocol**: When jeo runs, it automatically creates `jeo-state.json` and proceeds sequentially through PLAN → EXECUTE → VERIFY → CLEANUP phases.
@@ -96,94 +92,79 @@ npx skills add https://github.com/akillness/oh-my-skills --skill plannotator --s
 > **agentation MCP install (recommended)**: `npx add-mcp "npx -y agentation-mcp server"` — auto-detects 9+ agents including Claude/Gemini/Codex/OpenCode.
 > **agentation Claude Code Official Skill**: Install with `npx skills add benjitaylor/agentation -g` then run `/agentation` in conversation to auto-launch browser UI.
 
-**Claude Code only:**
+**Claude Code only (platform-specific — excludes common core above):**
 ```bash
 npx skills add https://github.com/akillness/oh-my-skills \
-  --skill omc --skill plannotator --skill ralph --skill ralphmode --skill vibe-kanban \
+  --skill omc --skill bmad-orchestrator \
   -g
 ```
 
 > **Claude Code + jeo**: jeo EXECUTE phase requires `/omc:team` and will **not** fall back to single-agent execution. Set `CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1` before running jeo.
 
-**Gemini CLI only:**
+**Gemini CLI only (platform-specific):**
 ```bash
 npx skills add https://github.com/akillness/oh-my-skills \
-  --skill ohmg --skill ralph --skill ralphmode --skill vibe-kanban \
+  --skill ohmg \
   -g
 ```
 
-**Codex CLI only:**
+**Codex CLI only (platform-specific):**
 ```bash
 npx skills add https://github.com/akillness/oh-my-skills \
-  --skill omx --skill ralph --skill ralphmode \
+  --skill omx \
   -g
 ```
 
-**Gemini CLI (extension install):**
+**Gemini CLI (extension install — alternative):**
 ```bash
 gemini extensions install https://github.com/akillness/oh-my-skills
 ```
 
 ---
 
-### Step 2: Full Installation (77 repo skills = 77 total)
+### Step 2: Full Installation (78 in-repo skills)
 
-> **Installs or updates all 77 in-repo skills = 77 total. Existing skills are overwritten with the latest version. Skills not in this list are preserved.**
-
-```bash
-# Ensure all skill directories exist (no wiping — update/overwrite only)
-_SKILLS_CANONICAL="${HOME}/.agent-skills"
-for _dest in \
-  "${_SKILLS_CANONICAL}" \
-  "${HOME}/.claude/skills"  "${PWD}/.claude/skills" \
-  "${HOME}/.codex/skills"   "${PWD}/.codex/skills" \
-  "${HOME}/.gemini/skills"  "${PWD}/.gemini/skills" \
-  "${HOME}/.opencode/skills" "${PWD}/.opencode/skills" \
-  "${HOME}/.config/opencode/skills" "${PWD}/.config/opencode/skills"; do
-  mkdir -p "${_dest}"
-done
-echo "✅ Skill directories ready — installing/updating skills"
-```
+> **Installs or overwrites all 78 in-repo skills. Existing skills are updated to the latest version. Skills not in this list are preserved. Step 0 already created directories — no duplicate mkdir needed.**
 
 ```bash
 npx skills add https://github.com/akillness/oh-my-skills \
-  --skill bmad-orchestrator --skill bmad-gds --skill bmad-idea \
-  --skill prompt-repetition --skill skill-standardization \
-  --skill api-design --skill api-documentation --skill authentication-setup \
-  --skill backend-testing --skill database-schema-design \
-  --skill design-system --skill frontend-design-system \
-  --skill react-best-practices --skill vercel-react-best-practices \
-  --skill responsive-design --skill state-management \
-  --skill ui-component-patterns --skill web-accessibility \
-  --skill web-design-guidelines --skill code-refactoring \
-  --skill code-review --skill debugging \
-  --skill performance-optimization --skill testing-strategies \
-  --skill deployment-automation --skill firebase-ai-logic \
-  --skill genkit --skill looker-studio-bigquery \
-  --skill monitoring-observability --skill security-best-practices \
-  --skill system-environment-setup --skill vercel-deploy \
-  --skill changelog-maintenance --skill presentation-builder \
-  --skill technical-writing --skill user-guide-writing \
-  --skill sprint-retrospective --skill standup-meeting \
-  --skill task-estimation --skill task-planning \
-  --skill codebase-search --skill data-analysis \
-  --skill log-analysis --skill pattern-detection \
-  --skill remotion-video-production --skill video-production \
+  --skill agent-browser --skill agentation --skill api-design \
+  --skill api-documentation --skill authentication-setup \
+  --skill autoresearch --skill backend-testing \
+  --skill bmad-gds --skill bmad-idea --skill bmad-orchestrator \
+  --skill changelog-maintenance --skill clawteam \
+  --skill code-refactoring --skill code-review --skill codebase-search \
+  --skill copilot-coding-agent --skill data-analysis \
+  --skill database-schema-design --skill debugging \
+  --skill deployment-automation --skill design-system \
+  --skill environment-setup --skill fabric \
+  --skill file-organization --skill firebase-ai-logic --skill firebase-cli \
+  --skill frontend-design-system --skill genkit \
+  --skill git-submodule --skill git-workflow \
+  --skill google-workspace --skill jeo \
+  --skill langsmith --skill log-analysis \
+  --skill looker-studio-bigquery \
   --skill marketing-automation --skill marketing-skills-collection \
-  --skill agent-browser --skill agentation --skill copilot-coding-agent \
-  --skill environment-setup --skill file-organization \
-  --skill git-submodule --skill git-workflow --skill jeo \
-  --skill npm-git-install --skill ohmg --skill omx \
-  --skill omc --skill opencontext --skill plannotator --skill playwriter \
-  --skill ralph --skill ralphmode --skill survey \
-  --skill vibe-kanban --skill workflow-automation \
-  --skill fabric --skill autoresearch --skill skill-autoresearch \
-  --skill google-workspace --skill langsmith --skill react-grab \
-  --skill firebase-cli --skill obsidian-plugin \
+  --skill monitoring-observability --skill npm-git-install \
+  --skill obsidian-plugin --skill ohmg --skill omc --skill omx \
+  --skill opencontext --skill pattern-detection \
+  --skill performance-optimization --skill plannotator --skill playwriter \
+  --skill presentation-builder --skill prompt-repetition \
+  --skill ralph --skill ralphmode --skill react-best-practices \
+  --skill react-grab --skill remotion-video-production \
+  --skill research-paper-writing --skill responsive-design \
+  --skill security-best-practices --skill skill-autoresearch \
+  --skill skill-standardization --skill sprint-retrospective \
+  --skill standup-meeting --skill state-management \
+  --skill survey --skill system-environment-setup \
+  --skill task-estimation --skill task-planning \
+  --skill technical-writing --skill testing-strategies \
+  --skill ui-component-patterns --skill user-guide-writing \
+  --skill vercel-deploy --skill vercel-react-best-practices \
+  --skill vibe-kanban --skill video-production \
+  --skill web-accessibility --skill web-design-guidelines \
+  --skill workflow-automation \
   -g
-
-# External skill: Research Paper Writing (ML/CV/NLP academic paper writing)
-npx skills add https://github.com/Master-cai/Research-Paper-Writing-Skills.git -g
 ```
 
 > Skip condition is only allowed when the user explicitly requests (`core only`, `minimal install`, `quick install`).
@@ -250,7 +231,7 @@ bash ~/.agent-skills/jeo/scripts/setup-gemini.sh
 ### Step 4: Verify Installation and Activation
 
 ```bash
-# Auto-detect installation directory (must be non-empty)
+# Auto-detect canonical installation directory
 is_non_empty_dir() { [ -d "$1" ] && [ -n "$(ls -A "$1" 2>/dev/null)" ]; }
 
 if is_non_empty_dir "${HOME}/.agent-skills"; then
@@ -265,38 +246,70 @@ fi
 
 echo "Detected skills dir: ${SKILL_SRC}"
 
-# Sync to canonical path (update/overwrite — preserves skills not in source)
-mkdir -p "${HOME}/.agent-skills"
-if command -v rsync >/dev/null 2>&1; then
-  rsync -a "${SKILL_SRC}/" "${HOME}/.agent-skills/"
-else
-  cp -R "${SKILL_SRC}/." "${HOME}/.agent-skills/"
+# Sync to canonical path if not already there
+if [ "${SKILL_SRC}" != "${HOME}/.agent-skills" ]; then
+  mkdir -p "${HOME}/.agent-skills"
+  if command -v rsync >/dev/null 2>&1; then
+    rsync -a "${SKILL_SRC}/" "${HOME}/.agent-skills/"
+  else
+    cp -R "${SKILL_SRC}/." "${HOME}/.agent-skills/"
+  fi
 fi
 
-# Update platform-specific skill directories (overwrite only — no deletion)
+# Symlink platform directories to canonical path (no duplication on disk)
+# Each platform reads from the same source — updates propagate instantly
 for dest in \
-    "${HOME}/.claude/skills" "${PWD}/.claude/skills" \
-    "${HOME}/.codex/skills" "${PWD}/.codex/skills" \
-    "${HOME}/.gemini/skills" "${PWD}/.gemini/skills" \
-    "${HOME}/.opencode/skills" "${PWD}/.opencode/skills" \
-    "${HOME}/.config/opencode/skills" "${PWD}/.config/opencode/skills"; do
-  mkdir -p "${dest}"
-  if command -v rsync >/dev/null 2>&1; then
-    rsync -a "${HOME}/.agent-skills/" "${dest}/"
+    "${HOME}/.claude/skills" "${HOME}/.codex/skills" \
+    "${HOME}/.gemini/skills" "${HOME}/.opencode/skills" \
+    "${HOME}/.config/opencode/skills"; do
+  parent="$(dirname "${dest}")"
+  mkdir -p "${parent}"
+  if [ -L "${dest}" ]; then
+    : # Already a symlink — skip
+  elif [ -d "${dest}" ]; then
+    echo "Replacing ${dest} (directory) with symlink to canonical path"
+    rm -rf "${dest}"
+    ln -s "${HOME}/.agent-skills" "${dest}"
   else
-    cp -R "${HOME}/.agent-skills/." "${dest}/"
+    ln -s "${HOME}/.agent-skills" "${dest}"
   fi
 done
 
-# Check installed skill list
-ls "${HOME}/.agent-skills" 2>/dev/null
-ls "${HOME}/.claude/skills" 2>/dev/null
-ls "${HOME}/.codex/skills" 2>/dev/null
-ls "${HOME}/.gemini/skills" 2>/dev/null
-ls "${HOME}/.opencode/skills" 2>/dev/null
-ls "${HOME}/.config/opencode/skills" 2>/dev/null
+# Also symlink PWD-local paths if they exist as directories
+for dest in \
+    "${PWD}/.claude/skills" "${PWD}/.codex/skills" \
+    "${PWD}/.gemini/skills" "${PWD}/.opencode/skills" \
+    "${PWD}/.config/opencode/skills"; do
+  parent="$(dirname "${dest}")"
+  [ -d "${parent}" ] || continue
+  if [ -L "${dest}" ]; then
+    :
+  elif [ -d "${dest}" ]; then
+    rm -rf "${dest}"
+    ln -s "${HOME}/.agent-skills" "${dest}"
+  else
+    ln -s "${HOME}/.agent-skills" "${dest}"
+  fi
+done
 
-# Verify individual skill
+# Verify
+echo "=== Installed skills (canonical) ==="
+ls "${HOME}/.agent-skills" 2>/dev/null | head -20
+SKILL_COUNT=$(ls -d "${HOME}/.agent-skills"/*/SKILL.md 2>/dev/null | wc -l | tr -d ' ')
+echo "Total: ${SKILL_COUNT} skills"
+
+echo "=== Symlink status ==="
+for dest in "${HOME}/.claude/skills" "${HOME}/.codex/skills" \
+            "${HOME}/.gemini/skills" "${HOME}/.opencode/skills"; do
+  if [ -L "${dest}" ]; then
+    echo "  ${dest} -> $(readlink "${dest}")"
+  elif [ -d "${dest}" ]; then
+    echo "  ${dest} (directory — not symlinked)"
+  else
+    echo "  ${dest} (not found)"
+  fi
+done
+
 npx skills info jeo
 ```
 
@@ -362,6 +375,8 @@ gh api --silent --method PUT /user/starred/akillness/oh-my-skills && echo "⭐ S
 | `autoresearch` | `autoresearch`, `autonomous ml experiments`, `val_bpb` | Karpathy autonomous ML experimentation — AI agent runs overnight GPU experiments, ratchets improvements via git |
 | `skill-autoresearch` | `skill-autoresearch`, `optimize this skill`, `eval my skill` | Eval-driven SKILL.md optimization loop — benchmark a skill, mutate one instruction at a time, keep only score-improving changes |
 | `agentation` | `annotate`, `UI검토`, `agentui` | UI annotation → agent code modification. Install: `npx add-mcp "npx -y agentation-mcp server"` (Universal) or `npx skills add benjitaylor/agentation -g` → `/agentation` (Claude Code Official Skill). Local-first architecture, offline operation, session continuity. |
+| `clawteam` | `clawteam`, `agent swarm`, `spawn agents` | Framework-agnostic multi-agent coordination CLI — file-based state, task queues, inboxes, kanban board |
+| `research-paper-writing` | `research paper`, `academic paper` | ML/CV/NLP academic paper writing — section structure, paragraph flow, reviewer-facing presentation |
 | `omx` | `omx` | Codex CLI multi-agent orchestration |
 | `ohmg` | `ohmg` | Gemini / Antigravity workflows |
 
